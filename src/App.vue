@@ -1,18 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div>
+    <Problem/>
+    <CLI/>
+    <FileTree />
+    <CommitGraph />
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+<script>
+import { Problem, CLI, FileTree, CommitGraph } from "./components";
+import { Git } from "./git/git.ts"
+import { PlainFile, Directory } from "./git/fileStructure.ts"
 
-export default defineComponent({
+const rootDir = new Directory('rootDir')
+const aTxt = new PlainFile('a.txt', rootDir)
+const bTxt = new PlainFile('b.txt', rootDir)
+const git = new Git(rootDir)
+const status = git.status()
+console.log(status, aTxt, bTxt)
+
+export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
-});
+    Problem,
+    CLI,
+    FileTree,
+    CommitGraph,
+  },
+}
 </script>
 
 <style>

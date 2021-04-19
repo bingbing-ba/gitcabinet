@@ -1,4 +1,5 @@
 # gitcabinet
+git을 처음 시작하는 사람들을 위한 과제 해결형 git simulator
 
 ## Project setup
 ```
