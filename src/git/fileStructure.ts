@@ -7,6 +7,9 @@ export class PlainFile {
     if (filename.includes(' ')) {
       throw new Error('Space is not allowed to File Name')
     }
+    if (parent.isExist(filename)) {
+      throw new Error('There is the same filename in this directory')
+    }
     this.filename = filename
     this.content = ''
     this.parent = parent

@@ -1,33 +1,43 @@
 <template>
   <div>
-    <Problem/>
-    <CLI/>
-    <FileTree />
-    <CommitGraph />
+    <problem-view :problem="problem"/>
+    <CLIView
+      :problem="problem"
+      :resultString="resultString"
+      @command="onCommand"
+    />
+    <file-tree :problem="problem" />
+    <commit-graph :problem="problem" />
   </div>
 </template>
 
-<script>
-import { Problem, CLI, FileTree, CommitGraph } from "./components";
-import { Git } from "./git/git.ts"
-import { PlainFile, Directory } from "./git/fileStructure.ts"
-
-const rootDir = new Directory('rootDir')
-const aTxt = new PlainFile('a.txt', rootDir)
-const bTxt = new PlainFile('b.txt', rootDir)
-const git = new Git(rootDir)
-const status = git.status()
-console.log(status, aTxt, bTxt)
-
-export default {
-  name: 'App',
+<script lang="ts">
+import { defineComponent, reactive, ref } from 'vue'
+import { ProblemView, CLIView, FileTree, CommitGraph } from '@/components'
+import { cli } from '@/cli'
+import { problems } from '@/problems'
+export default defineComponent({
   components: {
-    Problem,
-    CLI,
+    ProblemView,
+    CLIView,
     FileTree,
     CommitGraph,
   },
-}
+  setup() {
+    const problemIndex = ref(0)
+    const problem = reactive(problems[problemIndex.value])
+    const resultString = ref('')
+    const onCommand = (inputCommand: string) => {
+      resultString.value = cli(inputCommand, problem)
+      console.log('onCommand', resultString.value)
+    }
+    return {
+      problem,
+      onCommand,
+      resultString,
+    }
+  },
+})
 </script>
 
 <style>
