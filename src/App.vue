@@ -1,6 +1,6 @@
 <template>
   <div>
-    <problem-view :problem="problem"/>
+    <problem-view :problem="problem" @next-problem="nextProblem"/>
     <CLIView
       :problem="problem"
       :resultString="resultString"
@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, reactive, ref } from 'vue'
 import { ProblemView, CLIView, FileTree, CommitGraph } from '@/components'
 import { cli } from '@/cli'
-import { problems } from '@/problems'
+import { problems as problemSet } from '@/problems'
 export default defineComponent({
   components: {
     ProblemView,
@@ -25,16 +25,26 @@ export default defineComponent({
   },
   setup() {
     const problemIndex = ref(0)
-    const problem = reactive(problems[problemIndex.value])
+    const problems = reactive(problemSet)
+
+    const problem = computed(()=>{
+      return problems[problemIndex.value]
+    })
+
     const resultString = ref('')
     const onCommand = (inputCommand: string) => {
-      resultString.value = cli(inputCommand, problem)
+      resultString.value = cli(inputCommand, problem.value)
       console.log('onCommand', resultString.value)
+    }
+    const nextProblem = () => {
+      problemIndex.value += 1
+      console.log('nextproblem', problemIndex)
     }
     return {
       problem,
       onCommand,
       resultString,
+      nextProblem,
     }
   },
 })

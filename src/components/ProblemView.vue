@@ -3,7 +3,12 @@
     <h1>{{ problem.title }}</h1>
     <p>{{ problem.content }}</p>
     <p>{{ problem.hint }}</p>
-    <button :class="isCorrect ? 'success' : 'disabled'">다음문제</button>
+    <button 
+      :class="isCorrect ? 'success' : 'disabled'"
+      @click="nextProblem"
+    >
+      다음문제
+    </button>
   </div>
 </template>
 
@@ -17,12 +22,18 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const isCorrect = computed(()=>{
       return props.problem.isCorrect()
     })
+    const nextProblem = () => {
+      if (isCorrect.value) {
+        emit('next-problem')
+      }
+    }
     return {
       isCorrect,
+      nextProblem,
     }
   },
 })
