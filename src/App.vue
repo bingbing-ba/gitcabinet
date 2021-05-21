@@ -2,15 +2,12 @@
   <TheNavBar class="navbar"/>
   <main class="main">
     <SectionLeft>
-      <ProblemInstruction :problem="problem">
-      </ProblemInstruction>
-      <ProblemCLI/>
+      <ProblemInstruction :problem="problem"/>
+      <ProblemCLI :problem="problem"/>
     </SectionLeft>
     <SectionRight>
-      <GitDirectory>
-      </GitDirectory>
-      <GitGraph>
-      </GitGraph>
+      <GitDirectory/>
+      <GitGraph/>
     </SectionRight>
     <Divider/>
   </main>
@@ -45,11 +42,11 @@ export default defineComponent({
   setup() {
     const problemIndex = ref(0)
     const problems = reactive(problemSet)
-
+    
     const problem = computed(()=>{
       return problems[problemIndex.value]
     })
-
+    
     const resultString = ref('')
     const onCommand = (inputCommand: string) => {
       resultString.value = cli(inputCommand, problem.value)
