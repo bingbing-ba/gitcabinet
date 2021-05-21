@@ -1,20 +1,28 @@
 import { sha256 } from 'js-sha256'
 import { PlainFile, Directory } from './fileStructure'
-import { stringObject, commit, statusToCommit, userConfig } from './gitTypes'
+import {
+  index,
+  branches,
+  tree,
+  fileHashes,
+  commit,
+  statusToCommit,
+  userConfig,
+} from './gitTypes'
 
 export class Git {
   /** @property `object`, staging area역할, key가 파일이름, value는 파일내용을 hash한 값 */
-  index: stringObject
+  index: index
   /** @property `string`, 활성화된 브랜치 이름 ex. master */
   head: string
-  /** @property `object`, key가 브랜치이름, value가 가장 최신 commit */
-  branches: stringObject
+  /** @property `object`, key가 브랜치이름, value가 가장 최신 commit hash */
+  branches: branches
   /** @property `object`, key가 commit을 hash한 값, value는 commit 객체 */
   commits: { [key: string]: commit }
   /** @property `object`, key가 tree를 hash한 값, value는 tree 객체 */
-  trees: { [key: string]: stringObject }
+  trees: { [key: string]: tree }
   /** @property `object` key가 파일 내용을 hash한 값, value는 hash전 원본 */
-  fileHashes: stringObject
+  fileHashes: fileHashes
   /** @property `object` user와 remote 정보  */
   config: {
     user: {
@@ -26,14 +34,14 @@ export class Git {
     }
   }
   /** @property `Directory`, git의 추적 대상인 디렉토리  */
-  refDir: Directory
+  refDirectory: Directory
 
   /**
    * `$ git init`하는 것과 동일
    * 기본 브랜치는 master입니다.
-   * @param refDir 추적 대상이 될 디렉토리
+   * @param refDirectory 추적 대상이 될 디렉토리
    */
-  constructor(refDir: Directory) {
+  constructor(refDirectory: Directory) {
     this.index = {}
     this.head = 'master'
     this.branches = {
@@ -49,7 +57,7 @@ export class Git {
       },
       remote: {},
     }
-    this.refDir = refDir
+    this.refDirectory = refDirectory
   }
 
   /**
@@ -58,7 +66,7 @@ export class Git {
    * @returns `object` key는 파일이름, value는 파일내용을 hash한 값.
    */
   hash(files: PlainFile[]) {
-    const hashedFiles: stringObject = {}
+    const hashedFiles: fileHashes = {}
     files.forEach((file) => {
       hashedFiles[file.filename] = sha256(file.content)
     })
@@ -73,7 +81,7 @@ export class Git {
   getStatusNotToCommit(passedNames?: string[]) {
     let filenames: string[] = []
     if (passedNames === undefined) {
-      filenames = this.refDir.getChildrenName()
+      filenames = this.refDirectory.getChildrenName()
     } else {
       filenames = passedNames
     }
@@ -83,7 +91,7 @@ export class Git {
       modified: new Array<string>(),
       deleted: new Array<string>(),
     }
-    const files = this.refDir.getFilesByName(filenames)
+    const files = this.refDirectory.getFilesByName(filenames)
     const hashedPresentFiles = this.hash(files)
     // 현재 파일 목록으로 변경사항 확인
     for (const filename in hashedPresentFiles) {
@@ -100,7 +108,7 @@ export class Git {
     // status에 인자 안 준 경우, 즉 모든 변경사항을 다 추적해야됨
     if (passedNames === undefined) {
       for (const filename in this.index) {
-        if (!this.refDir.isExist(filename)) {
+        if (!this.refDirectory.isExist(filename)) {
           statusNotToCommit.deleted.push(filename)
         }
       }
@@ -110,7 +118,7 @@ export class Git {
         // 삭제에 들어와야하는 것? index에는 있고, dir에는 없는 것
         if (
           Object.keys(this.index).includes(filename) &&
-          !this.refDir.isExist(filename)
+          !this.refDirectory.isExist(filename)
         ) {
           statusNotToCommit.deleted.push(filename)
         }
@@ -201,7 +209,7 @@ export class Git {
     // 없는애들은 암것도 안함
     let filenames: string[] = []
     if (passedNames === undefined) {
-      filenames = this.refDir.getChildrenName()
+      filenames = this.refDirectory.getChildrenName()
     } else {
       filenames = passedNames
     }
@@ -209,7 +217,7 @@ export class Git {
     // undefined일 때 모든 변경사항을 받아오기 위해 일부러 passedNames를 전달함
     const { deleted } = this.getStatusNotToCommit(passedNames)
     // delete된 파일은 없고 unstaged나 modified된 녀석들만 아래 files에 있음
-    const files = this.refDir.getFilesByName(filenames)
+    const files = this.refDirectory.getFilesByName(filenames)
     const hashedFiles = files.map((file) => {
       return {
         filename: file.filename,

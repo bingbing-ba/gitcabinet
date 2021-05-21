@@ -1,6 +1,37 @@
-export interface stringObject {
+/**
+ * staging area입니다.
+ * key는 파일 이름이고 value는 파일 내용을 hash한 값입니다.
+ */
+export interface index {
   [key: string]: string,
 }
+
+/**
+ * branch 정보 객체입니다.
+ * key에는 branch 이름이 오고(ex. master)
+ * value에는 해당 브랜치의 가장 최신 commit hash값이 옵니다.
+ */
+export interface branches {
+  [key: string]: string,
+}
+
+/**
+ * tree 객체입니다. 
+ * commit시점의 파일 상태를 기록하기 위해 사용합니다.
+ * key는 파일이름, value는 파일내용을 hash한 값입니다.
+ */
+export interface tree {
+  [key: string]: string,
+}
+
+/**
+ * hash한 파일 내용을 원래대로 표시할 때 사용하는 객체입니다.
+ * key는 파일 내용을 hash한 값, value는 원본 파일 내용입니다.
+ */
+export interface fileHashes {
+  [key: string]: string,
+}
+
 /**
  * commit object입니다.
  * tree는 tree object에서 index로 쓸 수 있는 hash값,

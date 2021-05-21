@@ -13,7 +13,7 @@ export const cli = (command: string, problem:Problem) => {
     .trim()
     .match(/(?:[^\s']+|'[^']*')+/g) as string [] 
     // split with space but ignore space in quote
-    const [firstCommand, secondCommand, ...restCommand] = splitedCommand
+  const [firstCommand, secondCommand, ...restCommand] = splitedCommand
 
   let resultString = ''
   if (firstCommand === 'git') {
