@@ -1,53 +1,38 @@
 import { sha256 } from 'js-sha256'
 import { PlainFile, Directory } from './fileStructure'
-
-interface hashObj {
-  [key: string]: string
-}
-
-interface commit {
-  tree: string
-  parent: string[]
-  author: string
-  message: string
-}
-
-interface nameConfig {
-  type: 'name'
-  name: string
-}
-
-interface emailConfig {
-  type: 'email'
-  email: string
-}
-
-type userConfig = nameConfig | emailConfig
-
-interface statusToCommit {
-  created: string[]
-  modified: string[]
-  deleted: string[]
-}
+import { stringObject, commit, statusToCommit, userConfig } from './gitTypes'
 
 export class Git {
-  index: hashObj
+  /** @property `object`, staging area역할, key가 파일이름, value는 파일내용을 hash한 값 */
+  index: stringObject
+  /** @property `string`, 활성화된 브랜치 이름 ex. master */
   head: string
-  branches: hashObj
+  /** @property `object`, key가 브랜치이름, value가 가장 최신 commit */
+  branches: stringObject
+  /** @property `object`, key가 commit을 hash한 값, value는 commit 객체 */
   commits: { [key: string]: commit }
-  trees: { [key: string]: hashObj }
-  fileHashes: hashObj
+  /** @property `object`, key가 tree를 hash한 값, value는 tree 객체 */
+  trees: { [key: string]: stringObject }
+  /** @property `object` key가 파일 내용을 hash한 값, value는 hash전 원본 */
+  fileHashes: stringObject
+  /** @property `object` user와 remote 정보  */
   config: {
     user: {
       name: string
       email: string
     }
     remote: {
-      [key: string]: string
+      [key: string]: Git
     }
   }
+  /** @property `Directory`, git의 추적 대상인 디렉토리  */
   refDir: Directory
 
+  /**
+   * `$ git init`하는 것과 동일
+   * 기본 브랜치는 master입니다.
+   * @param refDir 추적 대상이 될 디렉토리
+   */
   constructor(refDir: Directory) {
     this.index = {}
     this.head = 'master'
@@ -67,14 +52,24 @@ export class Git {
     this.refDir = refDir
   }
 
+  /**
+   * 여러 파일을 hash하는 함수
+   * @param files 파일객체 배열
+   * @returns `object` key는 파일이름, value는 파일내용을 hash한 값.
+   */
   hash(files: PlainFile[]) {
-    const hashedFiles: hashObj = {}
+    const hashedFiles: stringObject = {}
     files.forEach((file) => {
       hashedFiles[file.filename] = sha256(file.content)
     })
     return hashedFiles
   }
 
+  /**
+   * index(stage)와 refDir를 비교해서 staging되지 않은 변경사항을 return
+   * @param passedNames 파일 이름 배열, 전달한 파일 이름에 대해서만 변경사항을 체크합니다. 전달하지 않으면 모든 변경사항 체크.
+   * @returns `object` key는 unstaged, modified, deleted, value는 모두 파일 이름 배열
+   */
   getStatusNotToCommit(passedNames?: string[]) {
     let filenames: string[] = []
     if (passedNames === undefined) {
@@ -109,7 +104,8 @@ export class Git {
           statusNotToCommit.deleted.push(filename)
         }
       }
-    } else { // 아닌 경우 인자로 넘겨준 것 들에 대해서만 status 추적
+    } else {
+      // 아닌 경우 인자로 넘겨준 것 들에 대해서만 status 추적
       for (const filename of filenames) {
         // 삭제에 들어와야하는 것? index에는 있고, dir에는 없는 것
         if (
@@ -124,8 +120,12 @@ export class Git {
     return statusNotToCommit
   }
 
+  /**
+   * index(stage)와 최신 commit의 tree를 비교해서 commit할 수 있는 변경사항을 return
+   * @returns `object` key는 created, modified, deleted, value는 모두 파일 이름 배열
+   */
   getStatusToCommit() {
-    const statusToCommit: statusToCommit = {
+    const statusToCommit = {
       created: new Array<string>(),
       modified: new Array<string>(),
       deleted: new Array<string>(),
@@ -156,6 +156,11 @@ export class Git {
     return statusToCommit
   }
 
+  /**
+   * `$ git status` 와 같은 역할을 하는 함수
+   * @param filenames 파일 이름 배열, 변경 사항 추적 대상이 됩니다. 넣지 않으면 모든 변경사항을 대상으로 합니다.
+   * @returns `object`, statusNotToCommit과 statusToCommit이 들어있습니다.
+   */
   status(filenames?: string[]) {
     return {
       statusNotToCommit: this.getStatusNotToCommit(filenames),
@@ -163,6 +168,11 @@ export class Git {
     }
   }
 
+  /**
+   * `$ git config user.name 이름` 명령어 역할
+   * name or email 세팅이 가능합니다.
+   * @param data 세팅할 유저 정보
+   */
   setUserConfig(data: userConfig) {
     if (data.type === 'name') {
       this.config.user.name = data.name
@@ -171,22 +181,28 @@ export class Git {
     }
   }
 
+  /**
+   * `$ git config user.name` 명령어 역할
+   * 이름이나 이메일 가져올 때 사용
+   * @param data 이름 or 이메일
+   * @returns 설정된 이름 or 이메일
+   */
   getUserConfig(data: { type: 'name' | 'email' }) {
     return this.config.user[data.type]
   }
 
-  // setRemoteConfig(remoteName:string, url:string) {
-  //   if (this.config.remote[remoteName])
-  // }
-
+  /**
+   * `$ git add` 명령어 역할, 변경사항을 staging 합니다.
+   * @param passedNames 파일 이름 배열, 전달하지 않으면 .(현재 디렉토리의 모든 변경사항)으로 동작
+   */
   add(passedNames?: string[]) {
     // unstaged나 modified에 있는 녀석들은 hashing하고 index에 추가
     // deleted에 있는 녀석들은 index에서 삭제
     // 없는애들은 암것도 안함
-    let filenames:string[] = []
+    let filenames: string[] = []
     if (passedNames === undefined) {
       filenames = this.refDir.getChildrenName()
-    }else{
+    } else {
       filenames = passedNames
     }
 
@@ -212,6 +228,10 @@ export class Git {
     }
   }
 
+  /**
+   * `$ git commit -m`의 역할을 하는 함수
+   * @param message 커밋메세지
+   */
   commit(message: string) {
     const statusToCommit = this.getStatusToCommit()
     const isAnyChange = Object.keys(statusToCommit).reduce((prev, curr) => {
@@ -238,5 +258,21 @@ export class Git {
     const commitHash = sha256(JSON.stringify(commitObj))
     this.commits[commitHash] = commitObj
     this.branches[this.head] = commitHash
+  }
+
+  /**
+   * `$ git remote add origin remote.url.com` 명령어 역할을 하는 함수
+   * 구현 상 remote는 아예 다른 git 인스턴스를 가리키게 하였습니다.
+   * @param remoteName 리모트 별칭, ex. origin
+   * @param remoteGit 리모트 깃 저장소
+   */
+  setRemoteConfig(remoteName: string, remoteGit: Git) {
+    this.config.remote[remoteName] = remoteGit
+  }
+
+  pull(remoteName: string, branch: string) {
+    // 1. remote의 branch의 가장 최신 commit이랑 내 branch랑 비교
+    // pull이니까 내 commithash를 remote의 head부터 차례로 찾아들어감
+    // 2. 일치하는 게 나오기 전까지 commit
   }
 }
