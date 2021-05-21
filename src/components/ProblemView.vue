@@ -46,6 +46,7 @@ export default defineComponent({
 }
 .success{
   cursor: pointer;
-  background-color: green;
+  background-color: green;  
 }
+
 </style>
