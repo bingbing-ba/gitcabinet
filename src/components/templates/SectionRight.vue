@@ -16,6 +16,6 @@ export default defineComponent({
 
 <style>
 .section__right {
-  @apply grid grid-rows-2 gap-y-3 py-7 px-4 overflow-auto;
+  @apply grid grid-rows-2 auto-cols-fr gap-y-3 py-7 px-4 overflow-auto;
 }
 </style>

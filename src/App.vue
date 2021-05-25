@@ -1,9 +1,21 @@
 <template>
-  <TheNavBar class="navbar"/>
+  <TheNavBar 
+    class="navbar" 
+    :problem="problem"
+    :problemIndex="problemIndex"
+    :lastProblemIndex="lastProblemIndex"
+    @goto-prev-problem="gotoPrevProblem"
+    @goto-next-problem="gotoNextProblem"
+    @reset-problem="resetProblem"
+  />
   <main class="main">
     <SectionLeft>
-      <ProblemInstruction :problem="problem"/>
-      <ProblemCLI :problem="problem"/>
+      <ProblemInstruction 
+        :problem="problem"
+      />
+      <ProblemCLI 
+        :problem="problem"
+      />
     </SectionLeft>
     <SectionRight>
       <GitDirectory/>
@@ -43,24 +55,29 @@ export default defineComponent({
     const problemIndex = ref(0)
     const problems = reactive(problemSet)
     
+    const lastProblemIndex = problems.length
     const problem = computed(()=>{
       return problems[problemIndex.value]
     })
-    
-    const resultString = ref('')
-    const onCommand = (inputCommand: string) => {
-      resultString.value = cli(inputCommand, problem.value)
-      console.log('onCommand', resultString.value)
+
+    const resetProblem = () => {
+      console.log(problem)
     }
-    const nextProblem = () => {
+
+    const gotoPrevProblem = () => {
+      problemIndex.value -= 1
+    }
+    const gotoNextProblem = () => {
       problemIndex.value += 1
-      console.log('nextproblem', problemIndex)
     }
+    
     return {
       problem,
-      onCommand,
-      resultString,
-      nextProblem,
+      problemIndex,
+      lastProblemIndex,
+      resetProblem,
+      gotoPrevProblem,
+      gotoNextProblem,
     }
   },
 })

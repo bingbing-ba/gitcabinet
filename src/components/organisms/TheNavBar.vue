@@ -2,8 +2,17 @@
   <div class="navbar">
     <div class="navbar-left">
       <Title>GIT CABINET</Title>
-      <ProblemNavigator/>
-      <ProblemResetButton/>
+      <ProblemNavigator
+        :problem="problem"
+        :problemIndex="problemIndex"
+        :lastProblemIndex="lastProblemIndex"
+        @goto-prev-problem="gotoPrevProblem"
+        @goto-next-problem="gotoNextProblem"
+      />
+      <ProblemResetButton 
+        :problem="problem"
+        @reset-problem="resetProblem"
+      />
     </div>
     <div class="navbar-right">
       <ButtonDirectory/>
@@ -16,6 +25,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { Problem } from '@/problems/problem'
 import { 
   Title, 
   ButtonDirectory,
@@ -37,8 +47,36 @@ export default defineComponent({
     ProblemResetButton
   },
   props: {
+    problem: {
+      type: Problem,
+      required: true,
+    },
+    problemIndex: {
+      type: Number,
+      required: true,
+    },
+    lastProblemIndex: {
+      type: Number,
+      required: true,
+    },
   },
-  setup() {
+  setup(props, { emit }) {
+    const resetProblem = (problem: Object) => {
+      emit('reset-problem', problem)
+    }
+
+    const gotoPrevProblem = () => {
+      emit('goto-prev-problem')
+    }
+    const gotoNextProblem = () => {
+      emit('goto-next-problem')
+    }
+
+    return {
+      resetProblem,
+      gotoPrevProblem,
+      gotoNextProblem,
+    }
   },
 })
 </script>

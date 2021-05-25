@@ -51,7 +51,17 @@ export default defineComponent({
 
 <style>
 .problem__instruction {
-  @apply bg-white rounded-md p-5 px-5 overflow-y-scroll shadow-xl;
+  @apply bg-white rounded-md p-5 px-5 overflow-auto shadow-xl;
+}
+
+.problem__instruction::-webkit-scrollbar {
+  width: 10px !important;
+}
+.problem__instruction::-webkit-scrollbar-thumb {
+  background-color: #2f3542 !important;
+}
+.problem__instruction::-webkit-scrollbar-track {
+  background-color: grey !important;
 }
 
 .problem__instruction-title {

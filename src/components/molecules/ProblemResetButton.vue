@@ -1,11 +1,12 @@
 <template>
-  <Button class="btn-reset">
+  <Button class="btn-reset" @click="resetProblem">
     <IconRefresh/>
   </Button>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { Problem } from '@/problems/problem'
 import { Button, IconRefresh } from '@/components'
 
 export default defineComponent({
@@ -14,8 +15,20 @@ export default defineComponent({
     IconRefresh,
   },
   props: {
+    problem: {
+      type: Problem,
+      required: true,
+    },
   },
-  setup() {
+  setup(props, { emit }) {
+    const problem = props.problem
+
+    const resetProblem = () => {
+      emit('reset-problem', problem)
+    }
+    return {
+      resetProblem,
+    }
   },
 })
 </script>
