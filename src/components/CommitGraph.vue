@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { Problem } from "@/problems";
+import { Problem } from "@/problem/problem";
 import { computed, defineComponent } from "@vue/runtime-core";
 
 

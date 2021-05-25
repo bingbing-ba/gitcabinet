@@ -258,14 +258,72 @@ export class Git {
       tree: treeHash,
       // 현재 branch의 가장 최신 commit hash, 처음 commit은 빈 배열로 parent
       parent: this.branches[this.head] ? [this.branches[this.head]] : [],
-      author: `${this.config.user.name} ${
-        this.config.user.email
-      } ${Date.now()}`,
+      author: {
+        name: this.config.user.name,
+        email: this.config.user.email,
+      },
+      createdAt: Date.now(),
       message,
     }
     const commitHash = sha256(JSON.stringify(commitObj))
     this.commits[commitHash] = commitObj
     this.branches[this.head] = commitHash
+  }
+
+  /**
+   * 인자로 넘긴 브랜치 이름의 가장 최근 commit 객체를 리턴합니다.
+   * 아무런 commit이 없다면 undefined를 리턴합니다.
+   * @param branchName 브랜치 이름입니다. default는 master
+   * @returns commit | undefined
+   */
+  getMostRecentCommit(branchName: string = 'master') {
+    const mostRecentCommitHash = this.branches[branchName]
+    if (mostRecentCommitHash === undefined) {
+      throw new Error(`there is no branch name of ${branchName}`)
+    }
+    return this.commits[mostRecentCommitHash] as commit | undefined
+  }
+
+  /**
+   * 인자로 넘긴 브랜치의 가장 최근 커밋이 가리키는 tree 객체를 리턴합니다.
+   * 아직 아무 커밋이 없다면 undefined를 리턴합니다.
+   * @param branchName 브랜치 이름입니다. default는 master
+   * @returns tree | undefined
+   */
+  getTreeOfMostRecentCommit(branchName: string = 'master') {
+    const mostRecentCommit = this.getMostRecentCommit(branchName)
+    const treeHash = mostRecentCommit?.tree
+    return treeHash === undefined ? treeHash : this.trees[treeHash]
+  }
+
+  /**
+   * 인덱스(staging area)에 해당 파일이 존재하는지를 검사합니다.
+   * @param file 파일 인스턴스
+   * @returns boolean
+   */
+  isExistAtIndex(file: PlainFile) {
+    if (this.index.hasOwnProperty(file.filename)) {
+      // 해당 파일이름이 index에 존재하고 내용도 일치하는지 확인
+      return this.index[file.filename] === sha256(file.content)
+    }
+    return false
+  }
+
+  /**
+   * 가장 최근 커밋 기록에 해당 파일 존재하는지 검사합니다.
+   * @param file 파일 인스턴스
+   * @param branchName 브랜치 이름, default값은 master
+   * @returns boolean
+   */
+  isExistAtRecentCommit(file: PlainFile, branchName: string='master') {
+    const tree = this.getTreeOfMostRecentCommit(branchName)
+    if (tree) {
+      // tree에 파일 이름 존재하고, 파일 이름도 같은지 확인
+      if (tree.hasOwnProperty(file.filename)) {
+        return tree[file.filename] === sha256(file.content)
+      }
+    }
+    return false
   }
 
   /**
