@@ -1,7 +1,5 @@
 <template>
-  <div class="section__right">
-    <slot></slot>
-  </div>
+  <div class="edge-line"></div>
 </template>
 
 <script lang="ts">
@@ -15,7 +13,9 @@ export default defineComponent({
 </script>
 
 <style>
-.section__right {
-  @apply grid grid-rows-2 auto-cols-fr gap-y-3 py-7 px-4 overflow-auto;
+.edge-line{
+  height: 60px;
+  width: 1px;
+  border: 2px solid black;
 }
 </style>
