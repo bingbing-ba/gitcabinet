@@ -14,7 +14,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { Title, Card, NetworkVertical } from '@/components'
-import { Problem } from "@/problems"
+import { Problem } from "@/problem"
 // import { PlainFile, Directory } from '@/git/fileStructure'
 // import { Git } from '@/git/git'
 
