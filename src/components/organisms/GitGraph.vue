@@ -1,19 +1,19 @@
 <template>
-  <div class="git-graph">
+  <div class="git-graph overflow-y-hidden">
     <div class="bg-gray-200">
       <Title class="git-graph__text">
         커밋 그래프
       </Title>
     </div>
-    <Card class="bg-white">
-      <GraphTree :commits="commits" />
+    <Card class="bg-white pb-10 overflow-y-scroll overflow-x-hidden max-h-full">
+      <NetworkVertical :git="git" :commits="commits" />
     </Card>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { Title, Card, GraphTree } from '@/components'
+import { Title, Card, NetworkVertical } from '@/components'
 import { Problem } from "@/problems"
 import { PlainFile, Directory } from '@/git/fileStructure'
 import { Git } from '@/git/git'
@@ -23,7 +23,7 @@ export default defineComponent({
   components: {
     Title,
     Card,
-    GraphTree
+    NetworkVertical
   },
   props:{
     problem:{
@@ -173,12 +173,13 @@ export default defineComponent({
 
     return {
       commits,
+      git
     }
   },
 })
 </script>
 
-<style>
+<style scoped>
 .git-graph {
   @apply bg-white rounded-bl-lg rounded-br-lg shadow;
 }
