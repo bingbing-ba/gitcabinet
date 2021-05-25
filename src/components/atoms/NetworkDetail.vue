@@ -21,8 +21,7 @@ export default defineComponent({
   },
   setup(props) {
     const date = computed(() => {
-      const unixTime = props.commit?.author.slice(props.commit?.author.length - 13)
-      const dateInstance = new Date(Number(unixTime))
+      const dateInstance = new Date(Number(props.commit?.createdAt))
       return dateInstance.toString()
     })
 
