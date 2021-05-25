@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem/problem'
 import { defineComponent, ref } from '@vue/runtime-core'
 export default defineComponent({
   props: {
@@ -27,7 +27,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const inputCommand = ref('')
-
+    
     const onChange = () => {
       context.emit('command', inputCommand.value)
       inputCommand.value = ''

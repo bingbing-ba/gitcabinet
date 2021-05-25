@@ -19,7 +19,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { cli } from '@/cli'
-import { problems as problemSet } from '@/problems'
+import { problems as problemSet } from '@/problem'
 import { 
   Divider, 
   TheNavBar, 

@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem/problem'
 import { defineComponent, computed } from 'vue'
 export default defineComponent({
   props: {

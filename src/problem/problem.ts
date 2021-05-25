@@ -38,16 +38,20 @@ export class Problem {
   }
 
   /**
-   * 
-   * @param git 이 Problem 인스턴스의 refDirectory를 참조하는 git instance이어야 합니다.
-   * @param globalConfig globalConfig를 구현하기 위해 만든건데 아직 미완성
+   * 이 문제에 git을 설정합니다. 인자가 없으면 새로 git을 만듭니다.
+   * @param git 이 Problem 인스턴스의 refDirectory를 참조하는 git instance이어야 합니다. 전달하지 않으면 새로 하나를 만듭니다.
+   * @param globalConfig global user config 설정 흉내내기 위한 인자인데 미완성
    */
-  setGit(git: Git, globalConfig?: { name: string; email: string }) {
+  setGit(git:Git=new Git(this.refDirectory), globalConfig?: { name: string; email: string }) {
+    if (git.refDirectory !== this.refDirectory) {
+      throw new Error('git.refDirectory is not refDirectory of this instance')
+    }
     this.git = git
     if (globalConfig) {
       this.git.setUserConfig({ type: 'name', name: globalConfig.name })
       this.git.setUserConfig({ type: 'email', email: globalConfig.email })
     }
+
   }
 
   /**
