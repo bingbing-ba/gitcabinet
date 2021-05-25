@@ -36,7 +36,8 @@ export interface fileHashes {
  * commit object입니다.
  * tree는 tree object에서 index로 쓸 수 있는 hash값,
  * parent는 부모 commit hash값입니다.
- * author와 message는 작성자와 커밋 메세지입니다.
+ * author는 작성자 정보 및 작성 시간입니다.
+ * message는 커밋 메세지입니다.
  */
 export interface commit {
   tree: string
