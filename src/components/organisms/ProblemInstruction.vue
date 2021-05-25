@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, toRefs, computed } from 'vue'
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem'
 import { Title, Card } from '@/components'
 
 export default defineComponent({

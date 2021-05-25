@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from "vue";
-import { Problem } from "@/problems";
+import { Problem } from "@/problem/problem";
 
 export default defineComponent({
   props:{

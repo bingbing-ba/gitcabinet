@@ -1,4 +1,4 @@
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem/problem'
 import { Git } from '@/git/git'
 
 export const cli = (command: string, problem:Problem) => {
