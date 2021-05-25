@@ -15,7 +15,8 @@ import Button from './atoms/Button.vue'
 import Box from './atoms/Box.vue'
 import Divider from './atoms/Divider.vue'
 import NetworkNode from './atoms/NetworkNode.vue'
-import NetworkEdge from './atoms/NetworkEdge.vue'
+import NetworkEdgeVertical from './atoms/NetworkEdgeVertical.vue'
+import NetworkEdgeHorizontal from './atoms/NetworkEdgeHorizontal.vue'
 import NetworkDetail from './atoms/NetworkDetail.vue'
 import Badge from './atoms/Badge.vue'
 
@@ -27,6 +28,7 @@ import ButtonGitGraph from './molecules/ButtonGitGraph.vue'
 import ButtonStagingArea from './molecules/ButtonStagingArea.vue'
 import ButtonRemote from './molecules/ButtonRemote.vue'
 import NetworkVertical from './molecules/NetworkVertical.vue'
+import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -57,7 +59,8 @@ export {
   IconGraph,
   IconRefresh,
   NetworkNode,
-  NetworkEdge,
+  NetworkEdgeVertical,
+  NetworkEdgeHorizontal,
   NetworkDetail,
   Badge,
 
@@ -69,6 +72,7 @@ export {
   ButtonStagingArea,
   ButtonRemote,
   NetworkVertical,
+  NetworkHorizontal,
 
   TheNavBar,
   ProblemInstruction,

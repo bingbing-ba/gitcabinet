@@ -1,37 +1,34 @@
 <template>
-  <div class="py-10">
+  <div class="network-container p-10">
     <div 
-      v-for="(commit, idx) in commits" 
+      v-for="(commit, idx) in reverseCommits" 
       :key="commit.hash" 
       class="node-box">
 
-      <div class="node-left-box px-5">
+      <div class="node-left-box">
         <Badge
           v-if="lastCommitBranch(commit.hash)" 
           :content="lastCommitBranch(commit.hash)"
           class="badge absolute" />
         <NetworkNode />
-        <NetworkEdgeVertical v-if="idx !== commits.length - 1"/>
       </div>
-
       <div class="node-right-box">
-        <NetworkDetail :commit="commit" />
+        <NetworkEdgeHorizontal v-if="idx !== commits.length - 1"/>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { NetworkNode, NetworkEdgeVertical, NetworkDetail, Badge } from '@/components'
+import { defineComponent, PropType, computed } from 'vue'
+import { NetworkNode, NetworkEdgeHorizontal, Badge } from '@/components'
 import { commit } from '@/git/gitTypes'
 import { Git } from '@/git/git'
 
 export default defineComponent({
   components: {
     NetworkNode,
-    NetworkEdgeVertical,
-    NetworkDetail,
+    NetworkEdgeHorizontal,
     Badge
   },
   props: {
@@ -52,23 +49,44 @@ export default defineComponent({
       return ''
     }
 
+    const reverseCommits = computed(() => {
+      const newArray: commit[] = []
+      // for (let i = props.commits?.length || 0; i > 0; i--) {
+      //   newArray.push(props.commits![i])
+      // }
+      props.commits?.forEach(commit => {
+        newArray.unshift(commit)
+      })
+      return newArray
+    })
+
     return {
-      lastCommitBranch
+      lastCommitBranch,
+      reverseCommits
     }
   },
 })
 </script>
 
 <style scoped>
+.network-container {
+  display: flex;
+  align-items: center;
+}
+
 .node-box {
   display: flex;
 }
 
 .node-left-box {
   display: flex;
-  flex-direction: column;
   align-items: center;
   position: relative;
+}
+
+.node-right-box {
+  display: flex;
+  align-items: center;
 }
 
 .badge {
