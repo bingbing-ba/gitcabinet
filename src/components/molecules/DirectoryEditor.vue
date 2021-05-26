@@ -1,0 +1,39 @@
+<template> 
+  <div>
+    <textarea v-model="content" @input="updateContent" 
+      class="resize-none bg-gray-300 w-full flex min-h-100px"></textarea>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
+
+export default defineComponent({
+  components: {
+  },
+  props: {
+    fileContent: {
+      type: String
+    }
+  },
+  setup(props) {
+    const content = ref('')
+    content.value = props.fileContent || ''
+
+    const updateContent = () => {
+      console.log(content.value)
+      // emit
+    }
+    return {
+      content,
+      updateContent
+    }
+  }
+})
+</script>
+
+<style scoped>
+.min-h-100px {
+  min-height: 100px;
+}
+</style>
