@@ -1,3 +1,5 @@
+import { fileHashes, tree } from './gitTypes'
+
 export class PlainFile {
   filename: string
   content: string
@@ -22,7 +24,7 @@ export class PlainFile {
 }
 
 export class Directory {
-  children: PlainFile []
+  children: PlainFile[]
   dirName: string
 
   constructor(dirName: string) {
@@ -41,7 +43,7 @@ export class Directory {
     return this.children.join(' ').split(' ')
   }
 
-  add(...children: PlainFile []) {
+  add(...children: PlainFile[]) {
     for (const child of children) {
       if (this.isExist(child.filename)) {
         throw new Error(`there is the same name of ${child.filename}`)
@@ -50,7 +52,7 @@ export class Directory {
     }
   }
 
-  delete(child: PlainFile ) {
+  delete(child: PlainFile) {
     const childIndex = this.children.indexOf(child)
     if (childIndex === -1) {
       throw new Error('there is no such child')
@@ -58,8 +60,8 @@ export class Directory {
     this.children.splice(childIndex, 1)
   }
 
-  getFilesByName(filenames: string []){
-    const files:PlainFile[] = []
+  getFilesByName(filenames: string[]) {
+    const files: PlainFile[] = []
     for (const filename of filenames) {
       for (const child of this.children) {
         if (child.filename === filename) {
@@ -72,10 +74,23 @@ export class Directory {
 
   isExist(filename: string) {
     for (const file of this.children) {
-      if (file.filename === filename){
+      if (file.filename === filename) {
         return true
       }
     }
     return false
+  }
+
+  clear() {
+    this.children = []
+  }
+
+  setDirectoryByTree(tree: tree, fileHashes: fileHashes) {
+    this.clear()
+    for (const filename in tree) {
+      const file = new PlainFile(filename, this)
+      const fileContentHash = tree[filename]
+      file.content = fileHashes[fileContentHash]
+    }
   }
 }
