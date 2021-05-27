@@ -1,12 +1,14 @@
 <template>
   <div>
     <button @click="toggleEditMode" class="flex">
-      <IconTextFile/> {{ file.filename }}
+      <IconTextFile/> {{ file.filename }} : {{ file.content}}
     </button>
 
     <transition name="slide">
       <div v-show="isEditMode" class="p-2">
-        <DirectoryEditor :fileContent="fileContent" />
+        <DirectoryEditor 
+          :fileContent="fileContent"
+          @update-file-content="updateFileContent" />
       </div>
     </transition>
   </div>
@@ -25,9 +27,12 @@ export default defineComponent({
   props: {
     file: {
       type: PlainFile
+    },
+    index: {
+      type: Number
     }
   },
-  setup(props) {
+  setup(props, context) {
     const isEditMode = ref(false)
 
     const toggleEditMode = () => {
@@ -37,11 +42,15 @@ export default defineComponent({
     const fileContent = computed(() => {
       return props.file?.content || ''
     })
-    
+
+    const updateFileContent = (content: string) => {
+      context.emit('update-file-content', content, props.index)
+    }
     return {
       isEditMode,
       toggleEditMode,
-      fileContent
+      fileContent,
+      updateFileContent
     }
   },
 })

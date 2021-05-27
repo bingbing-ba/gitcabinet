@@ -17,13 +17,14 @@ export default defineComponent({
       type: String
     }
   },
-  setup(props) {
+  setup(props, context) {
     const content = ref('')
     content.value = props.fileContent || ''
 
     const updateContent = () => {
       console.log(content.value)
       // emit
+      context.emit('update-file-content', content.value)
     }
     return {
       content,

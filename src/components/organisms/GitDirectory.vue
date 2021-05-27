@@ -9,9 +9,11 @@
       <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
       <DirectoryFile
         class="pl-5 py-2"
-        v-for="file in fileList"
+        v-for="(file, index) in fileList"
         :key="file.filename"
-        :file="file" />
+        :file="file"
+        :index="index"
+        @update-file-content="updateFileContent"/>
     </Card>
   </div>
 </template>
@@ -33,7 +35,7 @@ export default defineComponent({
       type: Git
     }
   },
-  setup(props) {
+  setup(props, context) {
     const fileList = computed(() => {
       return props.git?.refDirectory?.children || []
     })
@@ -42,9 +44,14 @@ export default defineComponent({
       return props.git?.refDirectory?.dirName || ''
     })
 
+    const updateFileContent = (content: string, index: number) => {
+      context.emit('update-file-content', content, index)
+    }
+
     return {
       dirName,
-      fileList
+      fileList,
+      updateFileContent
     }
   },
 })
