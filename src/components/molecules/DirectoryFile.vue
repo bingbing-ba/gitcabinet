@@ -3,15 +3,29 @@
     <button @click="toggleEditMode" 
       class="flex items-center relative"
       :class="{ 
-        'text-yellow-500': isModified,
-        'text-green-500': isUnstaged 
+        'text-yellow-500': isNotToCommitModified || isToCommitModified,
+        'text-green-500': isNotToCommitUnstaged || isToCommitCreated
       }">
       <IconTextFile/> {{ file.filename }}
-      <Badge
-        v-if="isUnstaged || isModified"
-        class="absolute -right-20" 
-        :content="isUnstaged? 'unstaged': isModified? 'modified': ''" 
-        :color="isUnstaged? 'green': isModified? 'yellow': ''" />
+      <div class="absolute -right-40 w-36" >
+        <Badge
+          v-if="isChanged"
+          :content="
+            isToCommitCreated
+            ? 'ready to commit (created)'
+            : isToCommitModified
+            ? 'ready to commit (modified)'
+            : isNotToCommitUnstaged
+            ? 'not ready to commit (unstaged)'
+            : isNotToCommitModified
+            ? 'not ready to commit (modifed)'
+            : ''"
+          :color="
+            isNotToCommitUnstaged || isToCommitCreated
+            ? 'green'
+            : isNotToCommitModified || isToCommitModified
+            ? 'yellow': ''" />
+      </div>
     </button>
 
     <transition name="slide">
@@ -19,20 +33,22 @@
         <DirectoryEditor 
           :fileContent="fileContent"
           @update-file-content="updateFileContent" />
+        <button @click="deleteFile"><IconTrash /></button>
       </div>
     </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { IconTextFile, DirectoryEditor, Badge } from '@/components'
+import { computed, defineComponent, ref, watch } from 'vue'
+import { IconTextFile, DirectoryEditor, Badge, IconTrash } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
 
 export default defineComponent({
   components: {
     IconTextFile,
+    IconTrash,
     DirectoryEditor,
     Badge
   },
@@ -50,7 +66,23 @@ export default defineComponent({
   setup(props, context) {
     const isEditMode = ref(false)
 
-    const toggleEditMode = () => {
+    const closeEditor = (event: Event) => {
+      event.stopPropagation()
+      isEditMode.value = false
+    }
+
+    watch(isEditMode, (isEditMode) => {
+      if (isEditMode) {
+        // console.log('add')
+        document.addEventListener('click', closeEditor)
+      } else {
+        // console.log('remove')
+        document.removeEventListener('click', closeEditor)
+      }
+    })
+
+    const toggleEditMode = (event: Event) => {
+      event.stopPropagation()
       isEditMode.value = !isEditMode.value
     }
 
@@ -62,14 +94,46 @@ export default defineComponent({
       context.emit('update-file-content', content, props.index)
     }
 
-    const isModified = computed(() => {
+    const deleteFile = () => {
+      context.emit('delete-file', props.file)
+    }
+
+    const isToCommitModified = computed(() => {
+      const nowStatus = props.git?.status()
+      return nowStatus?.statusToCommit.modified.includes(props.file?.filename || '')
+    })
+
+    const isToCommitCreated = computed(() => {
+      const nowStatus = props.git?.status()
+      return nowStatus?.statusToCommit.created.includes(props.file?.filename || '')
+    })
+
+    const isReadyToCommit = computed(() => {
+      const modified = isToCommitModified.value
+      const created = isToCommitCreated.value
+      // 삭제는 별도로 표시
+      return modified || created
+    })
+
+    const isNotToCommitModified = computed(() => {
       const nowStatus = props.git?.status()
       return nowStatus?.statusNotToCommit.modified.includes(props.file?.filename || '')
     })
 
-    const isUnstaged = computed(() => {
+    const isNotToCommitUnstaged = computed(() => {
       const nowStatus = props.git?.status()
       return nowStatus?.statusNotToCommit.unstaged.includes(props.file?.filename || '')
+    })
+
+    const isNotReadyToCommit = computed(() => {
+      const modified = isNotToCommitModified.value
+      const unstaged = isNotToCommitUnstaged.value
+      // 삭제는 별도로 표시
+      return modified || unstaged
+    })
+
+    const isChanged = computed(() => {
+      return isReadyToCommit.value || isNotReadyToCommit.value
     })
 
     return {
@@ -77,8 +141,14 @@ export default defineComponent({
       toggleEditMode,
       fileContent,
       updateFileContent,
-      isModified,
-      isUnstaged
+      deleteFile,
+      isChanged,
+      isReadyToCommit,
+      isNotReadyToCommit,
+      isToCommitModified,
+      isNotToCommitModified,
+      isToCommitCreated,
+      isNotToCommitUnstaged
     }
   },
 })

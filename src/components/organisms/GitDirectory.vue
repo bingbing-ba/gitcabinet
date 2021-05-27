@@ -6,22 +6,34 @@
       </Title>
     </div>
     <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
-      <DirectoryFile
-        class="pl-5 py-2"
-        v-for="(file, index) in fileList"
-        :key="file.filename"
-        :git="git"
-        :file="file"
-        :index="index"
-        @update-file-content="updateFileContent"/>
+      <div class="flex max-w-full">
+        <div class="w-3/4">
+          <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
+          <DirectoryFile
+            class="pl-5 py-2"
+            v-for="(file, index) in fileList"
+            :key="file.filename"
+            :git="git"
+            :file="file"
+            :index="index"
+            @update-file-content="updateFileContent"
+            @delete-file="deleteFile" />
+        </div>
+        <div class="w-1/4">
+          <IconTrash />
+          <div v-for="(fileName, idx) in deletedFiles" :key="idx">
+            {{ fileName }}
+          </div>
+        </div>
+      </div>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { Title, Card, DirectoryFile, DirectoryFolder } from '@/components'
+import { Title, Card, DirectoryFile, DirectoryFolder, IconTrash } from '@/components'
+import { PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
 
 export default defineComponent({
@@ -29,7 +41,8 @@ export default defineComponent({
     Title,
     Card,
     DirectoryFile,
-    DirectoryFolder
+    DirectoryFolder,
+    IconTrash
   },
   props: {
     git: {
@@ -49,10 +62,28 @@ export default defineComponent({
       context.emit('update-file-content', content, index)
     }
 
+    const deleteFile = (file: PlainFile) => {
+      context.emit('delete-file', file)
+    }
+
+    const deletedFiles = computed(() => {
+      const nowStatus = props.git?.status()
+      const result: string[] = []
+      nowStatus?.statusNotToCommit.deleted.forEach(fileName => {
+        result.push(fileName)
+      })
+      nowStatus?.statusToCommit.deleted.forEach(fileName => {
+        result.push(fileName)
+      })
+      return result
+    })
+
     return {
       dirName,
       fileList,
-      updateFileContent
+      updateFileContent,
+      deleteFile,
+      deletedFiles
     }
   },
 })
