@@ -1,8 +1,9 @@
 <template> 
-  <div>
-    <textarea v-model="content" @input="updateContent" 
-      class="resize-none bg-gray-300 w-full flex min-h-100px"></textarea>
-  </div>
+  <textarea 
+    v-model="content"
+    @input="updateContent"
+    class="resize-none bg-gray-300 w-full flex min-h-100px p-2">
+  </textarea>
 </template>
 
 <script lang="ts">

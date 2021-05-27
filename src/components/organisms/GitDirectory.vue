@@ -1,28 +1,51 @@
 <template>
-  <div class="git-directory">
+  <div class="git-directory overflow-y-hidden">
     <div class="bg-gray-200">
       <Title class="git-directory__text">
         디렉토리
       </Title>
     </div>
-    <Card class="p-2">
-      TEST
+    <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
+      <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
+      <DirectoryFile
+        class="pl-5 py-2"
+        v-for="file in fileList"
+        :key="file.filename"
+        :file="file" />
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { Title, Card } from '@/components'
+import { computed, defineComponent } from 'vue'
+import { Title, Card, DirectoryFile, DirectoryFolder } from '@/components'
+import { Git } from '@/git/git'
 
 export default defineComponent({
   components: {
     Title,
     Card,
+    DirectoryFile,
+    DirectoryFolder
   },
   props: {
+    git: {
+      type: Git
+    }
   },
-  setup() {
+  setup(props) {
+    const fileList = computed(() => {
+      return props.git?.refDirectory?.children || []
+    })
+
+    const dirName = computed(() => {
+      return props.git?.refDirectory?.dirName || ''
+    })
+
+    return {
+      dirName,
+      fileList
+    }
   },
 })
 </script>

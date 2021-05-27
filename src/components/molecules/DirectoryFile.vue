@@ -5,10 +5,9 @@
     </button>
 
     <transition name="slide">
-      <DirectoryEditor 
-        v-if="isEditMode" 
-        :fileContent="fileContent" 
-      />
+      <div v-show="isEditMode" class="p-2">
+        <DirectoryEditor :fileContent="fileContent" />
+      </div>
     </transition>
   </div>
 </template>
@@ -50,22 +49,22 @@ export default defineComponent({
 
 <style scoped>
 .slide-enter-active {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.1s linear;
 }
 
 .slide-leave-active {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.1s linear;
 }
 
-.slide-enter-to, 
-.slide-leave-from {
-  max-height: 100px;
+.slide-enter-from,
+.slide-leave-to {
+  height: 0;
   overflow: hidden;
 }
 
-.slide-enter-from, 
-.slide-leave-to {
-  max-height: 0;
+.slide-enter-to,
+.slide-leave-from {
+  height: 100px;
   overflow: hidden;
 }
 </style>
