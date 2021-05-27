@@ -1,7 +1,12 @@
 <template>
   <div>
-    <button @click="toggleEditMode" class="flex">
-      <IconTextFile/> {{ file.filename }} : {{ file.content}}
+    <button @click="toggleEditMode" 
+      class="flex" 
+      :class="{ 
+        'text-yellow-500': isModified,
+        'text-green-500': isUnstaged 
+      }">
+      <IconTextFile/> {{ file.filename }}
     </button>
 
     <transition name="slide">
@@ -18,6 +23,7 @@
 import { computed, defineComponent, ref } from 'vue'
 import { IconTextFile, DirectoryEditor } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
+import { Git } from '@/git/git'
 
 export default defineComponent({
   components: {
@@ -25,6 +31,9 @@ export default defineComponent({
     DirectoryEditor
   },
   props: {
+    git: {
+      type: Git
+    },
     file: {
       type: PlainFile
     },
@@ -46,11 +55,24 @@ export default defineComponent({
     const updateFileContent = (content: string) => {
       context.emit('update-file-content', content, props.index)
     }
+
+    const isModified = computed(() => {
+      const nowStatus = props.git?.status()
+      return nowStatus?.statusNotToCommit.modified.includes(props.file?.filename || '')
+    })
+
+    const isUnstaged = computed(() => {
+      const nowStatus = props.git?.status()
+      return nowStatus?.statusNotToCommit.unstaged.includes(props.file?.filename || '')
+    })
+
     return {
       isEditMode,
       toggleEditMode,
       fileContent,
-      updateFileContent
+      updateFileContent,
+      isModified,
+      isUnstaged
     }
   },
 })

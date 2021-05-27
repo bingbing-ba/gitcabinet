@@ -11,6 +11,7 @@
         class="pl-5 py-2"
         v-for="(file, index) in fileList"
         :key="file.filename"
+        :git="git"
         :file="file"
         :index="index"
         @update-file-content="updateFileContent"/>

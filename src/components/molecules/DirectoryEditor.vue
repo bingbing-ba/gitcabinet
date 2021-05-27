@@ -22,8 +22,6 @@ export default defineComponent({
     content.value = props.fileContent || ''
 
     const updateContent = () => {
-      console.log(content.value)
-      // emit
       context.emit('update-file-content', content.value)
     }
     return {
