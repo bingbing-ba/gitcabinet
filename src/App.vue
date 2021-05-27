@@ -7,9 +7,9 @@
       <ProblemCLI/>
     </SectionLeft>
     <SectionRight>
-      <GitDirectory>
+      <GitDirectory :git="problem.git" @update-file-content="updateFileContent">
       </GitDirectory>
-      <GitGraph>
+      <GitGraph :problem="problem">
       </GitGraph>
     </SectionRight>
     <Divider/>
@@ -59,11 +59,17 @@ export default defineComponent({
       problemIndex.value += 1
       console.log('nextproblem', problemIndex)
     }
+
+    const updateFileContent = (content: string, index: number) => {
+      problems[problemIndex.value].refDirectory.children[index].content = content
+    }
+    
     return {
       problem,
       onCommand,
       resultString,
       nextProblem,
+      updateFileContent
     }
   },
 })
