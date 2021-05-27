@@ -1,12 +1,17 @@
 <template>
   <div>
     <button @click="toggleEditMode" 
-      class="flex" 
+      class="flex items-center relative"
       :class="{ 
         'text-yellow-500': isModified,
         'text-green-500': isUnstaged 
       }">
       <IconTextFile/> {{ file.filename }}
+      <Badge
+        v-if="isUnstaged || isModified"
+        class="absolute -right-20" 
+        :content="isUnstaged? 'unstaged': isModified? 'modified': ''" 
+        :color="isUnstaged? 'green': isModified? 'yellow': ''" />
     </button>
 
     <transition name="slide">
@@ -21,14 +26,15 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { IconTextFile, DirectoryEditor } from '@/components'
+import { IconTextFile, DirectoryEditor, Badge } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
 
 export default defineComponent({
   components: {
     IconTextFile,
-    DirectoryEditor
+    DirectoryEditor,
+    Badge
   },
   props: {
     git: {
