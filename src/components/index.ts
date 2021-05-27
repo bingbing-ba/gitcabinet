@@ -11,6 +11,7 @@ import IconFolder from './atoms/IconFolder.vue'
 import IconGraph from './atoms/IconGraph.vue'
 import IconRefresh from './atoms/IconRefresh.vue'
 import IconTextFile from './atoms/IconTextFile.vue'
+import IconTrash from './atoms/IconTrash.vue'
 import Title from './atoms/Title.vue'
 import Button from './atoms/Button.vue'
 import Box from './atoms/Box.vue'
@@ -61,6 +62,7 @@ export {
   IconGraph,
   IconRefresh,
   IconTextFile,
+  IconTrash,
   NetworkNode,
   NetworkEdge,
   NetworkDetail,
