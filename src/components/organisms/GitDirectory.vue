@@ -6,8 +6,8 @@
       </Title>
     </div>
     <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <div class="flex max-w-full">
-        <div class="w-3/4">
+      <div class="xl:flex max-w-full">
+        <div class="xl:w-1/2">
           <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
           <DirectoryFile
             class="pl-5 py-2"
@@ -19,10 +19,11 @@
             @update-file-content="updateFileContent"
             @delete-file="deleteFile" />
         </div>
-        <div class="w-1/4">
-          <IconTrash />
-          <div v-for="(fileName, idx) in deletedFiles" :key="idx">
-            {{ fileName }}
+        <hr class="xl:hidden m-5">
+        <div class="xl:w-1/2">
+          <p class="flex pb-2"><IconTrash />삭제된 파일</p>
+          <div v-for="(fileName, idx) in deletedFiles" :key="idx" class="pl-5 py-2">
+            <p class="flex overflow-hidden"><IconTextFile/> {{ fileName }}</p>
           </div>
         </div>
       </div>
@@ -32,7 +33,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { Title, Card, DirectoryFile, DirectoryFolder, IconTrash } from '@/components'
+import { Title, Card, DirectoryFile, DirectoryFolder, IconTrash, IconTextFile } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
 
@@ -42,7 +43,8 @@ export default defineComponent({
     Card,
     DirectoryFile,
     DirectoryFolder,
-    IconTrash
+    IconTrash,
+    IconTextFile
   },
   props: {
     git: {
