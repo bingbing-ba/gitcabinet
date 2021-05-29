@@ -1,5 +1,7 @@
 <template>
-  <span class="badge" :class="`bg-${color}-500 text-${color}-100`">{{ content }}</span>
+  <span class="badge" :class="`bg-${color}-500 text-${color}-100`">
+    <slot></slot>
+  </span>
 </template>
 
 <script lang="ts">

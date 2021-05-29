@@ -8,8 +8,9 @@
       <div class="node-left-box">
         <Badge
           v-if="lastCommitBranch(commit.hash)" 
-          :content="lastCommitBranch(commit.hash)"
-          class="badge absolute" />
+          class="badge absolute">
+          {{ lastCommitBranch(commit.hash) }}
+        </Badge>
         <NetworkNode />
       </div>
       <div class="node-right-box">

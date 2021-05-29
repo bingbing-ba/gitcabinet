@@ -7,9 +7,10 @@
 
       <div class="node-left-box px-5">
         <Badge
-          v-if="lastCommitBranch(commit.hash)" 
-          :content="lastCommitBranch(commit.hash)"
-          class="badge absolute" />
+          v-if="lastCommitBranch(commit.hash)"
+          class="badge absolute">
+          {{ lastCommitBranch(commit.hash) }}
+        </Badge>
         <NetworkNode />
         <NetworkEdgeVertical v-if="idx !== commits.length - 1"/>
       </div>
