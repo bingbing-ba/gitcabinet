@@ -1,11 +1,9 @@
 <template>
   <div class="content">
-    <p>{{ commit.hash }}</p>
-    <!-- <p>{{ shortHash }}</p> -->
+    <!-- <p>{{ commit.hash }}</p> -->
+    <p>{{ shortHash }} : {{ commit.message }}</p>
     <p>Date : {{ date }}</p>
-    <p>
-      {{ commit.message }}
-    </p>
+    <p>{{ commit.author.name }} | {{ commit.author.email }}</p>
   </div>
 </template>
 
