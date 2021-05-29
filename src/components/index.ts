@@ -10,6 +10,8 @@ import IconCloud from './atoms/IconCloud.vue'
 import IconFolder from './atoms/IconFolder.vue'
 import IconGraph from './atoms/IconGraph.vue'
 import IconRefresh from './atoms/IconRefresh.vue'
+import IconTextFile from './atoms/IconTextFile.vue'
+import IconTrash from './atoms/IconTrash.vue'
 import Title from './atoms/Title.vue'
 import Button from './atoms/Button.vue'
 import Box from './atoms/Box.vue'
@@ -28,6 +30,9 @@ import ButtonGitGraph from './molecules/ButtonGitGraph.vue'
 import ButtonStagingArea from './molecules/ButtonStagingArea.vue'
 import ButtonRemote from './molecules/ButtonRemote.vue'
 import NetworkVertical from './molecules/NetworkVertical.vue'
+import DirectoryEditor from './molecules/DirectoryEditor.vue'
+import DirectoryFile from './molecules/DirectoryFile.vue'
+import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
@@ -58,6 +63,8 @@ export {
   IconFolder,
   IconGraph,
   IconRefresh,
+  IconTextFile,
+  IconTrash,
   NetworkNode,
   NetworkEdgeVertical,
   NetworkEdgeHorizontal,
@@ -72,6 +79,9 @@ export {
   ButtonStagingArea,
   ButtonRemote,
   NetworkVertical,
+  DirectoryEditor,
+  DirectoryFile,
+  DirectoryFolder,
   NetworkHorizontal,
 
   TheNavBar,

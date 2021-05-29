@@ -1,5 +1,5 @@
 <template>
-  <span class="badge">{{ content }}</span>
+  <span class="badge" :class="`bg-${color}-500 text-${color}-100`">{{ content }}</span>
 </template>
 
 <script lang="ts">
@@ -9,6 +9,10 @@ export default defineComponent({
     content: {
       type: String,
       default: ''
+    },
+    color: {
+      type: String,
+      default: 'indigo'
     }
   },
   setup() {
@@ -18,6 +22,6 @@ export default defineComponent({
 
 <style scoped>
 .badge {
-  @apply inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-indigo-100 bg-indigo-700 rounded;
+  @apply inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none rounded;
 }
 </style>
