@@ -10,6 +10,8 @@ import IconCloud from './atoms/IconCloud.vue'
 import IconFolder from './atoms/IconFolder.vue'
 import IconGraph from './atoms/IconGraph.vue'
 import IconRefresh from './atoms/IconRefresh.vue'
+import IconSwitchHorizontal from './atoms/IconSwitchHorizontal.vue'
+import IconSwitchVertical from './atoms/IconSwitchVertical.vue'
 import IconTextFile from './atoms/IconTextFile.vue'
 import IconTrash from './atoms/IconTrash.vue'
 import Title from './atoms/Title.vue'
@@ -63,6 +65,8 @@ export {
   IconFolder,
   IconGraph,
   IconRefresh,
+  IconSwitchHorizontal,
+  IconSwitchVertical,
   IconTextFile,
   IconTrash,
   NetworkNode,
