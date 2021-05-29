@@ -12,10 +12,11 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .edge-line{
   height: 60px;
   width: 1px;
   border: 2px solid black;
+  background-color: black;
 }
 </style>
