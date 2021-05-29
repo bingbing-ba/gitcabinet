@@ -5,9 +5,11 @@
       <ProblemInstruction :problem="problem">
       </ProblemInstruction>
       <ProblemCLI/>
-      <!-- <button @click="startTest">Sample View</button> -->
-      <!-- <button @click="gitAdd">git add</button> -->
-      <!-- <button @click="gitCommit">git commit</button> -->
+      <!-- test용 버튼 -->
+      <button @click="startTest">Sample View</button>
+      <button @click="gitAdd">git add</button>
+      <button @click="gitCommit">git commit</button>
+      <!-- test용 버튼 -->
     </SectionLeft>
     <SectionRight>
       <GitDirectory 
@@ -76,7 +78,7 @@ export default defineComponent({
       problems[problemIndex.value].refDirectory.delete(file)
     }
     
-    // 테스팅용 샘플 git 설정
+    // ~ 테스팅용 샘플 git 설정 
     const presentDir = new Directory('test1')
     const git = new Git(presentDir)
     git.setUserConfig(
@@ -132,6 +134,7 @@ export default defineComponent({
     const gitCommit = () => {
       problems[0].git?.commit('test commit')
     }
+    // ~
     
     return {
       problem,
@@ -140,9 +143,11 @@ export default defineComponent({
       nextProblem,
       updateFileContent,
       deleteFile,
+      // ~ test용 method
       startTest,
       gitAdd,
       gitCommit
+      // ~
     }
   },
 })

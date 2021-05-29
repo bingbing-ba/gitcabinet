@@ -6,14 +6,42 @@
       </Title>
     </div>
     <Card class="bg-white pb-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <NetworkVertical v-if="problem" :git="problem.git" :commits="commits" />
+      <div v-if="problem" class="p-2">
+        <div class="flex items-center overflow-auto">
+          <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center mx-2">
+            <IconSwitchHorizontal /> 수평 모드
+          </Button>
+          <Button v-else @click="toggleNetworkView" class="flex align-middle items-center mx-2">
+            <IconSwitchVertical /> 수직 모드
+          </Button>
+          <button v-for="(hash, branch) in branches" :key="hash" @click="changeHead(branch)" 
+            class="mx-2 flex">
+            <Badge>
+              {{ branch }}
+            </Badge>
+          </button>
+        </div>
+        
+        <transition name="swap">
+          <NetworkVertical v-if="isVerticalView"  :git="problem.git" :commits="commits" />
+          <NetworkHorizontal v-else  :git="problem.git" :commits="commits" />
+        </transition>
+      </div>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { Title, Card, NetworkVertical } from '@/components'
+import { computed, defineComponent, ref } from 'vue'
+import { 
+  Title, 
+  Card, 
+  NetworkVertical, 
+  NetworkHorizontal, 
+  IconSwitchHorizontal, 
+  IconSwitchVertical,
+  Button, 
+  Badge } from '@/components'
 import { Problem } from "@/problem"
 // import { PlainFile, Directory } from '@/git/fileStructure'
 // import { Git } from '@/git/git'
@@ -23,7 +51,12 @@ export default defineComponent({
   components: {
     Title,
     Card,
-    NetworkVertical
+    NetworkVertical,
+    NetworkHorizontal,
+    IconSwitchHorizontal,
+    IconSwitchVertical,
+    Button,
+    Badge
   },
   props: {
     problem: {
@@ -32,36 +65,21 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // 테스팅 용 객체 생성 부분
-    // const presentDir = new Directory('test1')
-    // const git = new Git(presentDir)
-    // const makeSwitchCommit = (prev: string ,next: string) => {
-    //   git.head = next
-    //   git.branches[next] = git.branches[prev]
-    //   const switchATxt = new PlainFile('switch_a.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add switch text file A')
-    //   const switchBTxt = new PlainFile('switch_b.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add switch text file B')
-    // }
-    // const makeSampleCommit = () => {
-    //   const aTxt = new PlainFile('a.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add text file A')
-    //   const bTxt = new PlainFile('b.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add text file B')
-    //   const cTxt = new PlainFile('c.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add text file C')
-    //   const dTxt = new PlainFile('d.txt', presentDir)
-    //   git.add()
-    //   git.commit('Add text file D')
-    //   return git
-    // }
-    // makeSampleCommit()
-    // makeSwitchCommit('master', 'develop')
+    const isVerticalView = ref(true)
+    
+    const toggleNetworkView = () => {
+      isVerticalView.value = !isVerticalView.value
+    }
+    
+    const branches = computed(() => {
+      return props.problem.git?.branches
+    })
+
+    const nowHead = ref('master')
+    
+    const changeHead = (branchName: string) => {
+      nowHead.value = branchName
+    }
 
     const commits = computed(() => {
       // 아직 git init을 하지 않은 경우
@@ -73,7 +91,8 @@ export default defineComponent({
       const result = []
         
       // head : 브랜치 이름
-      const head = props.problem.git.head
+      // const head = props.problem.git.head
+      const head = nowHead.value
 
       // headCommitHash : 해당 브랜치의 가장 최근 커밋 해쉬
       const headCommitHash = props.problem.git.branches[head]
@@ -108,7 +127,11 @@ export default defineComponent({
     })
 
     return {
-      commits
+      commits,
+      isVerticalView,
+      toggleNetworkView,
+      branches,
+      changeHead
     }
   },
 })
@@ -121,5 +144,19 @@ export default defineComponent({
 
 .git-graph__text {
   @apply text-sm text-gray-500 rounded-tl-lg rounded-tr-lg bg-white inline-block px-4 py-3;
+}
+
+.swap-enter-active {
+}
+
+.swap-leave-active {
+}
+
+.swap-enter-from,
+.swap-leave-to {
+}
+
+.swap-enter-to,
+.swap-leave-from {
 }
 </style>

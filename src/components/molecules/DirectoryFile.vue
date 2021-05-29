@@ -10,8 +10,12 @@
       <div class="absolute -right-40 w-36" >
         <Badge
           v-if="isChanged"
-          :content="
-            isToCommitCreated
+          :color="
+            isNotToCommitUnstaged || isToCommitCreated
+            ? 'green'
+            : isNotToCommitModified || isToCommitModified
+            ? 'yellow': ''" >
+          {{ isToCommitCreated
             ? 'ready to commit (created)'
             : isToCommitModified
             ? 'ready to commit (modified)'
@@ -19,12 +23,8 @@
             ? 'not ready to commit (unstaged)'
             : isNotToCommitModified
             ? 'not ready to commit (modifed)'
-            : ''"
-          :color="
-            isNotToCommitUnstaged || isToCommitCreated
-            ? 'green'
-            : isNotToCommitModified || isToCommitModified
-            ? 'yellow': ''" />
+            : '' }}
+        </Badge>
       </div>
     </button>
 
