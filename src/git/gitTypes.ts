@@ -79,3 +79,14 @@ export interface statusToCommit {
   modified: string[]
   deleted: string[]
 }
+
+export interface statusNotToCommit {
+  unstaged: string[]
+  modified: string[]
+  deleted: string[]
+}
+
+export interface status {
+  statusToCommit: statusToCommit,
+  statusNotToCommit: statusNotToCommit,
+}

@@ -427,7 +427,6 @@ export class Git {
     return allCommitHashes
   }
 
-
   /**
    * 커밋 해시 하나만 전달하면, 그 커밋의 tree를 기준으로 index와 directory 업데이트
    * 병합 시만 사용, 두개 전달하면 conflict 파악해서 발생한 경우 filecontent도 업데이트
@@ -471,7 +470,24 @@ export class Git {
       this.index = { ...sourceTree }
       this.refDirectory.setDirectoryByTree(this.index, this.fileHashes)
     }
-    
+  }
+
+  /**
+   * 현재 브랜치의 status에 해당 파일이 존재하는지를 체크하는 함수
+   * @param filename 파일 이름
+   * @returns boolean
+   */
+  isExistAtStatus(filename:string) {
+    // 비 반복적인 코드를 짜고 싶으나... 다양한 시도 끝에 포기
+    const {statusNotToCommit, statusToCommit} = this.status()
+    let isExist = false
+    isExist ||= statusNotToCommit.unstaged.includes(filename)
+    isExist ||= statusNotToCommit.modified.includes(filename)
+    isExist ||= statusNotToCommit.deleted.includes(filename)
+    isExist ||= statusToCommit.created.includes(filename)
+    isExist ||= statusToCommit.modified.includes(filename)
+    isExist ||= statusToCommit.deleted.includes(filename)
+    return isExist
   }
 
   /**
@@ -506,8 +522,18 @@ export class Git {
       }
     }
 
+    // source브랜치의 commit 되지 않은 변경사항이 있는 파일이 target브랜치의 tree에 존재할때는 merge 불가능
+    const targetTree = this.trees[this.commits[targetHeadCommitHash].tree]
+    for (const filename in targetTree) {
+      if(this.isExistAtStatus(filename)) {
+        throw new Error(`cannot merge because of uncommited change, ${filename}`)
+      }
+    }
+    
+
     const sourceHeadCommitHash = this.branches[this.head]
-    if (!sourceHeadCommitHash) {  // source에 아무런 커밋 없을 때,ff
+    if (!sourceHeadCommitHash) {
+      // source에 아무런 커밋 없을 때,ff
       this.branches[this.head] = targetHeadCommitHash
       this.updateIndexAndDirectory(targetHeadCommitHash)
       return 'fast forward'
@@ -537,10 +563,14 @@ export class Git {
     // non fast forward
     this.updateIndexAndDirectory(sourceHeadCommitHash, targetHeadCommitHash)
     this.mergeHead = targetHeadCommitHash
-    if (this.conflicts.length === 0) { // no conflict, 바로 커밋
-      this.commit(mergeCommitMessage || `merge branch ${targetBranch.branchName}`)
+    if (this.conflicts.length === 0) {
+      // no conflict, 바로 커밋
+      this.commit(
+        mergeCommitMessage || `merge branch ${targetBranch.branchName}`
+      )
       return 'non fast forward merged'
-    } else {  // conflict, 커밋 할 수 없어 종료
+    } else {
+      // conflict, 커밋 할 수 없어 종료
       return 'conflict occured, merge failed'
     }
   }
