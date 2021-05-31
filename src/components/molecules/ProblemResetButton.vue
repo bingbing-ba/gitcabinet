@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem'
 import { Button, IconRefresh } from '@/components'
 
 export default defineComponent({

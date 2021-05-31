@@ -4,8 +4,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue'
-import { Problem } from '@/problems/problem'
+import { defineComponent, onMounted, onUpdated } from 'vue'
+import { Problem } from '@/problem'
 import { gitCabinetTerm } from '@/terminal/gitCabinetTerm'
 import { Terminal } from 'xterm'
 import 'xterm/lib/xterm.js'
@@ -19,22 +19,43 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-      onMounted(() => {
-        const termOptions = {
-          theme: {
-            foreground: 'white',
-            background: '#0F172A',
-          },
-          lineHeight: 1.5,
-          fontSize: 18,
-          scrollSensitivity: 50,
-          minimumContrastRatio: 4.5,
-          convertEol: true,
-          cursorBlink: true,
-        }
+    const problem = props.problem
+    
+    onMounted(() => {
+      const termOptions = {
+        theme: {
+          foreground: 'white',
+          background: '#0F172A',
+        },
+        lineHeight: 1.5,
+        fontSize: 18,
+        scrollSensitivity: 50,
+        minimumContrastRatio: 4.5,
+        convertEol: true,
+        cursorBlink: true,
+      }
       const term = new Terminal(termOptions)
-      term.loadAddon(new gitCabinetTerm())
       term.open(document.querySelector('#terminal') as HTMLElement)
+      term.loadAddon(new gitCabinetTerm(term, problem))
+      term.focus()
+    })
+
+    onUpdated(() => {
+      const termOptions = {
+        theme: {
+          foreground: 'white',
+          background: '#0F172A',
+        },
+        lineHeight: 1.5,
+        fontSize: 18,
+        scrollSensitivity: 50,
+        minimumContrastRatio: 4.5,
+        convertEol: true,
+        cursorBlink: true,
+      }
+      const term = new Terminal(termOptions)
+      term.open(document.querySelector('#terminal') as HTMLElement)
+      term.loadAddon(new gitCabinetTerm(term, problem))
       term.focus()
     })
     
@@ -149,7 +170,7 @@ export default defineComponent({
 
 <style>
 #terminal {
-  @apply bg-gray-900 rounded overflow-scroll;
+  @apply bg-gray-900 rounded overflow-y-scroll break-words min-w-full max-w-full;
 }
 
 #terminal::-webkit-scrollbar {
@@ -177,7 +198,21 @@ export default defineComponent({
   width: 0 !important;
 }
 
+.xterm-screen {
+  max-width: 100% !important;
+  width: 0 !important;
+}
+
 .xterm-viewport {
   overflow-y: scroll;
 }
+
+/* .xterm-text-layer,
+.xterm-selection-layer,
+.xterm-link-layer,
+.xterm-cursor-layer {
+  max-width: 100% !important;
+  min-width: 100% !important;
+  width: 100%;
+} */
 </style>

@@ -27,7 +27,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
-import { cli } from '@/cli'
 import { problems as problemSet } from '@/problem'
 import { 
   Divider, 
@@ -61,9 +60,7 @@ export default defineComponent({
     })
 
     const resetProblem = () => {
-      console.log(problem)
     }
-
     const gotoPrevProblem = () => {
       problemIndex.value -= 1
     }

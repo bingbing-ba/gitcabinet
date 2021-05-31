@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, toRefs, computed } from 'vue'
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem'
 import { Button, Title, IconArrowLeft, IconArrowRight } from '@/components'
 
 export default defineComponent({

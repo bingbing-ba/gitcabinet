@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Problem } from '@/problems/problem'
+import { Problem } from '@/problem/'
 import { 
   Title, 
   ButtonDirectory,

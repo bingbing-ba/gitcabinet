@@ -1,4 +1,4 @@
-import { Problem } from "@/problems/problem"
+import { Problem } from "@/problem"
 import { PlainFile } from "@/git/fileStructure";
 
 export const problem1 = new Problem('Git 초기화하기')

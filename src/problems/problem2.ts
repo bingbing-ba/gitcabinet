@@ -1,4 +1,4 @@
-import { Problem } from "@/problems/problem"
+import { Problem } from "@/problem"
 import { PlainFile } from "@/git/fileStructure"
 import { Git } from "@/git/git"
 
