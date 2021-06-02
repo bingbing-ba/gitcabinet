@@ -6,7 +6,7 @@
       </Title>
     </div>
     <Card class="bg-white pb-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <div v-if="problem" class="p-2">
+      <div v-if="problem.git" class="p-2">
         <div class="flex items-center overflow-auto">
           <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center mx-2">
             <IconSwitchHorizontal /> 수평 모드
