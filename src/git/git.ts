@@ -1,4 +1,5 @@
 import { sha256 } from 'js-sha256'
+import { cloneDeep } from 'lodash'
 import { PlainFile, Directory } from './fileStructure'
 import {
   index,
@@ -7,6 +8,7 @@ import {
   fileHashes,
   commit,
   statusToCommit,
+  statusNotToCommit,
   userConfig,
 } from './gitTypes'
 
@@ -331,7 +333,7 @@ export class Git {
    * @param branchName 브랜치 이름입니다. default는 master
    * @returns commit | undefined
    */
-  getMostRecentCommit(branchName: string = 'master') {
+  getMostRecentCommit(branchName = 'master') {
     const mostRecentCommitHash = this.branches[branchName]
     if (mostRecentCommitHash === undefined) {
       throw new Error(`there is no branch name of ${branchName}`)
@@ -345,7 +347,7 @@ export class Git {
    * @param branchName 브랜치 이름입니다. default는 master
    * @returns tree | undefined
    */
-  getTreeOfMostRecentCommit(branchName: string = 'master') {
+  getTreeOfMostRecentCommit(branchName = 'master') {
     const mostRecentCommit = this.getMostRecentCommit(branchName)
     const treeHash = mostRecentCommit?.tree
     return treeHash === undefined ? treeHash : this.trees[treeHash]
@@ -370,7 +372,7 @@ export class Git {
    * @param branchName 브랜치 이름, default값은 master
    * @returns boolean
    */
-  isExistAtRecentCommit(file: PlainFile, branchName: string = 'master') {
+  isExistAtRecentCommit(file: PlainFile, branchName = 'master') {
     const tree = this.getTreeOfMostRecentCommit(branchName)
     if (tree) {
       // tree에 파일 이름 존재하고, 파일 이름도 같은지 확인
@@ -425,6 +427,46 @@ export class Git {
       })
     }
     return allCommitHashes
+  }
+
+  /**
+   * `$ git switch 브랜치` 명령어 역할을 하는 함수. 브랜치를 전환함.
+   * create를 통해 `-c` 옵션 주었을 때 역할도 함.
+   * 구현 편의를 위해 commit되지 않은 변경사항이 있을 때 switch를 금지하였음
+   * @param branch 전환할 브랜치 이름
+   * @param create 브랜치를 생성할 것인지 옵션
+   */
+  switch(branch: string, create = false) {
+    const branches = Object.keys(this.branches)
+
+    const {statusToCommit, statusNotToCommit} = this.status()
+    let anyStatus = false
+    Object.keys(statusToCommit).forEach(key=>{
+      anyStatus ||= statusToCommit[key as keyof statusToCommit].length > 0
+    })
+    Object.keys(statusNotToCommit).forEach(key=>{
+      anyStatus ||= statusNotToCommit[key as keyof statusNotToCommit].length > 0
+    })
+    if (anyStatus) {
+      throw new Error('구현의 편의를 위해 switch할 때 commit되지 않은 변경사항을 허용하지 않습니다.')
+    }
+
+    if (create) {
+      if (branches.includes(branch)) {
+        throw new Error(`already exist branch name ${branch}`)
+      }
+      this.branches[branch] = this.branches[this.head]
+    } else {
+      if (!branches.includes(branch)) {
+        throw new Error(`no name of branch ${branch}`)
+      }
+      const targetCommit = this.commits[this.branches[branch]]
+      const targetTree = this.trees[targetCommit.tree]
+      this.refDirectory.setDirectoryByTree(targetTree, this.fileHashes)
+      this.index = cloneDeep(targetTree) 
+
+    }
+    this.head = branch
   }
 
   /**
