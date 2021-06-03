@@ -120,7 +120,7 @@ export const cli = (command: string, problem:Problem) => {
     
     subCommands[secondCommand](...restCommand)
   }else{
-    resultString = '지원하지 않는 명령어 입니다.'
+    resultString = '지원하지 않는 명령어입니다.'
   }
   return resultString
 

@@ -1,18 +1,17 @@
 <template>
   <div class="problem__instruction">
-    <Title class="my-3 text-gray-800 font-extrabold text-3xl">
+    <Title class="problem__instruction-title">
       {{ problem.title }}
     </Title>
-    <Card class="text-normal whitespace-normal leading-loose break-words">
-      <p>{{ problem.content }}</p>
-      <p>{{ problem.hint }}</p>
+    <Card class="problem__instruction-content">
+      <p v-html="wrapCodesInProblemContent"></p>
     </Card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { Problem } from '@/problem/problem'
+import { defineComponent, toRefs, computed } from 'vue'
+import { Problem } from '@/problem'
 import { Title, Card } from '@/components'
 
 export default defineComponent({
@@ -26,13 +25,60 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  setup(props) {
+    const { problem } = toRefs(props)
+
+    const wrapCodesInProblemContent = computed(() => {
+      let problemContent = problem.value.content
+      const pattern = new RegExp('\\*\\$.+?\\*', 'g')
+      const matchList = problemContent?.match(pattern)
+      
+      let result = problemContent
+      matchList?.forEach((code) => {
+        const codeAsteriskRemoved = code.slice(1, code.length-1)
+        const codeDecorated = `<code class="problem__content-code">${codeAsteriskRemoved}</code>`
+        result = result?.replace(code, codeDecorated)
+      })
+      return result
+    })
+
+    return {
+      wrapCodesInProblemContent,
+    }
   },
 })
 </script>
 
 <style>
 .problem__instruction {
-  @apply bg-white rounded-md p-5 px-5 overflow-y-scroll shadow-xl;
+  @apply bg-white rounded-md p-5 px-5 overflow-auto shadow-xl;
+}
+
+.problem__instruction::-webkit-scrollbar {
+  @apply bg-white w-3 rounded;
+}
+
+.problem__instruction::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
+.problem__instruction::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
+.problem__instruction::-webkit-scrollbar-thumb {
+  @apply bg-gray-500 rounded w-2 mt-3;
+}
+
+.problem__instruction-title {
+  @apply my-3 text-gray-800 font-extrabold text-3xl;
+}
+
+.problem__instruction-content {
+  @apply font-normal text-gray-700 whitespace-normal leading-loose break-words;
+}
+
+.problem__content-code {
+  @apply text-indigo-500 py-1 px-2 m-0 text-base font-bold bg-gray-200 rounded;
 }
 </style>

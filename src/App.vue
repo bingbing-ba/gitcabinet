@@ -1,15 +1,22 @@
 <template>
-  <TheNavBar class="navbar"/>
+  <TheNavBar 
+    class="navbar" 
+    :problem="problem"
+    :problemIndex="problemIndex"
+    :lastProblemIndex="lastProblemIndex"
+    @goto-prev-problem="gotoPrevProblem"
+    @goto-next-problem="gotoNextProblem"
+    @reset-problem="resetProblem"
+  />
   <main class="main">
-    <SectionLeft>
-      <ProblemInstruction :problem="problem">
-      </ProblemInstruction>
-      <ProblemCLI/>
-      <!-- test용 버튼 -->
-      <button @click="startTest">Sample View</button>
-      <button @click="gitAdd">git add</button>
-      <button @click="gitCommit">git commit</button>
-      <!-- test용 버튼 -->
+    <SectionLeft class="overflow-auto">
+      <ProblemInstruction 
+        :problem="problem"
+      />
+      <ProblemCLI 
+        ref="ProblemCLI"
+        :problem="problem"
+      />
     </SectionLeft>
     <SectionRight>
       <GitDirectory 
@@ -26,7 +33,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
-import { cli } from '@/cli'
 import { problems as problemSet } from '@/problem'
 import { 
   Divider, 
@@ -55,19 +61,22 @@ export default defineComponent({
   setup() {
     const problemIndex = ref(0)
     const problems = reactive(problemSet)
-
+    
+    const lastProblemIndex = problems.length
     const problem = computed(()=>{
       return problems[problemIndex.value]
     })
-
-    const resultString = ref('')
-    const onCommand = (inputCommand: string) => {
-      resultString.value = cli(inputCommand, problem.value)
-      console.log('onCommand', resultString.value)
+    problem.value.setBase()
+    
+    const resetProblem = () => {
+      problem.value.resetToBase()
+      problem.value.setBase()
     }
-    const nextProblem = () => {
+    const gotoPrevProblem = () => {
+      problemIndex.value -= 1
+    }
+    const gotoNextProblem = () => {
       problemIndex.value += 1
-      console.log('nextproblem', problemIndex)
     }
 
     const updateFileContent = (content: string, index: number) => {
@@ -137,10 +146,13 @@ export default defineComponent({
     // ~
     
     return {
+      problemIndex,
+      lastProblemIndex,
+      resetProblem,
+      gotoPrevProblem,
+      gotoNextProblem,
+
       problem,
-      onCommand,
-      resultString,
-      nextProblem,
       updateFileContent,
       deleteFile,
       // ~ test용 method
