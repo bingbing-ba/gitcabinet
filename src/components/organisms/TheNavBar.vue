@@ -6,10 +6,10 @@
       <ProblemResetButton/>
     </div>
     <div class="navbar-right">
-      <ButtonDirectory/>
-      <ButtonGitGraph/>
-      <ButtonStagingArea/>
-      <ButtonRemote/>
+      <ButtonDirectory @click="updateViewQueue(0)" />
+      <ButtonGitGraph @click="updateViewQueue(1)" />
+      <ButtonStagingArea @click="updateViewQueue(2)" />
+      <ButtonRemote @click="updateViewQueue(3)" />
     </div>
   </div>
 </template>
@@ -38,7 +38,13 @@ export default defineComponent({
   },
   props: {
   },
-  setup() {
+  setup(props, context) {
+    const updateViewQueue = (nextViewIndex: number) => {
+      context.emit('update-view-queue', nextViewIndex)
+    }
+    return {
+      updateViewQueue
+    }
   },
 })
 </script>

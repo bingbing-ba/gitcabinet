@@ -1,24 +1,20 @@
 <template>
-  <TheNavBar class="navbar"/>
+  <TheNavBar class="navbar" @update-view-queue="updateViewQueue"/>
   <main class="main">
     <SectionLeft>
       <ProblemInstruction :problem="problem">
       </ProblemInstruction>
       <ProblemCLI/>
-      <!-- test용 버튼 -->
-      <button @click="startTest">Sample View</button>
-      <button @click="gitAdd">git add</button>
-      <button @click="gitCommit">git commit</button>
-      <!-- test용 버튼 -->
     </SectionLeft>
     <SectionRight>
-      <GitDirectory 
-        :git="problem.git" 
-        @update-file-content="updateFileContent"
-        @delete-file="deleteFile">
-      </GitDirectory>
-      <GitGraph :problem="problem">
-      </GitGraph>
+      <div v-for="viewIndex in viewQueue" :key="viewIndex">
+        <component
+          :is="setCurrentComponent(viewIndex)" 
+          v-bind="setCurrentProps(viewIndex)"
+          @update-file-content="updateFileContent"
+          @delete-file="deleteFile">
+        </component>
+      </div>
     </SectionRight>
     <Divider/>
   </main>
@@ -37,9 +33,10 @@ import {
   ProblemInstruction,
   GitDirectory,
   GitGraph,
+  GitStagingArea,
+  GitRemote,
 } from '@/components'
-import { PlainFile, Directory } from '@/git/fileStructure'
-import { Git } from '@/git/git'
+import { PlainFile } from '@/git/fileStructure'
 
 export default defineComponent({
   components: {
@@ -51,6 +48,8 @@ export default defineComponent({
     ProblemInstruction,
     GitDirectory,
     GitGraph,
+    GitStagingArea,
+    GitRemote
   },
   setup() {
     const problemIndex = ref(0)
@@ -78,63 +77,49 @@ export default defineComponent({
       problems[problemIndex.value].refDirectory.delete(file)
     }
     
-    // ~ 테스팅용 샘플 git 설정 
-    const presentDir = new Directory('test1')
-    const git = new Git(presentDir)
-    git.setUserConfig(
-      {
-        type: 'name',
-        name: 'tony'
-      }
-    )
-    git.setUserConfig(
-      {
-        type: 'email',
-        email: 'tony@tony.com'
-      }
-    )
-    const startTest = () => {
-      const makeSwitchCommit = (prev: string ,next: string) => {
-        git.head = next
-        git.branches[next] = git.branches[prev]
-        const switchATxt = new PlainFile('switch_a.txt', presentDir)
-        git.add()
-        git.commit('Add switch text file A')
-        const switchBTxt = new PlainFile('switch_b.txt', presentDir)
-        git.add()
-        git.commit('Add switch text file B')
-      }
-      const makeSampleCommit = () => {
-        const aTxt = new PlainFile('a.txt', presentDir)
-        git.add(presentDir.getChildrenName())
-        git.commit('Add text file A')
-        const bTxt = new PlainFile('b.txt', presentDir)
-        git.add(presentDir.getChildrenName())
-        git.commit('Add text file B')
-        const cTxt = new PlainFile('c.txt', presentDir)
-        git.add(presentDir.getChildrenName())
-        git.commit('Add text file C')
-        const dTxt = new PlainFile('d.txt', presentDir)
-        git.add(presentDir.getChildrenName())
-        git.commit('Add text file D')
-        return git
-      }
-      makeSampleCommit()
-      makeSwitchCommit('master', 'develop')
-      problems[0].refDirectory = presentDir
-      problems[0].git = git
+    const viewQueue = ref([0, 1])
 
-      const eTxt = new PlainFile('e.txt', presentDir)
+    const updateViewQueue = (nextViewIndex: number) => {
+      if (viewQueue.value.includes(nextViewIndex)) {
+        const realIndex = viewQueue.value.indexOf(nextViewIndex)
+        viewQueue.value.splice(realIndex, 1)
+      } else {
+        viewQueue.value.unshift(nextViewIndex)
+        if (viewQueue.value.length > 2) {
+          viewQueue.value.pop()
+        }
+      }
     }
 
-    const gitAdd = () => {
-      problems[0].git?.add()
+    const setCurrentComponent = (viewIndex: number) => {
+      switch (viewIndex) {
+        case 1:
+          return 'GitGraph'
+        case 2:
+          return 'GitStagingArea'
+        case 3:
+          return 'GitRemote'
+        default:
+          return 'GitDirectory'
+      }
     }
 
-    const gitCommit = () => {
-      problems[0].git?.commit('test commit')
+    const setCurrentProps = (viewIndex: number) => {
+      switch (viewIndex) {
+        case 1:
+          return {
+            problem: problem.value
+          }
+        case 2:
+          return {}
+        case 3:
+          return {}
+        default:
+          return {
+            git: problem.value.git
+          }
+      }
     }
-    // ~
     
     return {
       problem,
@@ -143,11 +128,10 @@ export default defineComponent({
       nextProblem,
       updateFileContent,
       deleteFile,
-      // ~ test용 method
-      startTest,
-      gitAdd,
-      gitCommit
-      // ~
+      viewQueue,
+      updateViewQueue,
+      setCurrentComponent,
+      setCurrentProps
     }
   },
 })
