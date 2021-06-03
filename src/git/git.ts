@@ -106,6 +106,7 @@ export class Git {
     }
     const files = this.refDirectory.getFilesByName(filenames)
     const hashedPresentFiles = this.hash(files)
+
     // 현재 파일 목록으로 변경사항 확인
     for (const filename in hashedPresentFiles) {
       if (this.index[filename] === undefined) {
@@ -264,6 +265,7 @@ export class Git {
       return {
         result: 'fail',
         message: 'there is no change',
+        hash: '',
       }
     }
 
@@ -282,6 +284,7 @@ export class Git {
         return {
           result: 'fail',
           message: 'there are still not merged files',
+          hash: '',
         }
       }
     }
@@ -319,11 +322,13 @@ export class Git {
       return {
         result: 'success',
         message: 'merged',
+        hash: commitHash,
       }
     }
     return {
       result: 'success',
       message: '',
+      hash: commitHash,
     }
   }
 
@@ -416,7 +421,7 @@ export class Git {
     const visited = {
       sourceCommitHash: true,
     } as { [key: string]: boolean }
-    while (q) {
+    while (q.length) {
       const commitHash = q.pop()
       allCommitHashes.push(commitHash)
       const commit = this.commits[commitHash!]
@@ -436,9 +441,8 @@ export class Git {
    * @param branch 전환할 브랜치 이름
    * @param create 브랜치를 생성할 것인지 옵션
    */
-  switch(branch: string, create = false) {
+  switch(branch: string, option?:{create:boolean}) {
     const branches = Object.keys(this.branches)
-
     const {statusToCommit, statusNotToCommit} = this.status()
     let anyStatus = false
     Object.keys(statusToCommit).forEach(key=>{
@@ -451,7 +455,7 @@ export class Git {
       throw new Error('구현의 편의를 위해 switch할 때 commit되지 않은 변경사항을 허용하지 않습니다.')
     }
 
-    if (create) {
+    if (option?.create) {
       if (branches.includes(branch)) {
         throw new Error(`already exist branch name ${branch}`)
       }
@@ -482,16 +486,14 @@ export class Git {
     if (targetCommitHash) {
       const targetCommit = this.commits[targetCommitHash]
       const targetTree = this.trees[targetCommit.tree]
-
       // conflict 검사
       for (const filename of Object.keys(sourceTree)) {
         if (targetTree[filename]) {
-          if (sourceTree[filename] !== sourceTree[filename]) {
+          if (sourceTree[filename] !== targetTree[filename]) {
             conflicts.push(filename)
           }
         }
       }
-
       this.index = { ...targetTree, ...sourceTree }
       this.refDirectory.setDirectoryByTree(this.index, this.fileHashes)
       if (conflicts.length > 0) {

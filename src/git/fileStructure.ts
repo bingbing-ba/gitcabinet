@@ -21,6 +21,14 @@ export class PlainFile {
   toString() {
     return this.filename
   }
+
+  toJSON() {
+    return {
+      filename:this.filename,
+      content:this.content,
+      parent: this.parent.dirName,
+    }
+  }
 }
 
 export class Directory {
@@ -37,6 +45,13 @@ export class Directory {
 
   toString() {
     return this.dirName
+  }
+
+  toJSON() {
+    return {
+      dirName: this.dirName,
+      children: this.children,
+    }
   }
 
   getChildrenName() {
@@ -92,5 +107,19 @@ export class Directory {
       const fileContentHash = tree[filename]
       file.content = fileHashes[fileContentHash]
     }
+  }
+
+  /**
+   * 파일이름으로 파일 찾아서 리턴, 없으면 undefined 리턴
+   * @param filename 파일이름
+   * @returns 파일객체 or undefined
+   */
+  getFileByFilename(filename:string){
+    for (const child of this.children) {
+      if (child.filename === filename) {
+        return child
+      }
+    }
+    return undefined
   }
 }
