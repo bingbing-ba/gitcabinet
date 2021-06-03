@@ -33,6 +33,7 @@ export class PlainFile {
 
 export class Directory {
   children: PlainFile[]
+  allChildren: PlainFile[]
   dirName: string
 
   constructor(dirName: string) {
@@ -41,6 +42,7 @@ export class Directory {
     }
     this.dirName = dirName
     this.children = []
+    this.allChildren = []
   }
 
   toString() {
@@ -51,6 +53,7 @@ export class Directory {
     return {
       dirName: this.dirName,
       children: this.children,
+      allChildren: this.allChildren,
     }
   }
 
@@ -64,6 +67,9 @@ export class Directory {
         throw new Error(`there is the same name of ${child.filename}`)
       }
       this.children.push(child)
+      if (!this.allChildren.includes(child)) {
+        this.allChildren.push(child)
+      }
     }
   }
 
@@ -100,12 +106,22 @@ export class Directory {
     this.children = []
   }
 
+  getFileOnAllChildren(filename:string) {
+    return this.allChildren.find((child)=>{
+      return child.filename === filename
+    })
+  }
+
   setDirectoryByTree(tree: tree, fileHashes: fileHashes) {
     this.clear()
     for (const filename in tree) {
-      const file = new PlainFile(filename, this)
-      const fileContentHash = tree[filename]
-      file.content = fileHashes[fileContentHash]
+      let file = this.getFileOnAllChildren(filename)
+      if (!file) {
+        file = new PlainFile(filename, this)
+      }else {
+        this.add(file)
+      }
+      file.content = fileHashes[tree[filename]]
     }
   }
 
