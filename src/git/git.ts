@@ -1,4 +1,5 @@
 import { sha256 } from 'js-sha256'
+import { cloneDeep } from 'lodash'
 import { PlainFile, Directory } from './fileStructure'
 import {
   index,
@@ -7,6 +8,7 @@ import {
   fileHashes,
   commit,
   statusToCommit,
+  statusNotToCommit,
   userConfig,
 } from './gitTypes'
 
@@ -15,8 +17,16 @@ export class Git {
   index: index
   /** @property `string`, 활성화된 브랜치 이름 ex. master */
   head: string
+  /** @property `string`, 병합 시 target브랜치의 head commit hash, 병합 중이 아니면 빈 문자열 */
+  mergeHead: string
+  /** @property `string[]`, 병합 시 충돌이 발생한 filename이 요소로 들어감 */
+  conflicts: string[]
   /** @property `object`, key가 브랜치이름, value가 가장 최신 commit hash */
   branches: branches
+  /** @property `object`, key가 remote 이름(ex. origin), branches 객체 */
+  remoteBranches: {
+    [key: string]: branches
+  }
   /** @property `object`, key가 commit을 hash한 값, value는 commit 객체 */
   commits: { [key: string]: commit }
   /** @property `object`, key가 tree를 hash한 값, value는 tree 객체 */
@@ -44,9 +54,12 @@ export class Git {
   constructor(refDirectory: Directory) {
     this.index = {}
     this.head = 'master'
+    this.mergeHead = ''
+    this.conflicts = []
     this.branches = {
       master: '',
     }
+    this.remoteBranches = {}
     this.commits = {}
     this.trees = {}
     this.fileHashes = {}
@@ -93,6 +106,7 @@ export class Git {
     }
     const files = this.refDirectory.getFilesByName(filenames)
     const hashedPresentFiles = this.hash(files)
+
     // 현재 파일 목록으로 변경사항 확인
     for (const filename in hashedPresentFiles) {
       if (this.index[filename] === undefined) {
@@ -239,6 +253,7 @@ export class Git {
   /**
    * `$ git commit -m`의 역할을 하는 함수
    * @param message 커밋메세지
+   * @returns result: 'success' or 'fail', message: 부가 설명
    */
   commit(message: string) {
     const statusToCommit = this.getStatusToCommit()
@@ -247,17 +262,50 @@ export class Git {
     }, 0)
 
     if (!isAnyChange) {
-      return
+      return {
+        result: 'fail',
+        message: 'there is no change',
+        hash: '',
+      }
+    }
+
+    // 병합 중 충돌된 파일이 있는 경우 충돌된 파일이 모두 staging 되어야 함
+    if (this.conflicts.length > 0) {
+      let allConflictsStaged = true
+      const { created, deleted, modified } = statusToCommit
+      for (const filename of this.conflicts) {
+        const conflictStaged =
+          created.includes(filename) ||
+          modified.includes(filename) ||
+          deleted.includes(filename)
+        allConflictsStaged = allConflictsStaged && conflictStaged
+      }
+      if (!allConflictsStaged) {
+        return {
+          result: 'fail',
+          message: 'there are still not merged files',
+          hash: '',
+        }
+      }
     }
 
     const tree = Object.assign({}, this.index)
     const treeHash = sha256(JSON.stringify(tree))
     this.trees[treeHash] = tree
 
+    // 현재 branch의 가장 최신 commit hash, 처음 commit이라면 빈 배열로 parent
+    const parent = []
+    if (this.branches[this.head]) {
+      // 병합 중이라면
+      if (this.mergeHead) {
+        parent.push(this.mergeHead, this.branches[this.head])
+      } else {
+        parent.push(this.branches[this.head])
+      }
+    }
     const commitObj: commit = {
       tree: treeHash,
-      // 현재 branch의 가장 최신 commit hash, 처음 commit은 빈 배열로 parent
-      parent: this.branches[this.head] ? [this.branches[this.head]] : [],
+      parent,
       author: {
         name: this.config.user.name,
         email: this.config.user.email,
@@ -268,6 +316,20 @@ export class Git {
     const commitHash = sha256(JSON.stringify(commitObj))
     this.commits[commitHash] = commitObj
     this.branches[this.head] = commitHash
+    if (this.mergeHead) {
+      this.mergeHead = ''
+      this.conflicts = []
+      return {
+        result: 'success',
+        message: 'merged',
+        hash: commitHash,
+      }
+    }
+    return {
+      result: 'success',
+      message: '',
+      hash: commitHash,
+    }
   }
 
   /**
@@ -276,7 +338,7 @@ export class Git {
    * @param branchName 브랜치 이름입니다. default는 master
    * @returns commit | undefined
    */
-  getMostRecentCommit(branchName: string = 'master') {
+  getMostRecentCommit(branchName = 'master') {
     const mostRecentCommitHash = this.branches[branchName]
     if (mostRecentCommitHash === undefined) {
       throw new Error(`there is no branch name of ${branchName}`)
@@ -290,7 +352,7 @@ export class Git {
    * @param branchName 브랜치 이름입니다. default는 master
    * @returns tree | undefined
    */
-  getTreeOfMostRecentCommit(branchName: string = 'master') {
+  getTreeOfMostRecentCommit(branchName = 'master') {
     const mostRecentCommit = this.getMostRecentCommit(branchName)
     const treeHash = mostRecentCommit?.tree
     return treeHash === undefined ? treeHash : this.trees[treeHash]
@@ -315,7 +377,7 @@ export class Git {
    * @param branchName 브랜치 이름, default값은 master
    * @returns boolean
    */
-  isExistAtRecentCommit(file: PlainFile, branchName: string='master') {
+  isExistAtRecentCommit(file: PlainFile, branchName = 'master') {
     const tree = this.getTreeOfMostRecentCommit(branchName)
     if (tree) {
       // tree에 파일 이름 존재하고, 파일 이름도 같은지 확인
@@ -340,5 +402,220 @@ export class Git {
     // 1. remote의 branch의 가장 최신 commit이랑 내 branch랑 비교
     // pull이니까 내 commithash를 remote의 head부터 차례로 찾아들어감
     // 2. 일치하는 게 나오기 전까지 commit
+  }
+
+  /**
+   * 어떤 commit hash부터 부모를 타고 가서 첫 commit hash까지 모든 commit hash를 모아 return 하는 함수.
+   * merge에 사용할 용도로 만들었습니다.
+   * @param sourceCommitHash 기준점이 되는 commit hash
+   * @returns sourceCommitHash가 처음, 첫 commitHash가 마지막 요소인 모든 commit hash 모은 배열
+   */
+  getAllCommitHahes(sourceCommitHash: string) {
+    const commit = this.commits[sourceCommitHash]
+    if (!commit) {
+      throw new Error(`there is no commit ${sourceCommitHash}`)
+    }
+
+    const q = [sourceCommitHash]
+    const allCommitHashes = []
+    const visited = {
+      sourceCommitHash: true,
+    } as { [key: string]: boolean }
+    while (q.length) {
+      const commitHash = q.pop()
+      allCommitHashes.push(commitHash)
+      const commit = this.commits[commitHash!]
+      commit.parent.forEach((parentCommitHash) => {
+        if (!visited[parentCommitHash]) {
+          q.unshift(parentCommitHash)
+        }
+      })
+    }
+    return allCommitHashes
+  }
+
+  /**
+   * `$ git switch 브랜치` 명령어 역할을 하는 함수. 브랜치를 전환함.
+   * create를 통해 `-c` 옵션 주었을 때 역할도 함.
+   * 구현 편의를 위해 commit되지 않은 변경사항이 있을 때 switch를 금지하였음
+   * @param branch 전환할 브랜치 이름
+   * @param create 브랜치를 생성할 것인지 옵션
+   */
+  switch(branch: string, option?:{create:boolean}) {
+    const branches = Object.keys(this.branches)
+    const {statusToCommit, statusNotToCommit} = this.status()
+    let anyStatus = false
+    Object.keys(statusToCommit).forEach(key=>{
+      anyStatus ||= statusToCommit[key as keyof statusToCommit].length > 0
+    })
+    Object.keys(statusNotToCommit).forEach(key=>{
+      anyStatus ||= statusNotToCommit[key as keyof statusNotToCommit].length > 0
+    })
+    if (anyStatus) {
+      throw new Error('구현의 편의를 위해 switch할 때 commit되지 않은 변경사항을 허용하지 않습니다.')
+    }
+
+    if (option?.create) {
+      if (branches.includes(branch)) {
+        throw new Error(`already exist branch name ${branch}`)
+      }
+      this.branches[branch] = this.branches[this.head]
+    } else {
+      if (!branches.includes(branch)) {
+        throw new Error(`no name of branch ${branch}`)
+      }
+      const targetCommit = this.commits[this.branches[branch]]
+      const targetTree = this.trees[targetCommit.tree]
+      this.refDirectory.setDirectoryByTree(targetTree, this.fileHashes)
+      this.index = cloneDeep(targetTree) 
+
+    }
+    this.head = branch
+  }
+
+  /**
+   * 커밋 해시 하나만 전달하면, 그 커밋의 tree를 기준으로 index와 directory 업데이트
+   * 병합 시만 사용, 두개 전달하면 conflict 파악해서 발생한 경우 filecontent도 업데이트
+   * @param sourceCommitHash update 대상이 되는 commit의 hash
+   * @param targetCommitHash 병합할 때만 사용하는 target commit hash
+   */
+  updateIndexAndDirectory(sourceCommitHash: string, targetCommitHash?: string) {
+    const sourceCommit = this.commits[sourceCommitHash]
+    const sourceTree = this.trees[sourceCommit.tree]
+    const conflicts = []
+    if (targetCommitHash) {
+      const targetCommit = this.commits[targetCommitHash]
+      const targetTree = this.trees[targetCommit.tree]
+      // conflict 검사
+      for (const filename of Object.keys(sourceTree)) {
+        if (targetTree[filename]) {
+          if (sourceTree[filename] !== targetTree[filename]) {
+            conflicts.push(filename)
+          }
+        }
+      }
+      this.index = { ...targetTree, ...sourceTree }
+      this.refDirectory.setDirectoryByTree(this.index, this.fileHashes)
+      if (conflicts.length > 0) {
+        const conflictedFiles = this.refDirectory.getFilesByName(conflicts)
+        for (const file of conflictedFiles) {
+          const sourceFileContent = this.fileHashes[sourceTree[file.filename]]
+          const targetFileContent = this.fileHashes[targetTree[file.filename]]
+          file.content = `<<<<<<< HEAD
+          ${sourceFileContent}
+          =======
+          ${targetFileContent}
+          >>>>>>>
+          `
+        }
+        this.conflicts = [...conflicts]
+      }
+    } else {
+      this.index = { ...sourceTree }
+      this.refDirectory.setDirectoryByTree(this.index, this.fileHashes)
+    }
+  }
+
+  /**
+   * 현재 브랜치의 status에 해당 파일이 존재하는지를 체크하는 함수
+   * @param filename 파일 이름
+   * @returns boolean
+   */
+  isExistAtStatus(filename:string) {
+    // 비 반복적인 코드를 짜고 싶으나... 다양한 시도 끝에 포기
+    const {statusNotToCommit, statusToCommit} = this.status()
+    let isExist = false
+    isExist ||= statusNotToCommit.unstaged.includes(filename)
+    isExist ||= statusNotToCommit.modified.includes(filename)
+    isExist ||= statusNotToCommit.deleted.includes(filename)
+    isExist ||= statusToCommit.created.includes(filename)
+    isExist ||= statusToCommit.modified.includes(filename)
+    isExist ||= statusToCommit.deleted.includes(filename)
+    return isExist
+  }
+
+  /**
+   * `git merge targetBranch` 명령어 역할의 함수, targetBranch의 commit을 현재 브랜치에 적용합니다.
+   * non fast forward일 때 conflict가 없으면 내부적으로 commit 실행
+   * conflict 발생하면 commit 하지않은채로 종료. conflict 해결해야함.
+   * @param targetBranch 병합 대상 브랜치
+   * @param mergeCommitMessage non fast forward 병합, conflict 없을 때 사용할 커밋 메세지
+   * @returns 병합 결과 메세지
+   */
+  merge(
+    targetBranch:
+      | { remote: true; remoteName: string; branchName: string }
+      | { remote: false; branchName: string },
+    mergeCommitMessage?: string
+  ) {
+    // 먼저 remote랑 브랜치 이름 검사
+    let targetHeadCommitHash = undefined
+    if (targetBranch.remote) {
+      const remoteBranches = this.remoteBranches[targetBranch.remoteName]
+      if (!remoteBranches) {
+        throw new Error(`There is no remoteName ${targetBranch.remoteName}`)
+      }
+      targetHeadCommitHash = remoteBranches[targetBranch.branchName]
+      if (!targetHeadCommitHash) {
+        throw new Error(`There is no branchName ${targetBranch.branchName}`)
+      }
+    } else {
+      targetHeadCommitHash = this.branches[targetBranch.branchName]
+      if (!targetHeadCommitHash) {
+        throw new Error(`There is no branchName ${targetBranch.branchName}`)
+      }
+    }
+
+    // source브랜치의 commit 되지 않은 변경사항이 있는 파일이 target브랜치의 tree에 존재할때는 merge 불가능
+    const targetTree = this.trees[this.commits[targetHeadCommitHash].tree]
+    for (const filename in targetTree) {
+      if(this.isExistAtStatus(filename)) {
+        throw new Error(`cannot merge because of uncommited change, ${filename}`)
+      }
+    }
+    
+
+    const sourceHeadCommitHash = this.branches[this.head]
+    if (!sourceHeadCommitHash) {
+      // source에 아무런 커밋 없을 때,ff
+      this.branches[this.head] = targetHeadCommitHash
+      this.updateIndexAndDirectory(targetHeadCommitHash)
+      return 'fast forward'
+    }
+
+    // 일치하는 source commit 찾기 - 그냥 가장 마지막 hash가 같은지만 비교하면 되네
+    const allSourceCommitHashes = this.getAllCommitHahes(sourceHeadCommitHash)
+    const allTargetCommitHashes = this.getAllCommitHahes(targetHeadCommitHash)
+    if (
+      allSourceCommitHashes[allSourceCommitHashes.length - 1] !==
+      allTargetCommitHashes[allTargetCommitHashes.length - 1]
+    ) {
+      throw new Error('unable to merge, there is no common commit')
+    }
+
+    // target head가 이미 source에 포함되어있어서 merge할게 없다면
+    if (allSourceCommitHashes.includes(targetHeadCommitHash)) {
+      return 'already updated'
+    }
+    // source head가 target에 포함되어있다면 - fast-forward
+    if (allTargetCommitHashes.includes(sourceHeadCommitHash)) {
+      this.branches[this.head] = targetHeadCommitHash
+      this.updateIndexAndDirectory(targetHeadCommitHash)
+      return 'fast forward'
+    }
+
+    // non fast forward
+    this.updateIndexAndDirectory(sourceHeadCommitHash, targetHeadCommitHash)
+    this.mergeHead = targetHeadCommitHash
+    if (this.conflicts.length === 0) {
+      // no conflict, 바로 커밋
+      this.commit(
+        mergeCommitMessage || `merge branch ${targetBranch.branchName}`
+      )
+      return 'non fast forward merged'
+    } else {
+      // conflict, 커밋 할 수 없어 종료
+      return 'conflict occured, merge failed'
+    }
   }
 }
