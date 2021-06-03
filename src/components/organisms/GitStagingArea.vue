@@ -5,7 +5,7 @@
         Staging Area
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
+    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
       Staging Area
     </Card>
   </div>
@@ -31,7 +31,7 @@ export default defineComponent({
 
 <style scoped>
 .git-staging-area {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-hidden;
 }
 
 .git-staging-area__text {

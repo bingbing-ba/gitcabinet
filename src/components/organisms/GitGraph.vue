@@ -5,7 +5,7 @@
         커밋 그래프
       </Title>
     </div>
-    <Card class="bg-white pb-10 overflow-y-scroll overflow-x-scroll max-h-full">
+    <Card class="bg-white pb-10 overflow-y-auto overflow-x-auto max-h-full">
       <div v-if="problem.git" class="p-2">
         <div class="flex items-center overflow-auto">
           <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center mx-2">
@@ -139,7 +139,7 @@ export default defineComponent({
 
 <style scoped>
 .git-graph {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-hidden;
 }
 
 .git-graph__text {

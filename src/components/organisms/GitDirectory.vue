@@ -5,7 +5,7 @@
         디렉토리
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
+    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
       <div v-if="dirName" class="xl:flex max-w-full">
         <div class="xl:w-1/2">
           <DirectoryFolder :dirName="dirName" class="pb-2"/>
@@ -93,7 +93,7 @@ export default defineComponent({
 
 <style>
 .git-directory {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-hidden;
 }
 
 .git-directory__text {

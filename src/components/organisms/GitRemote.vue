@@ -5,7 +5,7 @@
         원격 저장소
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
+    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
       원격 저장소
     </Card>
   </div>
@@ -27,7 +27,7 @@ export default defineComponent({
 
 <style scoped>
 .git-remote {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-hidden;
 }
 
 .git-remote__text {

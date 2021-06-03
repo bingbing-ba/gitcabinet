@@ -20,7 +20,7 @@
       />
     </SectionLeft>
     <SectionRight>
-      <div v-for="viewIndex in viewQueue" :key="viewIndex">
+      <div v-for="viewIndex in viewQueue" :key="viewIndex" class="overflow-hidden">
         <component
           :is="setCurrentComponent(viewIndex)" 
           v-bind="setCurrentProps(viewIndex)"
