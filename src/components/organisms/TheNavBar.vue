@@ -15,10 +15,10 @@
       />
     </div>
     <div class="navbar-right">
-      <ButtonDirectory/>
-      <ButtonGitGraph/>
-      <ButtonStagingArea/>
-      <ButtonRemote/>
+      <ButtonDirectory @click="updateViewQueue(0)" />
+      <ButtonGitGraph @click="updateViewQueue(1)" />
+      <ButtonStagingArea @click="updateViewQueue(2)" />
+      <ButtonRemote @click="updateViewQueue(3)" />
     </div>
   </div>
 </template>
@@ -61,7 +61,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const resetProblem = (problem: Object) => {
+    const resetProblem = (problem: Problem) => {
       emit('reset-problem', problem)
     }
 
@@ -72,10 +72,15 @@ export default defineComponent({
       emit('goto-next-problem')
     }
 
+    const updateViewQueue = (nextViewIndex: number) => {
+      emit('update-view-queue', nextViewIndex)
+    }
+
     return {
       resetProblem,
       gotoPrevProblem,
       gotoNextProblem,
+      updateViewQueue
     }
   },
 })

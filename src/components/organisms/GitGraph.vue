@@ -1,12 +1,12 @@
 <template>
-  <div class="git-graph overflow-y-hidden">
+  <div class="git-graph">
     <div class="bg-gray-200">
       <Title class="git-graph__text">
         커밋 그래프
       </Title>
     </div>
-    <Card class="bg-white pb-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <div v-if="problem" class="p-2">
+    <Card class="bg-white pb-10 overflow-y-scroll overflow-x-scroll max-h-full">
+      <div v-if="problem.git" class="p-2">
         <div class="flex items-center overflow-auto">
           <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center mx-2">
             <IconSwitchHorizontal /> 수평 모드
@@ -139,7 +139,7 @@ export default defineComponent({
 
 <style scoped>
 .git-graph {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
 }
 
 .git-graph__text {
