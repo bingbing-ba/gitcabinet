@@ -55,13 +55,19 @@ export default defineComponent({
 }
 
 .problem__instruction::-webkit-scrollbar {
-  width: 10px !important;
+  @apply bg-white w-3 rounded;
 }
+
+.problem__instruction::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
+.problem__instruction::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
 .problem__instruction::-webkit-scrollbar-thumb {
-  background-color: #2f3542 !important;
-}
-.problem__instruction::-webkit-scrollbar-track {
-  background-color: grey !important;
+  @apply bg-gray-500 rounded w-2 mt-3;
 }
 
 .problem__instruction-title {

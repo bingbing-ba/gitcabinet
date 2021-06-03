@@ -9,18 +9,14 @@
     @reset-problem="resetProblem"
   />
   <main class="main">
-    <SectionLeft>
+    <SectionLeft class="overflow-auto">
       <ProblemInstruction 
         :problem="problem"
       />
       <ProblemCLI 
+        ref="ProblemCLI"
         :problem="problem"
       />
-      <!-- test용 버튼 -->
-      <!-- <button @click="startTest">Sample View</button>
-      <button @click="gitAdd">git add</button>
-      <button @click="gitCommit">git commit</button> -->
-      <!-- test용 버튼 -->
     </SectionLeft>
     <SectionRight>
       <GitDirectory 
@@ -70,8 +66,11 @@ export default defineComponent({
     const problem = computed(()=>{
       return problems[problemIndex.value]
     })
-
+    problem.value.setBase()
+    
     const resetProblem = () => {
+      problem.value.resetToBase()
+      problem.value.setBase()
     }
     const gotoPrevProblem = () => {
       problemIndex.value -= 1

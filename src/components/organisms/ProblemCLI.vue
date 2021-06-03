@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated } from 'vue'
+import { defineComponent, onMounted, onUpdated, watch } from 'vue'
 import { Problem } from '@/problem'
 import { gitCabinetTerm } from '@/terminal/gitCabinetTerm'
 import { Terminal } from 'xterm'
@@ -21,6 +21,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const problem = props.problem
     
+    let term: Terminal
+    let cabinetTerm: any
     onMounted(() => {
       const termOptions = {
         theme: {
@@ -28,165 +30,55 @@ export default defineComponent({
           background: '#0F172A',
         },
         lineHeight: 1.5,
-        fontSize: 18,
+        fontSize: 16,
         scrollSensitivity: 50,
         minimumContrastRatio: 4.5,
         convertEol: true,
         cursorBlink: true,
       }
-      const term = new Terminal(termOptions)
+      term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
-      term.loadAddon(new gitCabinetTerm(term, problem))
+      cabinetTerm = new gitCabinetTerm(term, problem)
+      term.loadAddon(cabinetTerm)
       term.focus()
     })
 
     onUpdated(() => {
-      const termOptions = {
-        theme: {
-          foreground: 'white',
-          background: '#0F172A',
-        },
-        lineHeight: 1.5,
-        fontSize: 18,
-        scrollSensitivity: 50,
-        minimumContrastRatio: 4.5,
-        convertEol: true,
-        cursorBlink: true,
-      }
-      const term = new Terminal(termOptions)
-      term.open(document.querySelector('#terminal') as HTMLElement)
-      term.loadAddon(new gitCabinetTerm(term, problem))
+      cabinetTerm.setProblem(props.problem)
       term.focus()
     })
     
-    // const problem = props.problem
-    // let terminal = {}
-      
-    //   const CURSOR_START_POSITION = 3
-    //   let curPosition = CURSOR_START_POSITION
-    //   let curLine = 0
-    //   let inputCommand = ''
-    //   let workingDir = '~'
-    //   term.write(`${workingDir}$ `)
-      
-    //   let solved = false
-    //   term.onKey((e) => {
-    //     const key = e.domEvent.key
-    //     if (key === 'ArrowDown' || key === 'ArrowUp') {
-    //       // a handler for the comamnd history
-    //       return
-    //     }
-
-    //     if (key === 'ArrowLeft') {
-    //       if (curPosition === CURSOR_START_POSITION) return
-    //       curPosition -= 1
-    //       term.write(ANSI_CONTROLS.cursorBackward)
-    //       return
-    //     }
-        
-    //     if (key === 'ArrowRight') {  
-    //       if (curPosition === inputCommand.length + CURSOR_START_POSITION) return
-    //       curPosition += 1
-    //       term.write(ANSI_CONTROLS.cursorForward)
-    //       return
-    //     }
-
-    //     if (key === 'Backspace') {
-    //       if (curPosition === 3) return
-    //       curPosition -= 1
-    //       term.write('\b \b')
-    //       return
-    //     }
-        
-    //     if (key === 'Enter') {
-    //       inputCommand = inputCommand
-    //       console.log(inputCommand)
-
-    //       if (inputCommand === 'clear') {
-    //         term.reset()
-    //         term.clear()
-    //         term.write('\x1b[2K\r')
-    //         term.write(`${workingDir}$ `)
-    //         inputCommand = ''
-    //         curPosition = CURSOR_START_POSITION
-    //         return
-    //       }
-          
-    //       if (inputCommand && curLine < 6) {
-    //         // issue: secondCommand가 정의되지 않은 메서드일 경우 'apply of undefined' 에러
-    //         // ex) git init test (OK) => git niit test (ERROR!)
-    //         let message = ''
-    //         try {
-    //           message = cli(inputCommand, problem)
-    //         } catch {
-    //           message = '지원하지 않는 명령어입니다.'
-    //         }
-    //         const result = problem.isCorrect()
-    //         let logLevel = ''
-            
-    //         if (solved) {
-    //           logLevel = ANSI_COLORS.RED
-    //         } else {
-    //           logLevel = result ? ANSI_COLORS.GREEN : ANSI_COLORS.RED
-    //           solved = result
-    //         }
-
-    //         const promptMessage = logLevel + message + ANSI_COLORS.RESET
-    //         term.write('\r\n')
-    //         term.write(promptMessage)
-    //       }
-          
-    //       if (curLine >= 6) {
-    //         term.reset()
-    //         term.clear()
-    //         term.write('\x1b[2K\r')
-    //         term.write(`${workingDir}$ `)
-    //         inputCommand = ''
-    //         curLine = 0
-    //         return
-    //       }
-          
-    //       inputCommand = ''
-    //       curPosition = CURSOR_START_POSITION
-    //       curLine += 1
-    //       term.write('\r\n')
-    //       term.write(`${workingDir}$ `)
-    //       return
-    //     }
-
-    //     inputCommand += e.key
-    //     curPosition += 1
-    //     term.write(e.key)
-    //   })
-    //   term.onLineFeed(() => {
-    //     term.scrollToLine(5)
-    //   })
-
-    //   return term
-    // }
+    watch(problem, (newProblem, oldProblem) => {
+      cabinetTerm.setProblem(newProblem)
+      term.focus()
+    })
   },
 })
 </script>
 
 <style>
 #terminal {
-  @apply bg-gray-900 rounded overflow-y-scroll break-words min-w-full max-w-full;
+  @apply bg-gray-900 rounded overflow-y-scroll overflow-x-hidden break-words min-w-full max-w-full;
 }
 
 #terminal::-webkit-scrollbar {
-  @apply bg-gray-900 rounded;
+  @apply bg-gray-900 w-3 h-3 rounded;
+}
+
+#terminal::-webkit-scrollbar-track {
+  @apply bg-gray-900 w-3 rounded;
 }
 
 #terminal::-webkit-scrollbar-corner {
-  @apply bg-gray-900 rounded;
+  @apply bg-gray-900 w-3 rounded;
 }
 
 #terminal::-webkit-scrollbar-corner {
-  @apply bg-gray-900 rounded;
+  @apply bg-gray-900 w-3 rounded;
 }
 
 #terminal::-webkit-scrollbar-thumb {
-  @apply bg-gray-500 rounded w-3 mt-3;
+  @apply bg-gray-500 w-3 rounded w-3 mt-3;
 }
 
 .xterm {
@@ -206,13 +98,4 @@ export default defineComponent({
 .xterm-viewport {
   overflow-y: scroll;
 }
-
-/* .xterm-text-layer,
-.xterm-selection-layer,
-.xterm-link-layer,
-.xterm-cursor-layer {
-  max-width: 100% !important;
-  min-width: 100% !important;
-  width: 100%;
-} */
 </style>

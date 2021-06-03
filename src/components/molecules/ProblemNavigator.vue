@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, computed } from 'vue'
+import { defineComponent, toRefs, reactive, computed, watch, } from 'vue'
 import { Problem } from '@/problem'
 import { Button, Title, IconArrowLeft, IconArrowRight } from '@/components'
 
@@ -57,10 +57,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const { problemIndex, lastProblemIndex } = toRefs(props)
 
+    const problem = toRefs(props).problem.value
     const index = computed(() => {
       return problemIndex.value + 1
     })
-
+    
     const showStageList = () => {
     }
     const gotoPrevProblem = () => {
@@ -74,6 +75,7 @@ export default defineComponent({
 
     return {
       index,
+      problem,
       showStageList,
       gotoPrevProblem,
       gotoNextProblem,
