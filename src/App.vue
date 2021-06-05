@@ -131,7 +131,8 @@ export default defineComponent({
           return {}
         default:
           return {
-            git: problem.value.git
+            git: problem.value.git,
+            problem: problem.value
           }
       }
     }

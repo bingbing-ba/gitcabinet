@@ -36,6 +36,7 @@ import { computed, defineComponent } from 'vue'
 import { Title, Card, DirectoryFile, DirectoryFolder, IconTrash, IconTextFile } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
+import { Problem } from '@/problem'
 
 export default defineComponent({
   components: {
@@ -49,15 +50,21 @@ export default defineComponent({
   props: {
     git: {
       type: Git
+    },
+    problem: {
+      type: Problem
     }
   },
   setup(props, context) {
     const fileList = computed(() => {
-      return props.git?.refDirectory?.children || []
+      if (props.git) {
+        return props.git?.refDirectory?.children
+      }
+      return props.problem?.refDirectory?.children
     })
 
     const dirName = computed(() => {
-      return props.git?.refDirectory?.dirName || ''
+      return props.problem?.refDirectory?.dirName || ''
     })
 
     const updateFileContent = (content: string, index: number) => {
