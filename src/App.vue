@@ -126,7 +126,9 @@ export default defineComponent({
             problem: problem.value
           }
         case 2:
-          return {}
+          return {
+            problem: problem.value
+          }
         case 3:
           return {}
         default:
