@@ -7,41 +7,37 @@
     </div>
     <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
       <div v-if="nowStatus" class="w-full flex justify-center">
-        <div class="w-1/2">
-          <p>working directory</p>
+        <div class="w-1/2 rounded-lg border-4 p-5">
+          <p class="text-center">working directory</p>
           <div>
-            <p>새로 생성된 파일</p>
-            <div v-for="fileName, idx in notToCommitUntrackedFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">새로 생성된 파일</p>
+            <div v-for="fileName, idx in notToCommitUntrackedFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
-            <hr>
-            <p>수정된 파일</p>
-            <div v-for="fileName, idx in notToCommitModifiedFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">수정된 파일</p>
+            <div v-for="fileName, idx in notToCommitModifiedFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
-            <hr>
-            <p>삭제된 파일</p>
-            <div v-for="fileName, idx in notToCommitDeleteddFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">삭제된 파일</p>
+            <div v-for="fileName, idx in notToCommitDeleteddFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
           </div>
         </div>
-        <div class="w-1/2">
-          <p>staging area</p>
+        <div class="w-1/2 rounded-lg border-4 p-5 ml-3">
+          <p class="text-center">staging area</p>
           <div>
-            <p>새로 생성된 파일</p>
-            <div v-for="fileName, idx in toCommitUntrackedFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">새로 생성된 파일</p>
+            <div v-for="fileName, idx in toCommitUntrackedFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
-            <hr>
-            <p>수정된 파일</p>
-            <div v-for="fileName, idx in toCommitModifiedFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">수정된 파일</p>
+            <div v-for="fileName, idx in toCommitModifiedFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
-            <hr>
-            <p>삭제된 파일</p>
-            <div v-for="fileName, idx in toCommitDeleteddFileList" :key="idx">
-              {{ fileName }}
+            <p class="py-5">삭제된 파일</p>
+            <div v-for="fileName, idx in toCommitDeleteddFileList" :key="idx" class="flex pl-5">
+              <IconTextFile /> {{ fileName }}
             </div>
           </div>
         </div>
@@ -55,13 +51,14 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { Title, Card } from '@/components'
+import { Title, Card, IconTextFile } from '@/components'
 import { Problem } from '@/problem'
 
 export default defineComponent({
   components: {
     Title,
     Card,
+    IconTextFile
   },
   props: {
     problem: {
