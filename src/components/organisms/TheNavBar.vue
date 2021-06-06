@@ -15,10 +15,10 @@
       />
     </div>
     <div class="navbar-right">
-      <ButtonDirectory @click="updateViewQueue(0)" />
-      <ButtonGitGraph @click="updateViewQueue(1)" />
-      <ButtonStagingArea @click="updateViewQueue(2)" />
-      <ButtonRemote @click="updateViewQueue(3)" />
+      <ButtonDirectory @click="updateViewQueue(0)" :class="{ selected: viewQueue.includes(0)}"/>
+      <ButtonGitGraph @click="updateViewQueue(1)" :class="{ selected: viewQueue.includes(1)}"/>
+      <ButtonStagingArea @click="updateViewQueue(2)" :class="{ selected: viewQueue.includes(2)}"/>
+      <ButtonRemote @click="updateViewQueue(3)" :class="{ selected: viewQueue.includes(3)}"/>
     </div>
   </div>
 </template>
@@ -59,6 +59,10 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    viewQueue: {
+      type: Array,
+      required: true
+    }
   },
   setup(props, { emit }) {
     const resetProblem = (problem: Problem) => {
@@ -86,7 +90,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .navbar {
   @apply flex flex-wrap justify-between p-4 shadow z-50;
 }
@@ -97,5 +101,9 @@ export default defineComponent({
 
 .navbar-right {
   @apply space-x-4 px-5 w-full hidden sm:hidden lg:flex lg:justify-start lg:my-0 lg:w-2/4;
+}
+
+.selected {
+  @apply opacity-50;
 }
 </style>

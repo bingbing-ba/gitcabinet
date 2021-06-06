@@ -4,6 +4,7 @@
     :problem="problem"
     :problemIndex="problemIndex"
     :lastProblemIndex="lastProblemIndex"
+    :viewQueue="viewQueue"
     @goto-prev-problem="gotoPrevProblem"
     @goto-next-problem="gotoNextProblem"
     @reset-problem="resetProblem"
