@@ -26,6 +26,13 @@
           <NetworkVertical v-if="isVerticalView"  :git="problem.git" :commits="commits" />
           <NetworkHorizontal v-else  :git="problem.git" :commits="commits" />
         </transition>
+        <div v-if="commits.length === 0" class="p-10">
+          현재까지 커밋 기록이 없습니다.
+        </div>
+        
+      </div>
+      <div v-else class="p-10">
+        현재 이 디렉토리는 git 저장소가 아닙니다.
       </div>
     </Card>
   </div>
