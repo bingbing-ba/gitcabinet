@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 import { Problem } from '@/problem/'
 import { 
   Title, 
@@ -61,6 +61,8 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const { problem } = toRefs(props)
+
     const resetProblem = (problem: Object) => {
       emit('reset-problem', problem)
     }
@@ -73,6 +75,7 @@ export default defineComponent({
     }
 
     return {
+      problem,
       resetProblem,
       gotoPrevProblem,
       gotoNextProblem,

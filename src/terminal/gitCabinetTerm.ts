@@ -42,6 +42,7 @@ export class gitCabinetTerm {
   problem: Problem
   _history: Array<Object>
   _cursor: number
+  _scrollHeight: number
   _input: string
   _isTermCommand: boolean
   _prompt: Prompt
@@ -51,6 +52,7 @@ export class gitCabinetTerm {
     this.problem = problem
     this._history = []
     this._cursor = 0
+    this._scrollHeight = 0
     this._input = ''
     this._isTermCommand = false
     this._prompt = {
@@ -78,7 +80,7 @@ export class gitCabinetTerm {
     const spaces = ' ' // 2 spaces as default
     const prefix = `${ANSI_COLORS.CYAN}${directory}${promptType}${ANSI_COLORS.RESET}`
     const suffix = `${ANSI_COLORS.YELLOW}(${head})${ANSI_COLORS.RESET}`
-
+    
     let result: string = ''
     if (head) {
       result = prefix + spaces + suffix + spaces
@@ -141,8 +143,9 @@ export class gitCabinetTerm {
   clearTerm(): void {
     this.term.clear()
     this.term.write('\x1b[2K\r')
-    this._cursor = 0
-    this._input = ''
+    // this.term.write('\x1B[F\x1B[K')
+    // this._cursor = 0
+    // this._input = ''
   }
   
   setInput(data: string): void {
@@ -178,9 +181,12 @@ export class gitCabinetTerm {
       displayMessage = '\r\n'
     }
     
+    // console.log(this.term)
+
     this.setInput(displayMessage)
     this.setPrompt()
     this._cursor = 0
+    this._scrollHeight += 1
     this._input = ''
     this._isTermCommand = false
   }
@@ -190,8 +196,10 @@ export class gitCabinetTerm {
     const prefix = this._input.substring(0, this._cursor - 1)
     const suffix = this._input.substring(this._cursor)
     this._input = prefix + suffix
+    this.term.write('\x1b[2K\r')
+    this.setPrompt()
+    this.term.write(this._input)
     this._cursor -= 1
-    this.term.write('\b \b')
   }
   
   handleCommand(data: string): string {

@@ -8,6 +8,7 @@ import { defineComponent, onMounted, onUpdated, watch } from 'vue'
 import { Problem } from '@/problem'
 import { gitCabinetTerm } from '@/terminal/gitCabinetTerm'
 import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/lib/xterm.js'
 import 'xterm/css/xterm.css'
 
@@ -38,19 +39,22 @@ export default defineComponent({
       }
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
+      const fitAddon = new FitAddon();
       cabinetTerm = new gitCabinetTerm(term, problem)
+      term.loadAddon(fitAddon);
       term.loadAddon(cabinetTerm)
       term.focus()
+      fitAddon.fit()
     })
-
+    
     onUpdated(() => {
       cabinetTerm.setProblem(props.problem)
-      term.focus()
+      // term.focus()
     })
     
     watch(problem, (newProblem, oldProblem) => {
       cabinetTerm.setProblem(newProblem)
-      term.focus()
+      // term.focus()
     })
   },
 })
@@ -86,16 +90,12 @@ export default defineComponent({
 }
 
 .xterm, .xterm-viewport {
-  height: 0 !important;
-  width: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 .xterm-screen {
   max-width: 100% !important;
-  width: 0 !important;
-}
-
-.xterm-viewport {
-  overflow-y: scroll;
+  width: 100% !important;
 }
 </style>
