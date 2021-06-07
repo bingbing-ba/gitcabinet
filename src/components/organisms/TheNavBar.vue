@@ -4,6 +4,7 @@
       <Title>GIT CABINET</Title>
       <ProblemNavigator
         :problem="problem"
+        :isCorrect="isCorrect"
         :problemIndex="problemIndex"
         :lastProblemIndex="lastProblemIndex"
         @goto-prev-problem="gotoPrevProblem"
@@ -49,6 +50,10 @@ export default defineComponent({
   props: {
     problem: {
       type: Problem,
+      required: true,
+    },
+    isCorrect: {
+      type: Boolean,
       required: true,
     },
     problemIndex: {

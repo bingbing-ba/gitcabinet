@@ -19,9 +19,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
-    const problem = props.problem
-    
+  setup(props, { emit }) {    
     let term: Terminal
     let cabinetTerm: any
     onMounted(() => {
@@ -40,23 +38,25 @@ export default defineComponent({
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
       const fitAddon = new FitAddon();
-      cabinetTerm = new gitCabinetTerm(term, problem)
+      cabinetTerm = new gitCabinetTerm(term, props.problem)
       term.loadAddon(fitAddon);
       term.loadAddon(cabinetTerm)
       term.focus()
       fitAddon.fit()
+
+      term.onLineFeed(() => {
+        emit('update-answer-manually', props.problem.isCorrect())
+      })
     })
     
     onUpdated(() => {
       cabinetTerm.setProblem(props.problem)
-      // term.focus()
     })
-    
-    watch(problem, (newProblem, oldProblem) => {
+
+    watch(props.problem, (newProblem) => {
       cabinetTerm.setProblem(newProblem)
-      // term.focus()
     })
-  },
+  }, 
 })
 </script>
 
@@ -87,15 +87,5 @@ export default defineComponent({
 
 .xterm {
   padding: 10px;
-}
-
-.xterm, .xterm-viewport {
-  height: 100% !important;
-  width: 100% !important;
-}
-
-.xterm-screen {
-  max-width: 100% !important;
-  width: 100% !important;
 }
 </style>

@@ -2,6 +2,7 @@
   <TheNavBar 
     class="navbar" 
     :problem="problem"
+    :isCorrect="isCorrect"
     :problemIndex="problemIndex"
     :lastProblemIndex="lastProblemIndex"
     @goto-prev-problem="gotoPrevProblem"
@@ -16,6 +17,7 @@
       <ProblemCLI 
         ref="ProblemCLI"
         :problem="problem"
+        @update-answer-manually="updateAnswerManually"
       />
     </SectionLeft>
     <SectionRight>
@@ -46,6 +48,7 @@ import {
 } from '@/components'
 import { PlainFile, Directory } from '@/git/fileStructure'
 import { Git } from '@/git/git'
+import { propertyOf } from 'lodash'
 
 export default defineComponent({
   components: {
@@ -68,15 +71,22 @@ export default defineComponent({
     })
     problem.value.setBase()
     
+    let isCorrect = ref(false)
     const resetProblem = () => {
       problem.value.resetToBase()
       problem.value.setBase()
+      isCorrect.value = false
     }
     const gotoPrevProblem = () => {
       problemIndex.value -= 1
+      isCorrect.value = false
     }
     const gotoNextProblem = () => {
       problemIndex.value += 1
+      isCorrect.value = false
+    }
+    const updateAnswerManually = (answer: boolean) => {
+      isCorrect.value = answer
     }
 
     const updateFileContent = (content: string, index: number) => {
@@ -153,6 +163,8 @@ export default defineComponent({
       gotoNextProblem,
 
       problem,
+      isCorrect,
+      updateAnswerManually,
       updateFileContent,
       deleteFile,
       // ~ test용 method

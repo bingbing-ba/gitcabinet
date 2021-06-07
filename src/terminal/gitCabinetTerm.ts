@@ -168,8 +168,9 @@ export class gitCabinetTerm {
   }
   
   handleCompleteInput(data: string): void {
+    
     let displayMessage: string = ''
-
+    
     if (data.length) {
       displayMessage = this.handleCommand(data)
     }
@@ -181,8 +182,6 @@ export class gitCabinetTerm {
       displayMessage = '\r\n'
     }
     
-    // console.log(this.term)
-
     this.setInput(displayMessage)
     this.setPrompt()
     this._cursor = 0
