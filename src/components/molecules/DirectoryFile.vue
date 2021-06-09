@@ -3,26 +3,23 @@
     <button @click="toggleEditMode" 
       class="flex items-center relative"
       :class="{ 
-        'text-yellow-500': isNotToCommitModified || isToCommitModified,
-        'text-green-500': isNotToCommitUnstaged || isToCommitCreated
+        'text-yellow-500': isNotToCommitModified,
+        'text-green-500': isNotToCommitUntracked
       }">
-      <IconTextFile/> {{ file.filename }}
+      <IconTextFile/> {{ fileName }}
       <div class="absolute -right-40 w-36" >
         <Badge
-          v-if="isChanged"
+          v-if="isNotToCommitUntracked || isNotToCommitModified"
           :color="
-            isNotToCommitUnstaged || isToCommitCreated
+            isNotToCommitUntracked
             ? 'green'
-            : isNotToCommitModified || isToCommitModified
-            ? 'yellow': ''" >
-          {{ isToCommitCreated
-            ? 'ready to commit (created)'
-            : isToCommitModified
-            ? 'ready to commit (modified)'
-            : isNotToCommitUnstaged
-            ? 'not ready to commit (unstaged)'
             : isNotToCommitModified
-            ? 'not ready to commit (modifed)'
+            ? 'yellow'
+            : ''" >
+          {{ isNotToCommitUntracked
+            ? '생성'
+            : isNotToCommitModified
+            ? '수정'
             : '' }}
         </Badge>
       </div>
@@ -63,7 +60,7 @@ export default defineComponent({
       type: Number
     }
   },
-  setup(props, context) {
+  setup(props, { emit } ) {
     const isEditMode = ref(false)
 
     const closeEditor = (event: Event) => {
@@ -86,69 +83,62 @@ export default defineComponent({
       isEditMode.value = !isEditMode.value
     }
 
+    const fileName = computed(() => {
+      return props.file?.filename || ''
+    })
     const fileContent = computed(() => {
       return props.file?.content || ''
     })
 
     const updateFileContent = (content: string) => {
-      context.emit('update-file-content', content, props.index)
+      emit('update-file-content', content, props.index)
     }
 
     const deleteFile = () => {
-      context.emit('delete-file', props.file)
+      emit('delete-file', props.file)
     }
 
-    const isToCommitModified = computed(() => {
-      const nowStatus = props.git?.status()
-      return nowStatus?.statusToCommit.modified.includes(props.file?.filename || '')
+    const nowStatus = computed(() => {
+      return props.git?.status()
     })
 
-    const isToCommitCreated = computed(() => {
-      const nowStatus = props.git?.status()
-      return nowStatus?.statusToCommit.created.includes(props.file?.filename || '')
+    const statusNotToCommit = computed(() => {
+      return nowStatus.value?.statusNotToCommit
     })
 
-    const isReadyToCommit = computed(() => {
-      const modified = isToCommitModified.value
-      const created = isToCommitCreated.value
-      // 삭제는 별도로 표시
-      return modified || created
+    const notToCommitUntrackedFileList = computed(() => {
+      return statusNotToCommit.value?.unstaged
+    })
+
+    const notToCommitModifiedFileList = computed(() => {
+      return statusNotToCommit.value?.modified
+    })
+
+    const notToCommitDeletedFileList = computed(() => {
+      return statusNotToCommit.value?.deleted
+    })
+
+    const isNotToCommitUntracked = computed(() => {
+      return notToCommitUntrackedFileList.value?.includes(fileName.value)
     })
 
     const isNotToCommitModified = computed(() => {
-      const nowStatus = props.git?.status()
-      return nowStatus?.statusNotToCommit.modified.includes(props.file?.filename || '')
-    })
-
-    const isNotToCommitUnstaged = computed(() => {
-      const nowStatus = props.git?.status()
-      return nowStatus?.statusNotToCommit.unstaged.includes(props.file?.filename || '')
-    })
-
-    const isNotReadyToCommit = computed(() => {
-      const modified = isNotToCommitModified.value
-      const unstaged = isNotToCommitUnstaged.value
-      // 삭제는 별도로 표시
-      return modified || unstaged
-    })
-
-    const isChanged = computed(() => {
-      return isReadyToCommit.value || isNotReadyToCommit.value
+      return notToCommitModifiedFileList.value?.includes(fileName.value)
     })
 
     return {
       isEditMode,
       toggleEditMode,
+      fileName,
       fileContent,
       updateFileContent,
       deleteFile,
-      isChanged,
-      isReadyToCommit,
-      isNotReadyToCommit,
-      isToCommitModified,
+      notToCommitUntrackedFileList,
+      notToCommitModifiedFileList,
+      notToCommitDeletedFileList,
+      isNotToCommitUntracked,
       isNotToCommitModified,
-      isToCommitCreated,
-      isNotToCommitUnstaged
+
     }
   },
 })

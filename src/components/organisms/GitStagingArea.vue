@@ -6,41 +6,33 @@
       </Title>
     </div>
     <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
-      <div v-if="nowStatus" class="w-full flex justify-center">
-        <div class="w-1/2 rounded-lg border-4 p-5">
-          <p class="text-center">working directory</p>
-          <div>
-            <p class="py-5">새로 생성된 파일</p>
-            <div v-for="fileName, idx in notToCommitUntrackedFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
-            <p class="py-5">수정된 파일</p>
-            <div v-for="fileName, idx in notToCommitModifiedFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
-            <p class="py-5">삭제된 파일</p>
-            <div v-for="fileName, idx in notToCommitDeleteddFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
+      <div v-if="nowStatus" class="w-full flex flex-col">
+        <span 
+          class="pl-5 py-2 flex relative"
+          v-for="hash, fileName in stagingAreaIndex" 
+          :key="hash"
+          :class="{ 
+            'text-yellow-500': isToCommitModified(fileName),
+            'text-green-500': isToCommitUntracked(fileName)
+          }">
+          <IconTextFile /> {{ fileName }}
+          <div class="absolute right-20 w-36" >
+            <Badge
+              v-if="isToCommitUntracked(fileName) || isToCommitModified(fileName)"
+              :color="
+                isToCommitUntracked(fileName)
+                ? 'green'
+                : isToCommitModified(fileName)
+                ? 'yellow'
+                : ''" >
+              {{ isToCommitUntracked(fileName)
+                ? '생성'
+                : isToCommitModified(fileName)
+                ? '수정'
+                : '' }}
+            </Badge>
           </div>
-        </div>
-        <div class="w-1/2 rounded-lg border-4 p-5 ml-3">
-          <p class="text-center">staging area</p>
-          <div>
-            <p class="py-5">새로 생성된 파일</p>
-            <div v-for="fileName, idx in toCommitUntrackedFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
-            <p class="py-5">수정된 파일</p>
-            <div v-for="fileName, idx in toCommitModifiedFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
-            <p class="py-5">삭제된 파일</p>
-            <div v-for="fileName, idx in toCommitDeleteddFileList" :key="idx" class="flex pl-5">
-              <IconTextFile /> {{ fileName }}
-            </div>
-          </div>
-        </div>
+        </span>
       </div>
       <div v-else>
         현재 이 디렉토리는 git 저장소가 아닙니다.
@@ -51,14 +43,15 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { Title, Card, IconTextFile } from '@/components'
+import { Title, Card, IconTextFile, Badge } from '@/components'
 import { Problem } from '@/problem'
 
 export default defineComponent({
   components: {
     Title,
     Card,
-    IconTextFile
+    IconTextFile,
+    Badge
   },
   props: {
     problem: {
@@ -66,31 +59,17 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const nowStatus = computed(() => {
-      return props.problem?.git?.status()
+    const stagingAreaIndex = computed(() => {
+      return props.problem?.git?.index
     })
 
-    // working directory status
-    const statusNotToCommit = computed(() => {
-      return nowStatus.value?.statusNotToCommit
+    const nowStatus = computed(() => {
+      return props.problem?.git?.status()
     })
 
     // staging area status
     const statusToCommit = computed(() => {
       return nowStatus.value?.statusToCommit
-    })
-
-    // working directory file list
-    const notToCommitUntrackedFileList = computed(() => {
-      return statusNotToCommit.value?.unstaged
-    })
-
-    const notToCommitModifiedFileList = computed(() => {
-      return statusNotToCommit.value?.modified
-    })
-
-    const notToCommitDeletedFileList = computed(() => {
-      return statusNotToCommit.value?.deleted
     })
 
     // staging area file list
@@ -106,16 +85,23 @@ export default defineComponent({
       return statusToCommit.value?.deleted
     })
 
+    const isToCommitUntracked = (fileName: string) => {
+      return toCommitUntrackedFileList.value?.includes(fileName)
+    }
+
+    const isToCommitModified = (fileName: string) => {
+      return toCommitModifiedFileList.value?.includes(fileName)
+    }
+
     return {
       nowStatus,
-      statusNotToCommit,
       statusToCommit,
-      notToCommitUntrackedFileList,
-      notToCommitModifiedFileList,
-      notToCommitDeletedFileList,
+      stagingAreaIndex,
       toCommitUntrackedFileList,
       toCommitModifiedFileList,
       toCommitDeletedFileList,
+      isToCommitUntracked,
+      isToCommitModified
     }
   }
 })
