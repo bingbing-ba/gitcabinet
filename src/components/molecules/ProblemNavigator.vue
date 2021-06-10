@@ -18,12 +18,10 @@
         <!-- ...dropdown... -->
       </div>
     </div>
-    <!-- {{ problem.git?.index || '' }} -->
-    {{ isCorrect }}
     <Button 
       class="p-navi__right"
       @click="gotoNextProblem"
-      :class="{ solved: isCorrect, disabled: index === lastProblemIndex }"
+      :class="{ solved: solved, disabled: index === lastProblemIndex }"
     >
       <IconArrowRight/>
     </Button>
@@ -65,6 +63,9 @@ export default defineComponent({
     const index = computed(() => {
       return props.problemIndex + 1
     })
+    const solved = computed(() => {
+      return props.isCorrect && !(index.value === props.lastProblemIndex)
+    })
     
     const showStageList = () => {
     }
@@ -79,6 +80,7 @@ export default defineComponent({
 
     return {
       index,
+      solved,
       showStageList,
       gotoPrevProblem,
       gotoNextProblem,

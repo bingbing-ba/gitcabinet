@@ -1,34 +1,9 @@
 import { Terminal, IDisposable } from 'xterm'
-import { Problem } from '@/problem'
 import { cli } from '@/cli'
+import { Problem } from '@/problem'
 import { PlainFile } from "@/git/fileStructure"
-
-// https://github.com/qwefgh90/ng-terminal/blob/master/projects/ng-terminal/src/lib/functions-using-csi.ts
-interface ANSI_COLORS {
-  PLAIN: string,
-  ERROR: string,
-  YELLOW: string,
-  CYAN: string,
-  INFO: string,
-  RESET: string,
-}
-interface ANSI_CONTROLS {
-  CURSOR_BACKWORD: string,
-  CURSOR_FORWARD: string,
-}
-
-const ANSI_COLORS: ANSI_COLORS = {
-  PLAIN: '\u001b[37m',
-  ERROR: '\u001b[31;1m',
-  YELLOW: '\u001b[33;1m',
-  CYAN: '\u001b[36;1m',
-  INFO: '\u001b[32;1m',
-  RESET: '\u001b[0m',
-}
-const ANSI_CONTROLS = {
-  CURSOR_BACKWORD: '\x9b1D', // CSI Ps D
-  CURSOR_FORWARD: '\x9b1C',  // CSI Ps C
-}
+import { ANSI_COLORS, ANSI_CONTROLS } from '@/terminal/gitTermANSI'
+import { isFormattingRequired, formattedDisplayMessage } from '@/terminal/gitTermUtils'
 
 interface Prompt {
   directory: string,
@@ -37,12 +12,11 @@ interface Prompt {
   hasFileChanges: boolean,
 }
 
-export class gitCabinetTerm {
+export class gitTerm {
   term: Terminal
   problem: Problem
-  _history: Array<Object>
+  _history: Array<string>
   _cursor: number
-  _scrollHeight: number
   _input: string
   _isTermCommand: boolean
   _prompt: Prompt
@@ -52,7 +26,6 @@ export class gitCabinetTerm {
     this.problem = problem
     this._history = []
     this._cursor = 0
-    this._scrollHeight = 0
     this._input = ''
     this._isTermCommand = false
     this._prompt = {
@@ -89,7 +62,7 @@ export class gitCabinetTerm {
     }
     this.term.write(result)
   }
-
+  
   setHead(): void {
     this._prompt.head = this.problem.git?.head || ''
   }
@@ -101,17 +74,17 @@ export class gitCabinetTerm {
     // handle ANSI data such as Arrow keys (refer to ASCII codes)
     if (ord === 0x1b) {
       switch (keyPressed) {
-        case '[A': {
+        case '[A': { // up arrow 
           if (this._history.length) {}
           else return
           break
         }
-        case '[B': {
+        case '[B': { // down arrow
           if (this._history.length) {}
           else return
           break
         }
-        case '[D': {
+        case '[D': { //
           break
         }
         case '[C': {
@@ -134,6 +107,21 @@ export class gitCabinetTerm {
           this.handleErase()
           break
         }
+        case '\t': { // tab
+          
+          // 1. 입력 명령어 파악 => 스플릿해서 파싱
+          // 2. 커서 위치 파악
+          //    - git add_일 경우 break
+          //    - git add _일 경우 next
+          // 2. 명령어 입력 위치에서 추천 가능한 후보군 찾기
+          //    - 후보군은 trie 형태로 저장
+          //    - ex) gi_일 때는 git 추천
+          //    - ex) git ad_일 때는 add 추천
+          // 3. 후보군 추천
+
+          const dirChildren = this.problem.refDirectory.getChildrenName()
+          break
+        }
       }
     } else {
       this.setInput(data)
@@ -153,12 +141,14 @@ export class gitCabinetTerm {
     this._cursor += 1
     this.term.write(data)
   }
-
+  
   setProblem(problem: Problem): void {
-    this.clearTerm()
-    this.problem = problem
+    if (this.problem === problem) return
+    
     this.setHead()
     this.setPrompt()
+    this.clearTerm()
+    this.problem = problem
   }
   
   isInputIncomplete(data: string): any {
@@ -182,10 +172,11 @@ export class gitCabinetTerm {
       displayMessage = '\r\n'
     }
     
+    this._history.push(data)
     this.setInput(displayMessage)
+    this.setHead()
     this.setPrompt()
     this._cursor = 0
-    this._scrollHeight += 1
     this._input = ''
     this._isTermCommand = false
   }
@@ -202,37 +193,39 @@ export class gitCabinetTerm {
   }
   
   handleCommand(data: string): string {
-    if (this.handleTermCommand(data)) {
+    const splitedCommand = data
+    .replace(/ +(?= )/g, '')
+    .trim()
+    .match(/(?:[^\s']+|'[^']*')+/g) as string [] 
+    
+    // 터미널 명령어일 경우 처리 후 리턴
+    if (this.handleTermCommand(splitedCommand)) {
       this._isTermCommand = true
       return ''
-    }
-
+    } 
+    
+    // git 관련 명령어 처리
     let displayMessage = ''
+
     try {
       displayMessage = cli(data, this.problem) // try-catch needed
+      if (isFormattingRequired(splitedCommand)) {
+        displayMessage = formattedDisplayMessage(this.problem, splitedCommand, displayMessage)
+      }
     } catch {
       displayMessage = '지원하지 않는 명령어입니다.'
     }
     
     let result: string = ''
-    const isCorrect = this.problem.isCorrect()
-
     if (!displayMessage.trim()) return result
-    if (isCorrect) {
-      result = this.highlight(displayMessage, 'INFO')
-    } else {
-      result = this.highlight(displayMessage, 'ERROR')
-    }
+    result = displayMessage
     
     return result
   }
   
-  handleTermCommand(command: string): boolean {
-    const splitedCommand = command
-      .replace(/ +(?= )/g, '')
-      .trim()
-      .match(/(?:[^\s']+|'[^']*')+/g) as string [] 
-    const [firstCommand, secondCommand, ...restCommand] = splitedCommand
+  handleTermCommand(command: string []): boolean {
+    if (!command.length) return false
+    const [firstCommand, secondCommand, ...restCommand] = command
     
     if (firstCommand && !secondCommand) {
       switch (firstCommand) {
@@ -279,13 +272,5 @@ export class gitCabinetTerm {
       }
     }
     return false
-  }
-  
-  highlight(data:string, logLevel: string): string {
-    let result: string = ''
-    const logColor = ANSI_COLORS[logLevel as keyof ANSI_COLORS]
-    const reset = ANSI_COLORS.RESET
-    result = logColor + data + reset
-    return result
   }
 }

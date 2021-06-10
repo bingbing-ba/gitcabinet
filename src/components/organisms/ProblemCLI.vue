@@ -6,7 +6,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUpdated, watch } from 'vue'
 import { Problem } from '@/problem'
-import { gitCabinetTerm } from '@/terminal/gitCabinetTerm'
+import { gitTerm } from '@/terminal/gitTerm'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/lib/xterm.js'
@@ -38,7 +38,7 @@ export default defineComponent({
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
       const fitAddon = new FitAddon();
-      cabinetTerm = new gitCabinetTerm(term, props.problem)
+      cabinetTerm = new gitTerm(term, props.problem)
       term.loadAddon(fitAddon);
       term.loadAddon(cabinetTerm)
       term.focus()
