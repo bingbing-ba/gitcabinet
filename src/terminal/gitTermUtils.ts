@@ -23,7 +23,6 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
         if (!problem.git) return message
         
         const parsedMessage = JSON.parse(message)
-        console.log(parsedMessage)
         const { deleted: deletedBeforeCommit, modified: modifiedBeforeCommit, unstaged } = parsedMessage.statusNotToCommit
         const { deleted: deletedAfterCommit, modified: modifiedAfterCommit, created } = parsedMessage.statusToCommit 
         
@@ -36,10 +35,10 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
         if (deletedBeforeCommit.length || deletedAfterCommit.length) {
           let messageForDeleted = '커밋하도록 정하지 않은 변경 사항: \n'
           deletedBeforeCommit.forEach((fileName: string) => {
-            messageForDeleted += highlight(`삭제함: ${fileName}\n`, 'ERROR')
+            messageForDeleted += highlight(`  삭제함: ${fileName}\n`, 'ERROR')
           })
           deletedAfterCommit.forEach((fileName: string) => {
-            messageForDeleted += highlight(`삭제함: ${fileName}\n`, 'ERROR')
+            messageForDeleted += highlight(`  삭제함: ${fileName}\n`, 'ERROR')
           })
           hasChanged = true
           result += messageForDeleted
@@ -49,10 +48,10 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
         if (modifiedBeforeCommit.length || modifiedAfterCommit.length) {
           let messageForModified = '커밋하도록 정하지 않은 변경 사항: \n'
           modifiedBeforeCommit.forEach((fileName: string) => {
-            messageForModified += highlight(`수정함: ${fileName}\n`, 'ERROR')
+            messageForModified += highlight(`  수정함: ${fileName}\n`, 'ERROR')
           })
           modifiedAfterCommit.forEach((fileName: string) => {
-            messageForModified += highlight(`수정함: ${fileName}\n`, 'ERROR')
+            messageForModified += highlight(`  수정함: ${fileName}\n`, 'ERROR')
           })
           hasChanged = true
           result += messageForModified
@@ -72,10 +71,10 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
         if (created.length || deletedAfterCommit.length) {
           let messageToCommit = '커밋할 변경 사항: \n'
           created.forEach((fileName: string) => {
-            messageToCommit += highlight(`새 파일: ${fileName}\n`, 'INFO')
+            messageToCommit += highlight(`  새 파일: ${fileName}\n`, 'INFO')
           })
           deletedAfterCommit.forEach((fileName: string) => {
-            messageToCommit += highlight(`삭제함: ${fileName}\n`, 'INFO')
+            messageToCommit += highlight(`  삭제함: ${fileName}\n`, 'INFO')
           })
           hasChanged = true
           result += messageToCommit

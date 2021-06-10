@@ -205,20 +205,15 @@ export class gitTerm {
     } 
     
     // git 관련 명령어 처리
-    let displayMessage = ''
-
+    let result = ''
     try {
-      displayMessage = cli(data, this.problem) // try-catch needed
+      const displayMessage = cli(data, this.problem) // try-catch needed
       if (isFormattingRequired(splitedCommand)) {
-        displayMessage = formattedDisplayMessage(this.problem, splitedCommand, displayMessage)
+        result = formattedDisplayMessage(this.problem, splitedCommand, displayMessage)
       }
     } catch {
-      displayMessage = '지원하지 않는 명령어입니다.'
+      result = '지원하지 않는 명령어입니다.'
     }
-    
-    let result: string = ''
-    if (!displayMessage.trim()) return result
-    result = displayMessage
     
     return result
   }
