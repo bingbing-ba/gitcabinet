@@ -36,6 +36,7 @@ import DirectoryEditor from './molecules/DirectoryEditor.vue'
 import DirectoryFile from './molecules/DirectoryFile.vue'
 import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
+import MessageBox from './molecules/MessageBox.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -87,6 +88,7 @@ export {
   DirectoryFile,
   DirectoryFolder,
   NetworkHorizontal,
+  MessageBox,
 
   TheNavBar,
   ProblemInstruction,
