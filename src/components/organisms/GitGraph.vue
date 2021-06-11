@@ -5,13 +5,13 @@
         커밋 그래프
       </Title>
     </div>
-    <Card class="bg-white pb-10 overflow-y-auto overflow-x-auto max-h-full">
-      <div v-if="problem.git" class="p-2">
-        <div class="flex items-center overflow-auto">
-          <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center mx-2">
+    <Card class="git-graph__card">
+      <div v-if="problem.git" class="git-graph__main">
+        <div class="flex items-center overflow-auto p-2">
+          <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center">
             <IconSwitchHorizontal /> 수평 모드
           </Button>
-          <Button v-else @click="toggleNetworkView" class="flex align-middle items-center mx-2">
+          <Button v-else @click="toggleNetworkView" class="flex align-middle items-center">
             <IconSwitchVertical /> 수직 모드
           </Button>
           <button v-for="(hash, branch) in branches" :key="hash" @click="changeHead(branch)" 
@@ -22,16 +22,18 @@
           </button>
         </div>
         
-        <transition name="swap">
+        <transition 
+          v-if="commits.length > 0"
+          name="swap">
           <NetworkVertical v-if="isVerticalView"  :git="problem.git" :commits="commits" />
           <NetworkHorizontal v-else  :git="problem.git" :commits="commits" />
         </transition>
-        <div v-if="commits.length === 0" class="p-10">
+        <div v-else class="grid justify-center items-center">
           현재까지 커밋 기록이 없습니다.
         </div>
         
       </div>
-      <div v-else class="p-10">
+      <div v-else class="flex justify-center items-center">
         현재 이 디렉토리는 git 저장소가 아닙니다.
       </div>
     </Card>
@@ -153,17 +155,14 @@ export default defineComponent({
   @apply text-sm text-gray-500 rounded-tl-lg rounded-tr-lg bg-white inline-block px-4 py-3;
 }
 
-.swap-enter-active {
+.git-graph__card {
+  height: calc(100% - 2.75rem);
+  display: grid;
+  @apply bg-white overflow-auto;
 }
 
-.swap-leave-active {
-}
-
-.swap-enter-from,
-.swap-leave-to {
-}
-
-.swap-enter-to,
-.swap-leave-from {
+.git-graph__main {
+  display: grid;
+  grid-template-rows: 1fr 5fr;
 }
 </style>
