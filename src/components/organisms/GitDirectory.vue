@@ -1,14 +1,14 @@
 <template>
-  <div class="git-directory overflow-y-hidden">
+  <div class="git-directory">
     <div class="bg-gray-200">
       <Title class="git-directory__text">
         디렉토리
       </Title>
     </div>
     <Card class="bg-white p-10 overflow-y-scroll overflow-x-hidden max-h-full">
-      <div class="xl:flex max-w-full">
+      <div v-if="dirName" class="xl:flex max-w-full">
         <div class="xl:w-1/2">
-          <DirectoryFolder v-if="dirName" :dirName="dirName" class="pb-2"/>
+          <DirectoryFolder :dirName="dirName" class="pb-2"/>
           <DirectoryFile
             class="pl-5 py-2"
             v-for="(file, index) in fileList"
@@ -21,7 +21,7 @@
         </div>
         <hr class="xl:hidden m-5">
         <div class="xl:w-1/2">
-          <p class="flex pb-2"><IconTrash />삭제된 파일</p>
+          <p v-if="fileList.length" class="flex pb-2"><IconTrash />삭제된 파일</p>
           <div v-for="(fileName, idx) in deletedFiles" :key="idx" class="pl-5 py-2">
             <p class="flex overflow-hidden"><IconTextFile/> {{ fileName }}</p>
           </div>
@@ -93,7 +93,7 @@ export default defineComponent({
 
 <style>
 .git-directory {
-  @apply bg-white rounded-bl-lg rounded-br-lg shadow;
+  @apply bg-white rounded-bl-lg rounded-br-lg shadow h-full overflow-y-auto;
 }
 
 .git-directory__text {
