@@ -1,3 +1,9 @@
+export interface Prompt {
+  directory: string,
+  promptType: string,
+  head: string,
+  hasFileChanges: boolean,
+}
 export interface ANSI_COLORS {
   [key: string]: string,
   PLAIN: string,

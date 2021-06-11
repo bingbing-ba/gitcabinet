@@ -2,15 +2,9 @@ import { Terminal, IDisposable } from 'xterm'
 import { cli } from '@/cli'
 import { Problem } from '@/problem'
 import { PlainFile } from "@/git/fileStructure"
+import { Prompt } from '@/terminal/gitTermTypes'
 import { ANSI_COLORS, ANSI_CONTROLS } from '@/terminal/gitTermANSI'
 import { isFormattingRequired, formattedDisplayMessage } from '@/terminal/gitTermUtils'
-
-interface Prompt {
-  directory: string,
-  promptType: string,
-  head: string,
-  hasFileChanges: boolean,
-}
 
 export class gitTerm {
   term: Terminal
@@ -207,9 +201,10 @@ export class gitTerm {
     // git 관련 명령어 처리
     let result = ''
     try {
-      const displayMessage = cli(data, this.problem) // try-catch needed
+      result = cli(data, this.problem) // try-catch needed
       if (isFormattingRequired(splitedCommand)) {
-        result = formattedDisplayMessage(this.problem, splitedCommand, displayMessage)
+        result = formattedDisplayMessage(this.problem, splitedCommand, result)
+        console.log('after format?', result)
       }
     } catch {
       result = '지원하지 않는 명령어입니다.'
