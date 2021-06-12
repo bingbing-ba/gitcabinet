@@ -36,22 +36,16 @@ export default defineComponent({
   },
   emits: ['activate-view-status'],
   setup(props, { emit }) {
-    // staging area status
-    const statusToCommit = computed(() => {
-      return props.nowStatus.statusToCommit
-    })
-
-    // staging area file list
     const toCommitUntrackedFileList = computed(() => {
-      return statusToCommit.value?.created
+      return props.nowStatus.created
     })
 
     const toCommitModifiedFileList = computed(() => {
-      return statusToCommit.value?.modified
+      return props.nowStatus.modified
     })
 
     const toCommitDeletedFileList = computed(() => {
-      return statusToCommit.value?.deleted
+      return props.nowStatus.deleted
     })
 
     const isToCommitUntracked = (fileName: string) => {
@@ -72,18 +66,7 @@ export default defineComponent({
       changeViewStatus(true)
     })
 
-    // add를 하게 되면 nowStatus에 변화가 생김
-    // commit을 하게 되면 nowStatus에 변화가 생김
-    // 같은 computed인데 함수로 감싸지 않으면 warning이 뜸...? 뭐지
-    watch(() => props.nowStatus, () => {
-      changeViewStatus(toCommitUntrackedFileList.value.length === 0
-      && toCommitModifiedFileList.value.length === 0
-      && toCommitDeletedFileList.value.length === 0
-      ? false: true)
-    })
-
     return {
-      statusToCommit,
       toCommitUntrackedFileList,
       toCommitModifiedFileList,
       toCommitDeletedFileList,

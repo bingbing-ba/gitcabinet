@@ -23,7 +23,7 @@
 
     <transition name="slide-fade" >
       <MessageBox 
-        v-if="isReadyToViewMessage"
+        v-if="isReadyToViewMessage && !isEmptyToCommit"
         @toggle-view-status="toggleViewStatus"
         :color="'green'">
         Staging Area 가 변경되었습니다.
@@ -52,13 +52,19 @@ export default defineComponent({
   },
   setup(props) {
     const stagingAreaIndex = computed(() => {
-      return props.problem?.git?.index
+      return props.problem.git?.index
     })
 
     const nowStatus = computed(() => {
-      return props.problem?.git?.status()
+      return props.problem.git?.getStatusToCommit()
     })
 
+    const isEmptyToCommit = computed(() => {
+      return nowStatus.value?.created.length === 0 
+      && nowStatus.value?.modified.length === 0 
+      && nowStatus.value?.deleted.length === 0
+    })
+    
     const isReadyToViewMessage = ref(false)
 
     const activateViewStatus = (target: boolean) => {
@@ -79,7 +85,8 @@ export default defineComponent({
       isReadyToViewMessage,
       activateViewStatus,
       toggleViewStatus,
-      isEmptyIndex
+      isEmptyIndex,
+      isEmptyToCommit
     }
   }
 })
