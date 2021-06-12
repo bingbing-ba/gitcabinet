@@ -10,20 +10,11 @@
         <div v-if="isEmptyIndex">
           Staging Area가 비어있습니다.
         </div>
-        <span 
-          class="pl-5 py-2 flex relative"
-          v-for="hash, fileName in stagingAreaIndex" 
-          :key="hash"
-          :class="{ 
-            'text-yellow-500': isToCommitModified(fileName),
-            'text-green-500': isToCommitUntracked(fileName)
-          }">
-          <IconTextFile /> {{ fileName }}
-          <div class="absolute right-20 w-36" >
-            <Badge v-if="isToCommitUntracked(fileName)" :color="'green'">생성</Badge>
-            <Badge v-else-if="isToCommitModified(fileName)" :color="'yellow'">수정</Badge>
-          </div>
-        </span>
+        <!-- v-else 를 넣으면 watch stagingAreaIndex 가 처음에 동작하지 않음 -->
+        <StagingAreaStatus
+          :stagingAreaIndex="stagingAreaIndex" 
+          :nowStatus="nowStatus" 
+          @activate-view-status="activateViewStatus" />
       </div>
       <div v-else>
         현재 이 디렉토리는 git 저장소가 아닙니다.
@@ -35,24 +26,23 @@
         v-if="isReadyToViewMessage"
         @toggle-view-status="toggleViewStatus"
         :color="'green'">
-        Staging Area에 추가 되었습니다.
+        Staging Area 가 변경되었습니다.
       </MessageBox>
     </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from 'vue'
-import { Title, Card, IconTextFile, Badge, MessageBox } from '@/components'
+import { defineComponent, computed, ref } from 'vue'
+import { Title, Card, MessageBox, StagingAreaStatus } from '@/components'
 import { Problem } from '@/problem'
 
 export default defineComponent({
   components: {
     Title,
     Card,
-    IconTextFile,
-    Badge,
-    MessageBox
+    MessageBox,
+    StagingAreaStatus
   },
   props: {
     problem: {
@@ -69,60 +59,27 @@ export default defineComponent({
       return props.problem?.git?.status()
     })
 
-    // staging area status
-    const statusToCommit = computed(() => {
-      return nowStatus.value?.statusToCommit
-    })
+    const isReadyToViewMessage = ref(false)
 
-    // staging area file list
-    const toCommitUntrackedFileList = computed(() => {
-      return statusToCommit.value?.created
-    })
-
-    const toCommitModifiedFileList = computed(() => {
-      return statusToCommit.value?.modified
-    })
-
-    const toCommitDeletedFileList = computed(() => {
-      return statusToCommit.value?.deleted
-    })
-
-    const isToCommitUntracked = (fileName: string) => {
-      return toCommitUntrackedFileList.value?.includes(fileName)
+    const activateViewStatus = (target: boolean) => {
+      isReadyToViewMessage.value = target
     }
 
-    const isToCommitModified = (fileName: string) => {
-      return toCommitModifiedFileList.value?.includes(fileName)
+    const toggleViewStatus = () => {
+      isReadyToViewMessage.value = !isReadyToViewMessage.value
     }
 
     const isEmptyIndex = computed(() => {
       return stagingAreaIndex.value && Object.keys(stagingAreaIndex.value).length === 0 
     })
 
-    const isReadyToViewMessage = ref(false)
-    watch(props.problem, () => {
-      const _isReadyToGit = props.problem?.git? true: false
-      const _isReadyToCommit = toCommitUntrackedFileList.value?.length !== 0 
-        || toCommitModifiedFileList.value?.length !== 0
-        || toCommitDeletedFileList.value?.length !== 0
-      isReadyToViewMessage.value = _isReadyToGit && _isReadyToCommit
-    })
-    const toggleViewStatus = () => {
-      isReadyToViewMessage.value = !isReadyToViewMessage.value
-    }
-
     return {
       nowStatus,
-      statusToCommit,
       stagingAreaIndex,
-      toCommitUntrackedFileList,
-      toCommitModifiedFileList,
-      toCommitDeletedFileList,
-      isToCommitUntracked,
-      isToCommitModified,
       isReadyToViewMessage,
-      isEmptyIndex,
-      toggleViewStatus
+      activateViewStatus,
+      toggleViewStatus,
+      isEmptyIndex
     }
   }
 })

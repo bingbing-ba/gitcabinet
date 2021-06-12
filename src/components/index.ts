@@ -38,6 +38,7 @@ import DirectoryFile from './molecules/DirectoryFile.vue'
 import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
 import MessageBox from './molecules/MessageBox.vue'
+import StagingAreaStatus from './molecules/StagingAreaStatus.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -91,6 +92,7 @@ export {
   DirectoryFolder,
   NetworkHorizontal,
   MessageBox,
+  StagingAreaStatus,
 
   TheNavBar,
   ProblemInstruction,
