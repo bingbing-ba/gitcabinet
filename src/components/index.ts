@@ -14,6 +14,7 @@ import IconSwitchHorizontal from './atoms/IconSwitchHorizontal.vue'
 import IconSwitchVertical from './atoms/IconSwitchVertical.vue'
 import IconTextFile from './atoms/IconTextFile.vue'
 import IconTrash from './atoms/IconTrash.vue'
+import IconX from './atoms/IconX.vue'
 import Title from './atoms/Title.vue'
 import Button from './atoms/Button.vue'
 import Box from './atoms/Box.vue'
@@ -70,6 +71,7 @@ export {
   IconSwitchVertical,
   IconTextFile,
   IconTrash,
+  IconX,
   NetworkNode,
   NetworkEdgeVertical,
   NetworkEdgeHorizontal,
