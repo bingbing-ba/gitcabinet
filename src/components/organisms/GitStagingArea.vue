@@ -1,12 +1,15 @@
 <template>
-  <div class="git-staging-area">
+  <div class="git-staging-area relative">
     <div class="bg-gray-200">
       <Title class="git-staging-area__text">
         Staging Area
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
+    <Card class="git-staging-area__card">
       <div v-if="nowStatus" class="w-full flex flex-col">
+        <div v-if="isEmptyIndex">
+          Staging Area가 비어있습니다.
+        </div>
         <span 
           class="pl-5 py-2 flex relative"
           v-for="hash, fileName in stagingAreaIndex" 
@@ -17,20 +20,8 @@
           }">
           <IconTextFile /> {{ fileName }}
           <div class="absolute right-20 w-36" >
-            <Badge
-              v-if="isToCommitUntracked(fileName) || isToCommitModified(fileName)"
-              :color="
-                isToCommitUntracked(fileName)
-                ? 'green'
-                : isToCommitModified(fileName)
-                ? 'yellow'
-                : ''" >
-              {{ isToCommitUntracked(fileName)
-                ? '생성'
-                : isToCommitModified(fileName)
-                ? '수정'
-                : '' }}
-            </Badge>
+            <Badge v-if="isToCommitUntracked(fileName)" :color="'green'">생성</Badge>
+            <Badge v-else-if="isToCommitModified(fileName)" :color="'yellow'">수정</Badge>
           </div>
         </span>
       </div>
@@ -38,12 +29,21 @@
         현재 이 디렉토리는 git 저장소가 아닙니다.
       </div>
     </Card>
+
+    <transition name="slide-fade" >
+      <MessageBox 
+        v-if="isReadyToViewMessage"
+        @toggle-view-status="toggleViewStatus"
+        :color="'green'">
+        Staging Area에 추가 되었습니다.
+      </MessageBox>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
-import { Title, Card, IconTextFile, Badge } from '@/components'
+import { defineComponent, computed, ref, watch } from 'vue'
+import { Title, Card, IconTextFile, Badge, MessageBox } from '@/components'
 import { Problem } from '@/problem'
 
 export default defineComponent({
@@ -51,12 +51,14 @@ export default defineComponent({
     Title,
     Card,
     IconTextFile,
-    Badge
+    Badge,
+    MessageBox
   },
   props: {
     problem: {
-      type: Problem
-    }
+      type: Problem,
+      required: true
+    },
   },
   setup(props) {
     const stagingAreaIndex = computed(() => {
@@ -93,6 +95,22 @@ export default defineComponent({
       return toCommitModifiedFileList.value?.includes(fileName)
     }
 
+    const isEmptyIndex = computed(() => {
+      return stagingAreaIndex.value && Object.keys(stagingAreaIndex.value).length === 0 
+    })
+
+    const isReadyToViewMessage = ref(false)
+    watch(props.problem, () => {
+      const _isReadyToGit = props.problem?.git? true: false
+      const _isReadyToCommit = toCommitUntrackedFileList.value?.length !== 0 
+        || toCommitModifiedFileList.value?.length !== 0
+        || toCommitDeletedFileList.value?.length !== 0
+      isReadyToViewMessage.value = _isReadyToGit && _isReadyToCommit
+    })
+    const toggleViewStatus = () => {
+      isReadyToViewMessage.value = !isReadyToViewMessage.value
+    }
+
     return {
       nowStatus,
       statusToCommit,
@@ -101,7 +119,10 @@ export default defineComponent({
       toCommitModifiedFileList,
       toCommitDeletedFileList,
       isToCommitUntracked,
-      isToCommitModified
+      isToCommitModified,
+      isReadyToViewMessage,
+      isEmptyIndex,
+      toggleViewStatus
     }
   }
 })
@@ -114,5 +135,25 @@ export default defineComponent({
 
 .git-staging-area__text {
   @apply text-sm text-gray-500 rounded-tl-lg rounded-tr-lg bg-white inline-block px-4 py-3;
+}
+
+.git-staging-area__card {
+  height: calc(100% - 2.75rem);
+  display: grid;
+  @apply bg-white overflow-auto;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1)
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(40px);
+  opacity: 0;
 }
 </style>
