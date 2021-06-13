@@ -1,6 +1,6 @@
 <template>
-  <span 
-    class="pl-5 py-2 flex relative"
+  <div
+    class="flex pb-2"
     v-for="hash, fileName in stagingAreaIndex" 
     :key="hash"
     :class="{ 
@@ -8,11 +8,11 @@
       'text-green-500': isToCommitUntracked(fileName)
     }">
     <IconTextFile /> {{ fileName }}
-    <div class="absolute right-20 w-36" >
+    <div class="pl-10">
       <Badge v-if="isToCommitUntracked(fileName)" :color="'green'">생성</Badge>
       <Badge v-else-if="isToCommitModified(fileName)" :color="'yellow'">수정</Badge>
     </div>
-  </span>
+  </div>
 </template>
 
 <script lang="ts">
