@@ -4,6 +4,7 @@
     :problem="problem"
     :problemIndex="problemIndex"
     :lastProblemIndex="lastProblemIndex"
+    :viewQueue="viewQueue"
     @goto-prev-problem="gotoPrevProblem"
     @goto-next-problem="gotoNextProblem"
     @reset-problem="resetProblem"
@@ -20,7 +21,7 @@
       />
     </SectionLeft>
     <SectionRight>
-      <div v-for="viewIndex in viewQueue" :key="viewIndex">
+      <div v-for="viewIndex in viewQueue" :key="viewIndex" class="overflow-hidden">
         <component
           :is="setCurrentComponent(viewIndex)" 
           v-bind="setCurrentProps(viewIndex)"
@@ -126,12 +127,15 @@ export default defineComponent({
             problem: problem.value
           }
         case 2:
-          return {}
+          return {
+            problem: problem.value
+          }
         case 3:
           return {}
         default:
           return {
-            git: problem.value.git
+            git: problem.value.git,
+            problem: problem.value
           }
       }
     }

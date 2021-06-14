@@ -14,6 +14,7 @@ import IconSwitchHorizontal from './atoms/IconSwitchHorizontal.vue'
 import IconSwitchVertical from './atoms/IconSwitchVertical.vue'
 import IconTextFile from './atoms/IconTextFile.vue'
 import IconTrash from './atoms/IconTrash.vue'
+import IconX from './atoms/IconX.vue'
 import Title from './atoms/Title.vue'
 import Button from './atoms/Button.vue'
 import Box from './atoms/Box.vue'
@@ -36,6 +37,8 @@ import DirectoryEditor from './molecules/DirectoryEditor.vue'
 import DirectoryFile from './molecules/DirectoryFile.vue'
 import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
+import MessageBox from './molecules/MessageBox.vue'
+import StagingAreaStatus from './molecules/StagingAreaStatus.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -69,6 +72,7 @@ export {
   IconSwitchVertical,
   IconTextFile,
   IconTrash,
+  IconX,
   NetworkNode,
   NetworkEdgeVertical,
   NetworkEdgeHorizontal,
@@ -87,6 +91,8 @@ export {
   DirectoryFile,
   DirectoryFolder,
   NetworkHorizontal,
+  MessageBox,
+  StagingAreaStatus,
 
   TheNavBar,
   ProblemInstruction,
