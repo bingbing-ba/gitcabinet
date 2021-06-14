@@ -4,7 +4,8 @@ import { Problem } from '@/problem'
 import { PlainFile } from "@/git/fileStructure"
 import { Prompt } from '@/terminal/gitTermTypes'
 import { ANSI_COLORS, ANSI_CONTROLS } from '@/terminal/gitTermANSI'
-import { isFormattingRequired, formattedDisplayMessage } from '@/terminal/gitTermUtils'
+import { isFormattingRequired, formattedDisplayMessage, splitCommand } from '@/terminal/gitTermUtils'
+import { words } from 'lodash'
 
 export class gitTerm {
   term: Terminal
@@ -104,13 +105,25 @@ export class gitTerm {
         case '\t': { // tab
           
           // 1. 입력 명령어 파악 => 스플릿해서 파싱
+          const splittedCommand = splitCommand(this._input)
+
           // 2. 커서 위치 파악
           //    - git add_일 경우 break
           //    - git add _일 경우 next
+          let wordsLength = 0
+          splittedCommand.forEach((word, idx) => {
+            if (idx !== splitCommand.length - 1) wordsLength += 1
+            wordsLength += word.length
+          })
+          if (wordsLength === this._cursor) return
+
           // 2. 명령어 입력 위치에서 추천 가능한 후보군 찾기
           //    - 후보군은 trie 형태로 저장
           //    - ex) gi_일 때는 git 추천
           //    - ex) git ad_일 때는 add 추천
+          
+
+
           // 3. 후보군 추천
 
           const dirChildren = this.problem.refDirectory.getChildrenName()
@@ -187,13 +200,10 @@ export class gitTerm {
   }
   
   handleCommand(data: string): string {
-    const splitedCommand = data
-    .replace(/ +(?= )/g, '')
-    .trim()
-    .match(/(?:[^\s']+|'[^']*')+/g) as string [] 
+    const splittedCommand = splitCommand(data)
     
     // 터미널 명령어일 경우 처리 후 리턴
-    if (this.handleTermCommand(splitedCommand)) {
+    if (this.handleTermCommand(splittedCommand)) {
       this._isTermCommand = true
       return ''
     } 
@@ -202,9 +212,8 @@ export class gitTerm {
     let result = ''
     try {
       result = cli(data, this.problem) // try-catch needed
-      if (isFormattingRequired(splitedCommand)) {
-        result = formattedDisplayMessage(this.problem, splitedCommand, result)
-        console.log('after format?', result)
+      if (isFormattingRequired(splittedCommand)) {
+        result = formattedDisplayMessage(this.problem, splittedCommand, result)
       }
     } catch {
       result = '지원하지 않는 명령어입니다.'

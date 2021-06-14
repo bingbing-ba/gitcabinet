@@ -94,10 +94,23 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
   return handlerFunc ? handlerFunc() : result
 }
 
-export default function highlight(data:string, logLevel: string): string {
+export function highlight(data: string, logLevel: string): string {
   let result: string = ''
   const logColor = ANSI_COLORS[logLevel]
   const reset = ANSI_COLORS.RESET
   result = logColor + data + reset
   return result
+}
+
+export function splitCommand(data: string): string [] {
+  const splitedCommand = data
+  .replace(/ +(?= )/g, '')
+  .trim()
+  .match(/(?:[^\s']+|'[^']*')+/g) as string [] 
+  return splitedCommand
+}
+
+export function findAutoCompleteCandidates(command: string []): string [] {
+  
+  return []
 }

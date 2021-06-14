@@ -66,13 +66,9 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-<<<<<<< HEAD
     const { problem } = toRefs(props)
 
     const resetProblem = (problem: Object) => {
-=======
-    const resetProblem = (problem: Problem) => {
->>>>>>> b748c49c8a665561041b92f9413b24d6d46ab6e9
       emit('reset-problem', problem)
     }
 
