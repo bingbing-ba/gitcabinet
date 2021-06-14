@@ -6,6 +6,10 @@
     <Card class="problem__instruction-content">
       <p v-html="wrapCodesInProblemContent"></p>
     </Card>
+    <br>
+    <Card class="problem__instruction-content">
+      <p v-html="wrapCodesInProblemExplanation"></p>
+    </Card>
   </div>
 </template>
 
@@ -17,7 +21,7 @@ import { Title, Card } from '@/components'
 export default defineComponent({
   components: {
     Title,
-    Card
+    Card,
   },
   props: {
     problem: {
@@ -28,22 +32,43 @@ export default defineComponent({
   setup(props) {
     const { problem } = toRefs(props)
 
-    const wrapCodesInProblemContent = computed(() => {
-      let problemContent = problem.value.content
+    const wrapCodesInProblem = (paragraph: string | undefined) => {
+      if (!paragraph) {
+        return ''
+      }
       const pattern = new RegExp('\\*\\$.+?\\*', 'g')
-      const matchList = problemContent?.match(pattern)
-      
-      let result = problemContent
+      const matchList = paragraph?.match(pattern)
+
+      let result = paragraph
       matchList?.forEach((code) => {
-        const codeAsteriskRemoved = code.slice(1, code.length-1)
+        const codeAsteriskRemoved = code.slice(1, code.length - 1)
         const codeDecorated = `<code class="problem__content-code">${codeAsteriskRemoved}</code>`
         result = result?.replace(code, codeDecorated)
       })
+      result = result.replace(/\n/g, '<br>')
+
+      const boldPattern = /\*.*?\*/g
+      const boldMatchList = result.match(boldPattern)
+      boldMatchList?.forEach((bold)=> {
+        const asteriskRemoved = bold.slice(1, bold.length -1)
+        const boldDecorated = `<span style="font-weight:900;color:#ff6103">${asteriskRemoved}</span>`
+        result = result.replace(bold, boldDecorated)
+      })
+
       return result
-    })
+    }
+
+    const wrapCodesInProblemContent = computed(() =>
+      wrapCodesInProblem(problem.value.content)
+    )
+
+    const wrapCodesInProblemExplanation = computed(() =>
+      wrapCodesInProblem(problem.value.explanation)
+    )
 
     return {
       wrapCodesInProblemContent,
+      wrapCodesInProblemExplanation,
     }
   },
 })

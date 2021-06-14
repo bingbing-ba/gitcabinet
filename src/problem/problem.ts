@@ -15,6 +15,8 @@ interface answer extends Function {
 export class Problem {
   /** @property 문제 제목 */
   title: string
+  /** @property 문제 해결을 위한 이론 설명 */
+  explanation?: string
   /** @property 문제 내용 */
   content?: string
   /** @property 문제의 환경이 되는 디렉토리 */

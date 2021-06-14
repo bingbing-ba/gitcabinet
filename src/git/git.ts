@@ -364,12 +364,46 @@ export class Git {
    * @param file 파일 인스턴스
    * @returns boolean
    */
-  isExistAtIndex(file: PlainFile) {
-    if (this.index.hasOwnProperty(file.filename)) {
-      // 해당 파일이름이 index에 존재하고 내용도 일치하는지 확인
-      return this.index[file.filename] === sha256(file.content)
+  isExistAtIndex(file: PlainFile | PlainFile[]) {
+    let files = []
+    if (file instanceof PlainFile){
+      files.push(file)
+    }else{
+      files = file
     }
-    return false
+    return files.every(({filename, content})=>{
+      if (this.index.hasOwnProperty(filename)) {
+        // 해당 파일이름이 index에 존재하고 내용도 일치하는지 확인
+        return this.index[filename] === sha256(content)
+      }
+      return false
+    })
+  }
+
+  /**
+   * 찾고자하는 파일이 commit에 존재하는지를 리턴합니다.
+   * @param file 찾고자하는 파일 or 파일 배열
+   * @param commitHash 찾고자하는 commitHash
+   * @returns 찾고자하는 파일이 존재하는지 여부
+   */
+  isExistAtCommit(file: PlainFile | PlainFile[], commitHash: string) {
+    const commit = this.commits[commitHash]
+    if (!commit) {
+      return false
+    }
+    const tree = this.trees[commit.tree]
+    let files = []
+    if (file instanceof PlainFile){
+      files = [file]
+    }else{
+      files = file
+    }
+    return files.every(({filename, content})=>{
+      if (tree.hasOwnProperty(filename)) {
+        return tree[filename] === sha256(content)
+      }
+      return false
+    })
   }
 
   /**
@@ -465,6 +499,9 @@ export class Git {
     if (this.config.remote[remoteName] === undefined) {
       throw new Error(`there is no remote name ${remoteName}`)
     }
+    if (this.branches[branchName] === undefined) {
+      throw new Error(`there is no branch name ${branchName}`)
+    }
     let remoteHead = remote.branches[branchName]
     if (remoteHead === undefined) {
       remote.branches[branchName] = ''
@@ -472,7 +509,6 @@ export class Git {
     }
     // remote의 해당 브랜치에 내가 가지지 않은 commit이 존재할때는 무조건 pull먼저
     if (remoteHead!=='' && !this.getAllCommitHahes(this.branches[this.head]).includes(remoteHead)){
-      
       throw new PushRejectedError(`현재 브랜치의 끝이 remote 브랜치보다 뒤에 있으므로 push가 거부되었습니다. 'git pull ... '등으로 remote의 변경사항을 먼저 포함하세요`)
     }
     remote.switch(branchName)
