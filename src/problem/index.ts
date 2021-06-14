@@ -4,6 +4,11 @@ import {
   problem2BasicAdd,
   problem3BasicCommit,
   problem4UserConfig,
+  problem5AddAdvanced,
+  problem6AddCommitPractice,
+  problem7Remote,
+  problem8PushToRemote,
+  problem9PullFromRemote,
 } from './problems'
 
 const problems = [
@@ -11,6 +16,11 @@ const problems = [
   problem2BasicAdd,
   problem3BasicCommit,
   problem4UserConfig,
+  problem5AddAdvanced,
+  problem6AddCommitPractice,
+  problem7Remote,
+  problem8PushToRemote,
+  problem9PullFromRemote,
 ]
 
 export { Problem, problems }

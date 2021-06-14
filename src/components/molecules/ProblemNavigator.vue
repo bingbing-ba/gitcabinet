@@ -12,7 +12,7 @@
         class='stages__title'
         @click="showStageList"
       >
-        {{ index }} of 12
+        {{ index }} of {{ lastProblemIndex }}
       </Title>
       <div>
         <!-- ...dropdown... -->
