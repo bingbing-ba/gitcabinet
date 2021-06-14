@@ -10,6 +10,7 @@ import {
   statusToCommit,
   statusNotToCommit,
   userConfig,
+  PushRejectedError,
 } from './gitTypes'
 
 export class Git {
@@ -394,14 +395,91 @@ export class Git {
    * @param remoteName 리모트 별칭, ex. origin
    * @param remoteGit 리모트 깃 저장소
    */
-  setRemoteConfig(remoteName: string, remoteGit: Git) {
+  addRemote(remoteName: string, remoteGit: Git) {
+    if (this.config.remote[remoteName] !== undefined) {
+      throw new Error(`already exist remote name ${remoteName}`)
+    }
     this.config.remote[remoteName] = remoteGit
+    this.remoteBranches[remoteName] = {}
   }
 
-  pull(remoteName: string, branch: string) {
-    // 1. remote의 branch의 가장 최신 commit이랑 내 branch랑 비교
-    // pull이니까 내 commithash를 remote의 head부터 차례로 찾아들어감
-    // 2. 일치하는 게 나오기 전까지 commit
+  /**
+   * `$ git fetch origin master` 명령어 역할을 하는 함수
+   * remote의 해당 브랜치의 모든 commit과 tree, file hash 중에 여기 없는 걸 다 복사해옵니다
+   * @param remoteName remote 이름
+   * @param branchName remote의 브랜치 이름, 생략하면 모든 브랜치 다 fetch
+   */
+  fetch(remoteName: string, branchName?: string) {
+    if (this.config.remote[remoteName] === undefined) {
+      throw new Error(`there is no remote name ${remoteName}`)
+    }
+    const remote = this.config.remote[remoteName]
+    const remoteBranches = []
+    if (!branchName) {
+      remoteBranches.push(...Object.keys(remote.branches))
+    } else {
+      if (remote.branches[branchName]===undefined) {
+        throw new Error(`there is no brance name ${branchName}`)
+      }
+      remoteBranches.push(branchName)
+    }
+    remoteBranches.forEach(branchName=>{
+      if (this.remoteBranches[remoteName][branchName] === remote.branches[branchName]) {
+        return
+      }
+      const commitHashStack = [remote.branches[branchName]]
+      while(commitHashStack.length){
+        const remoteCommitHash = commitHashStack.pop() as string
+        if (this.commits[remoteCommitHash] !== undefined) {
+          continue
+        }
+        const remoteCommit = remote.commits[remoteCommitHash]
+        const remoteTree = remote.trees[remoteCommit.tree]
+        this.commits[remoteCommitHash] = {...remoteCommit}
+        this.trees[remoteCommit.tree] = {...remoteTree}
+        
+        Object.values(remoteTree).forEach(contentHash=>{
+          if (this.fileHashes[contentHash] === undefined) {
+            this.fileHashes[contentHash] = remote.fileHashes[contentHash]
+          }
+        })
+        commitHashStack.push(...remoteCommit.parent)
+      }
+      this.remoteBranches[remoteName][branchName] = remote.branches[branchName]
+    })
+  }
+
+  /**
+   * `$ git pull origin master` 명령어의 역할을 하는 함수
+   * fetch + merge
+   * @param remoteName remote 이름
+   * @param branchName remote의 브랜치 이름
+   */
+  pull(remoteName: string, branchName: string) {
+    this.fetch(remoteName, branchName)
+    this.merge({remote:true, branchName, remoteName})
+  }
+
+  push(remoteName: string, branchName: string) {
+    const remote = this.config.remote[remoteName]
+    if (this.config.remote[remoteName] === undefined) {
+      throw new Error(`there is no remote name ${remoteName}`)
+    }
+    let remoteHead = remote.branches[branchName]
+    if (remoteHead === undefined) {
+      remote.branches[branchName] = ''
+      remoteHead = ''
+    }
+    // remote의 해당 브랜치에 내가 가지지 않은 commit이 존재할때는 무조건 pull먼저
+    if (remoteHead!=='' && !this.getAllCommitHahes(this.branches[this.head]).includes(remoteHead)){
+      
+      throw new PushRejectedError(`현재 브랜치의 끝이 remote 브랜치보다 뒤에 있으므로 push가 거부되었습니다. 'git pull ... '등으로 remote의 변경사항을 먼저 포함하세요`)
+    }
+    remote.switch(branchName)
+    remote.addRemote(remoteName, this)
+    remote.pull(remoteName, branchName)
+    delete remote.config.remote[remoteName]
+    
   }
 
   /**
@@ -464,8 +542,13 @@ export class Git {
       if (!branches.includes(branch)) {
         throw new Error(`no name of branch ${branch}`)
       }
-      const targetCommit = this.commits[this.branches[branch]]
-      const targetTree = this.trees[targetCommit.tree]
+      let targetTree = undefined
+      if (this.branches[branch]==='') {
+        targetTree = {}
+      }else{
+        const targetCommit = this.commits[this.branches[branch]]
+        targetTree = this.trees[targetCommit.tree]
+      }
       this.refDirectory.setDirectoryByTree(targetTree, this.fileHashes)
       this.index = cloneDeep(targetTree) 
 

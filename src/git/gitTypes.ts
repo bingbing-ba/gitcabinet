@@ -90,3 +90,9 @@ export interface status {
   statusToCommit: statusToCommit,
   statusNotToCommit: statusNotToCommit,
 }
+
+export class PushRejectedError extends Error {
+  constructor (...params:string[]) {
+    super(...params)
+  }
+}
