@@ -21,7 +21,7 @@
     <Button 
       class="p-navi__right"
       @click="gotoNextProblem"
-      :class="{ solved: problem.isCorrect(), disabled: index === lastProblemIndex }"
+      :class="{ solved: solved, disabled: index === lastProblemIndex }"
     >
       <IconArrowRight/>
     </Button>
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs, reactive, computed, watch, } from 'vue'
+import { defineComponent, watch, computed } from 'vue'
 import { Problem } from '@/problem'
 import { Button, Title, IconArrowLeft, IconArrowRight } from '@/components'
 
@@ -45,6 +45,10 @@ export default defineComponent({
       type: Problem,
       required: true,
     },
+    isCorrect: {
+      type: Boolean,
+      required: true,
+    },
     problemIndex: {
       type: Number,
       required: true,
@@ -55,11 +59,12 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const { problemIndex, lastProblemIndex } = toRefs(props)
-
-    const problem = toRefs(props).problem.value
+    
     const index = computed(() => {
-      return problemIndex.value + 1
+      return props.problemIndex + 1
+    })
+    const solved = computed(() => {
+      return props.isCorrect && !(index.value === props.lastProblemIndex)
     })
     
     const showStageList = () => {
@@ -69,13 +74,13 @@ export default defineComponent({
       emit('goto-prev-problem')
     }
     const gotoNextProblem = () => {
-      if (index.value === lastProblemIndex.value) return
+      if (index.value === props.lastProblemIndex) return
       emit('goto-next-problem')
     }
 
     return {
       index,
-      problem,
+      solved,
       showStageList,
       gotoPrevProblem,
       gotoNextProblem,

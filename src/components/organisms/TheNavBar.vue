@@ -4,6 +4,7 @@
       <Title>GIT CABINET</Title>
       <ProblemNavigator
         :problem="problem"
+        :isCorrect="isCorrect"
         :problemIndex="problemIndex"
         :lastProblemIndex="lastProblemIndex"
         @goto-prev-problem="gotoPrevProblem"
@@ -24,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 import { Problem } from '@/problem/'
 import { 
   Title, 
@@ -51,6 +52,10 @@ export default defineComponent({
       type: Problem,
       required: true,
     },
+    isCorrect: {
+      type: Boolean,
+      required: true,
+    },
     problemIndex: {
       type: Number,
       required: true,
@@ -65,7 +70,9 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    const resetProblem = (problem: Problem) => {
+    const { problem } = toRefs(props)
+
+    const resetProblem = (problem: Object) => {
       emit('reset-problem', problem)
     }
 
@@ -81,6 +88,7 @@ export default defineComponent({
     }
 
     return {
+      problem,
       resetProblem,
       gotoPrevProblem,
       gotoNextProblem,

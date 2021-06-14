@@ -6,8 +6,9 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUpdated, watch } from 'vue'
 import { Problem } from '@/problem'
-import { gitCabinetTerm } from '@/terminal/gitCabinetTerm'
+import { gitTerm } from '@/terminal/gitTerm'
 import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/lib/xterm.js'
 import 'xterm/css/xterm.css'
 
@@ -18,9 +19,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
-    const problem = props.problem
-    
+  setup(props, { emit }) {    
     let term: Terminal
     let cabinetTerm: any
     onMounted(() => {
@@ -38,21 +37,26 @@ export default defineComponent({
       }
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
-      cabinetTerm = new gitCabinetTerm(term, problem)
+      const fitAddon = new FitAddon();
+      cabinetTerm = new gitTerm(term, props.problem)
+      term.loadAddon(fitAddon);
       term.loadAddon(cabinetTerm)
       term.focus()
-    })
+      fitAddon.fit()
 
-    onUpdated(() => {
-      cabinetTerm.setProblem(props.problem)
-      term.focus()
+      term.onLineFeed(() => {
+        emit('update-answer-manually', props.problem.isCorrect())
+      })
     })
     
-    watch(problem, (newProblem, oldProblem) => {
-      cabinetTerm.setProblem(newProblem)
-      term.focus()
+    onUpdated(() => {
+      cabinetTerm.setProblem(props.problem)
     })
-  },
+
+    watch(props.problem, (newProblem) => {
+      cabinetTerm.setProblem(newProblem)
+    })
+  }, 
 })
 </script>
 
@@ -83,19 +87,5 @@ export default defineComponent({
 
 .xterm {
   padding: 10px;
-}
-
-.xterm, .xterm-viewport {
-  height: 0 !important;
-  width: 0 !important;
-}
-
-.xterm-screen {
-  max-width: 100% !important;
-  width: 0 !important;
-}
-
-.xterm-viewport {
-  overflow-y: scroll;
 }
 </style>
