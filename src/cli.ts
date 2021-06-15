@@ -9,6 +9,10 @@ export const cli = (command: string, problem:Problem) => {
     return `현재 "(double quote)는 허용하지 않습니다. 
     대신 '(single quote)를 사용해주세요`
   }
+
+  if ((command.match(/'/g) || []).length % 2) {
+    return `따옴표가 올바르게 닫히지 않았어요. 다시 입력해주세요.`
+  }
   
   const splitedCommand = command
     .replace(/ +(?= )/g, '') // remove consecutive spaces
@@ -181,8 +185,10 @@ export const cli = (command: string, problem:Problem) => {
         }
       }
     }
-    
-    subCommands[secondCommand](...restCommand)
+    const restCommandRemovedQuotes = restCommand.map(command=>{
+      return command.replace(/'/g, '')
+    })
+    subCommands[secondCommand](...restCommandRemovedQuotes)
   }else{
     resultString = '지원하지 않는 명령어입니다.'
   }
