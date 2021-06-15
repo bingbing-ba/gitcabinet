@@ -4,8 +4,13 @@ import { Problem } from '@/problem'
 import { PlainFile } from "@/git/fileStructure"
 import { Prompt } from '@/terminal/gitTermTypes'
 import { ANSI_COLORS, ANSI_CONTROLS } from '@/terminal/gitTermANSI'
-import { isFormattingRequired, formattedDisplayMessage, splitCommand } from '@/terminal/gitTermUtils'
-import { words } from 'lodash'
+import { 
+  isFormattingRequired, 
+  formattedDisplayMessage, 
+  splitCommand,
+  findAutoCompleteCandidates,
+  findSimilarWord,
+} from '@/terminal/gitTermUtils'
 
 export class gitTerm {
   term: Terminal
@@ -103,6 +108,7 @@ export class gitTerm {
           break
         }
         case '\t': { // tab
+          if (!this._input.length) break
           
           // 1. 입력 명령어 파악 => 스플릿해서 파싱
           const splittedCommand = splitCommand(this._input)
@@ -115,18 +121,33 @@ export class gitTerm {
             if (idx !== splitCommand.length - 1) wordsLength += 1
             wordsLength += word.length
           })
-          if (wordsLength === this._cursor) return
 
           // 2. 명령어 입력 위치에서 추천 가능한 후보군 찾기
           //    - 후보군은 trie 형태로 저장
           //    - ex) gi_일 때는 git 추천
           //    - ex) git ad_일 때는 add 추천
+          const commandCandidates = findAutoCompleteCandidates(this.problem, splittedCommand)
           
-
-
-          // 3. 후보군 추천
-
-          const dirChildren = this.problem.refDirectory.getChildrenName()
+          if (!commandCandidates.length) {
+            if (wordsLength === this._cursor) {
+              this.setInput(' ')
+              return 
+            }
+            const fileCandidates = this.problem.refDirectory.getChildrenName()
+            const result = findSimilarWord(splittedCommand, fileCandidates)
+            // 여기서부터 작업... 0614 11:37
+          } else {
+            const compensatedArgLength = 
+            commandCandidates[0].length - splittedCommand[splittedCommand.length - 1].length
+            this._cursor += compensatedArgLength
+            this.term.write('\x1b[2K\r')
+            this.setPrompt()
+            const prefix = splittedCommand.slice(0, splittedCommand.length-1)
+            const suffix = commandCandidates[0]
+            const newCommand = [...prefix, suffix]
+            this._input = newCommand.join(' ')
+            this.term.write(this._input)          
+          }
           break
         }
       }
@@ -139,8 +160,8 @@ export class gitTerm {
     this.term.clear()
     this.term.write('\x1b[2K\r')
     // this.term.write('\x1B[F\x1B[K')
-    // this._cursor = 0
-    // this._input = ''
+    this._cursor = 0
+    this._input = ''
   }
   
   setInput(data: string): void {
@@ -152,10 +173,10 @@ export class gitTerm {
   setProblem(problem: Problem): void {
     if (this.problem === problem) return
     
-    this.setHead()
-    this.setPrompt()
     this.clearTerm()
     this.problem = problem
+    this.setHead()
+    this.setPrompt()
   }
   
   isInputIncomplete(data: string): any {

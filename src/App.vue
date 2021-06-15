@@ -19,6 +19,8 @@
       <ProblemCLI 
         ref="ProblemCLI"
         :problem="problem"
+        :hasReset="hasReset"
+        @undo-reset="undoReset"
         @update-answer-manually="updateAnswerManually"
       />
     </SectionLeft>
@@ -77,12 +79,17 @@ export default defineComponent({
       return problems[problemIndex.value]
     })
     problem.value.setBase()
-    
+
     let isCorrect = ref(false)
+    let hasReset = ref(false)
     const resetProblem = () => {
       problem.value.resetToBase()
       problem.value.setBase()
       isCorrect.value = false
+      hasReset.value = true
+    }
+    const undoReset = () => {
+      hasReset.value = false
     }
     const gotoPrevProblem = () => {
       problemIndex.value -= 1
@@ -105,7 +112,7 @@ export default defineComponent({
     }
     
     const viewQueue = ref([0, 1])
-
+    
     const updateViewQueue = (nextViewIndex: number) => {
       if (viewQueue.value.includes(nextViewIndex)) {
         const realIndex = viewQueue.value.indexOf(nextViewIndex)
@@ -155,11 +162,12 @@ export default defineComponent({
       problemIndex,
       lastProblemIndex,
       resetProblem,
+      undoReset,
       gotoPrevProblem,
       gotoNextProblem,
-
       problem,
       isCorrect,
+      hasReset,
       updateAnswerManually,
       updateFileContent,
       deleteFile,
