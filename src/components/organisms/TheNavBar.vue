@@ -16,10 +16,10 @@
       />
     </div>
     <div class="navbar-right">
-      <ButtonDirectory @click="updateViewQueue(0)" :class="{ selected: viewQueue.includes(0) }"/>
-      <ButtonGitGraph @click="updateViewQueue(1)" :class="{ selected: viewQueue.includes(1) }"/>
-      <ButtonStagingArea @click="updateViewQueue(2)" :class="{ selected: viewQueue.includes(2) }"/>
-      <ButtonRemote @click="updateViewQueue(3)" :class="{ selected: viewQueue.includes(3) }"/>
+      <ButtonDirectory @click="updateViewQueue(0)" :class="{ selected: !viewQueue.includes(0) }"/>
+      <ButtonGitGraph @click="updateViewQueue(1)" :class="{ selected: !viewQueue.includes(1) }"/>
+      <ButtonStagingArea @click="updateViewQueue(2)" :class="{ selected: !viewQueue.includes(2) }"/>
+      <ButtonRemote @click="updateViewQueue(3)" :class="{ selected: !viewQueue.includes(3) }"/>
     </div>
   </div>
 </template>

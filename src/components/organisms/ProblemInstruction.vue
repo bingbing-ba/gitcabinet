@@ -7,7 +7,8 @@
       <p v-html="wrapCodesInProblemContent"></p>
     </Card>
     <br>
-    <Card class="problem__instruction-content">
+    <Badge>설명</Badge>
+    <Card class="problem__instruction-explanation">
       <p v-html="wrapCodesInProblemExplanation"></p>
     </Card>
   </div>
@@ -16,12 +17,13 @@
 <script lang="ts">
 import { defineComponent, toRefs, computed } from 'vue'
 import { Problem } from '@/problem'
-import { Title, Card } from '@/components'
+import { Title, Card, Badge } from '@/components'
 
 export default defineComponent({
   components: {
     Title,
     Card,
+    Badge,
   },
   props: {
     problem: {
@@ -47,12 +49,12 @@ export default defineComponent({
       })
       result = result.replace(/\n/g, '<br>')
 
-      const boldPattern = /\*.*?\*/g
-      const boldMatchList = result.match(boldPattern)
-      boldMatchList?.forEach((bold)=> {
-        const asteriskRemoved = bold.slice(1, bold.length -1)
-        const boldDecorated = `<span style="font-weight:900;color:#ff6103">${asteriskRemoved}</span>`
-        result = result.replace(bold, boldDecorated)
+      const strongPattern = /\*.*?\*/g
+      const strongMatchList = result.match(strongPattern)
+      strongMatchList?.forEach((strong)=> {
+        const asteriskRemoved = strong.slice(1, strong.length -1)
+        const strongDecorated = `<span class="problem__content-strong">${asteriskRemoved}</span>`
+        result = result.replace(strong, strongDecorated)
       })
 
       return result
@@ -103,7 +105,16 @@ export default defineComponent({
   @apply font-normal text-gray-700 whitespace-normal leading-loose break-words;
 }
 
+.problem__instruction-explanation {
+  @apply font-light text-gray-500 whitespace-normal leading-loose break-words;
+}
+
 .problem__content-code {
   @apply text-indigo-500 py-1 px-2 m-0 text-base font-bold bg-gray-200 rounded;
+}
+
+.problem__content-strong {
+  color:#ff6103;
+  @apply font-bold
 }
 </style>
