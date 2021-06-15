@@ -163,6 +163,22 @@ export default defineComponent({
 
 .git-graph__main {
   display: grid;
-  grid-template-rows: 1fr 5fr;
+  grid-template-rows: 1fr 3fr;
+}
+
+.git-graph__card::-webkit-scrollbar {
+  @apply bg-white w-3 rounded;
+}
+
+.git-graph__card::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
+.git-graph__card::-webkit-scrollbar-corner {
+  @apply bg-gray-900 rounded;
+}
+
+.git-graph__card::-webkit-scrollbar-thumb {
+  @apply bg-gray-500 rounded w-2 mt-3;
 }
 </style>
