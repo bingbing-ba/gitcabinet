@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated, watch } from 'vue'
+import { defineComponent, onMounted, onUpdated, watch, watchEffect } from 'vue'
 import { Problem } from '@/problem'
 import { gitTerm } from '@/terminal/gitTerm'
 import { Terminal } from 'xterm'
@@ -16,6 +16,10 @@ export default defineComponent({
   props: {
     problem: {
       type: Problem,
+      required: true,
+    },
+    hasReset: {
+      type: Boolean,
       required: true,
     },
   },
@@ -37,9 +41,9 @@ export default defineComponent({
       }
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
-      const fitAddon = new FitAddon();
+      const fitAddon = new FitAddon()
       cabinetTerm = new gitTerm(term, props.problem)
-      term.loadAddon(fitAddon);
+      term.loadAddon(fitAddon)
       term.loadAddon(cabinetTerm)
       term.focus()
       fitAddon.fit()
@@ -51,6 +55,11 @@ export default defineComponent({
     
     onUpdated(() => {
       cabinetTerm.setProblem(props.problem)
+      if (props.hasReset) {
+        cabinetTerm.clearTerm()
+        cabinetTerm.setPrompt()
+        emit('undo-reset')
+      }
     })
 
     watch(props.problem, (newProblem) => {

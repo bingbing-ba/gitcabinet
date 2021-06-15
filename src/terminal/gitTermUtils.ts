@@ -1,6 +1,10 @@
 import { Problem } from '@/problem'
-import { commandSet, commandformatterSet } from '@/terminal/gitTermTypes'
 import { ANSI_COLORS, ANSI_CONTROLS } from '@/terminal/gitTermANSI'
+import { 
+  commandSet, 
+  commandformatterSet, 
+  commandCandidatesTree,
+} from '@/terminal/gitTermTypes'
 
 export function isFormattingRequired(command: string []): boolean {
   let result = false
@@ -110,7 +114,41 @@ export function splitCommand(data: string): string [] {
   return splitedCommand
 }
 
-export function findAutoCompleteCandidates(command: string []): string [] {
+export function findAutoCompleteCandidates(problem: Problem, command: string []): string [] {
+  let result: string [] = []
+  if (!command.length) return result
+
+  const commandCandidatesTree: commandCandidatesTree = {
+    git: {
+      add: {},
+      config: {},
+      commit: {},
+      status: {},
+      init: {},
+    }
+  }
+
+  const targetCommand = command[command.length - 1]
+  let prev = commandCandidatesTree[command[0]]
+  for (let i = 1; i < command.length - 1; i++) {
+    prev = prev[command[i]]
+  }
+  if (!prev) return result
+
+  const commandCandidates = Object.keys(prev).filter((key) => {
+    if (key.includes(targetCommand)) return key
+  })
+  if (commandCandidates.length === 1) {
+    if (commandCandidates[0] === targetCommand) {
+      result = []
+    } else {
+      result = commandCandidates
+    }
+  }
   
-  return []
+  return result
+}
+
+export function findSimilarWord(command: string [], fileCandidates: string []): string {
+  return ''
 }
