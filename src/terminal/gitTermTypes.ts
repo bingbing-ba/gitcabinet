@@ -45,3 +45,9 @@ export interface commandformatterSet {
     [key: string]: Function,
   }
 }
+
+export interface commandCandidatesTree {
+  [key: string]: {
+    [key: string]: {},
+  }
+}
