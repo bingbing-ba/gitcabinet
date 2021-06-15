@@ -52,8 +52,6 @@ import {
   Button, 
   Badge } from '@/components'
 import { Problem } from "@/problem"
-// import { PlainFile, Directory } from '@/git/fileStructure'
-// import { Git } from '@/git/git'
 
 
 export default defineComponent({

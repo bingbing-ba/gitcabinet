@@ -15,6 +15,8 @@ const untracked1 = new PlainFile('untracked1.txt', problem6AddCommitPractice.ref
 const untracked2 = new PlainFile('untracked2.txt', problem6AddCommitPractice.refDirectory)
 const untracked3 = new PlainFile('untracked3.txt', problem6AddCommitPractice.refDirectory)
 problem6AddCommitPractice.setGit()
+problem6AddCommitPractice.git?.setUserConfig({name:'bing', type:'name'})
+problem6AddCommitPractice.git?.setUserConfig({email:'bing@bing.com', type:'email'})
 problem6AddCommitPractice.git?.add([modified.filename])
 problem6AddCommitPractice.git?.commit('add modified')
 modified.content = '수정된 내용'

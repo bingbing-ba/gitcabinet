@@ -1,5 +1,5 @@
 <template>
-  <div class="p-navi">
+  <div :class="{'p-navi':true, green:solvedStyle}">
     <Button 
       class="p-navi__left"
       @click="gotoPrevProblem"
@@ -66,6 +66,9 @@ export default defineComponent({
     const solved = computed(() => {
       return props.isCorrect && !(index.value === props.lastProblemIndex)
     })
+    const solvedStyle = computed(()=>{
+      return props.problem.isCorrect()
+    })
     
     const showStageList = () => {
     }
@@ -81,6 +84,7 @@ export default defineComponent({
     return {
       index,
       solved,
+      solvedStyle,
       showStageList,
       gotoPrevProblem,
       gotoNextProblem,
@@ -100,6 +104,10 @@ export default defineComponent({
 
 .p-navi {
   @apply self-stretch flex ml-auto items-center bg-gray-500 rounded-full;
+}
+
+.green {
+  @apply bg-green-500;
 }
 
 .p-navi__left {

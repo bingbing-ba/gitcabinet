@@ -149,7 +149,9 @@ export default defineComponent({
             problem: problem.value
           }
         case 3:
-          return {}
+          return {
+            problem: problem.value
+          }
         default:
           return {
             git: problem.value.git,
