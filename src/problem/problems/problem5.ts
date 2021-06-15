@@ -14,6 +14,9 @@ const deleted = new PlainFile('deleted.txt', problem5AddAdvanced.refDirectory)
 const untracked1 = new PlainFile('untracked1.txt', problem5AddAdvanced.refDirectory)
 const untracked2 = new PlainFile('untracked2.txt', problem5AddAdvanced.refDirectory)
 problem5AddAdvanced.setGit()
+problem5AddAdvanced.git?.setUserConfig({name:'bing', type:'name'})
+problem5AddAdvanced.git?.setUserConfig({email:'bing@bing.com', type:'email'})
+
 problem5AddAdvanced.git?.add([modified.filename, deleted.filename])
 problem5AddAdvanced.git?.commit('initial commit')
 modified.content = '수정된 내용'

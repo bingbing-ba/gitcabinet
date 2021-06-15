@@ -1,8 +1,3 @@
-import ProblemView from './ProblemView.vue'
-import CLIView from './CLIView.vue'
-import FileTree from './FileTree.vue'
-import CommitGraph from './CommitGraph.vue'
-
 import IconArrowLeft from './atoms/IconArrowLeft.vue'
 import IconArrowRight from './atoms/IconArrowRight.vue'
 import IconChart from './atoms/IconChart.vue'
@@ -52,11 +47,6 @@ import SectionLeft from './templates/SectionLeft.vue'
 import SectionRight from './templates/SectionRight.vue'
 
 export {
-  ProblemView,
-  CLIView,
-  FileTree,
-  CommitGraph,
-
   Title,
   Button,
   Box,

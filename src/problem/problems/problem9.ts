@@ -16,10 +16,14 @@ problem9PullFromRemote.explanation = `원격 저장소의 내용을 내 컴퓨�
 그래서 위의 명령어는 "원격 저장소 *origin* 의 내용을 내 컴퓨터로 가져와 업데이트 하겠다." 정도로 해석가능합니다.`
 
 problem9PullFromRemote.setGit()
+problem9PullFromRemote.git?.setUserConfig({name:'bing', type:'name'})
+problem9PullFromRemote.git?.setUserConfig({email:'bing@bing.com', type:'email'})
 const README = new PlainFile('README.md', problem9PullFromRemote.refDirectory)
 problem9PullFromRemote.git?.add()
 problem9PullFromRemote.git?.commit('initial commit')
 const origin = new Git(new Directory('origin'))
+origin.setUserConfig({name:'bing', type:'name'})
+origin.setUserConfig({email:'bing@bing.com', type:'email'})
 problem9PullFromRemote.git?.addRemote('origin', origin)
 problem9PullFromRemote.git?.push('origin', 'master')
 const pull = new PlainFile('pull.txt', origin.refDirectory)

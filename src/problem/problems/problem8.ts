@@ -13,6 +13,8 @@ problem8PushToRemote.explanation = `내 컴퓨터에 쌓인 commit을 원격 저
 명령어를 해석하면, 내 컴퓨터의 commit을 *origin*이라는 원격 저장소에 업로드하겠다는 의미가 됩니다.`
 
 problem8PushToRemote.setGit()
+problem8PushToRemote.git?.setUserConfig({name:'bing', type:'name'})
+problem8PushToRemote.git?.setUserConfig({email:'bing@bing.com', type:'email'})
 const a = new PlainFile('a.txt', problem8PushToRemote.refDirectory)
 const b = new PlainFile('b.txt', problem8PushToRemote.refDirectory)
 problem8PushToRemote.git?.add([a.filename])
