@@ -4,7 +4,7 @@ module.exports = {
   purge: {
     content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
     options: {
-      safelist: [/bg-.*-500/,],
+      safelist: [/bg-.*-*00/, /text-.*-*00/, ],
     },
   },
   darkMode: false, // or 'media' or 'class'
