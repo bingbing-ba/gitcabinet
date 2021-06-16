@@ -1,11 +1,11 @@
 <template>
-  <span class="badge" :class="`bg-${color}-500 text-${color}-100`">
+  <span class="badge" :class="[bgColor, textColor]">
     <slot></slot>
   </span>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 export default defineComponent({
   props: {
     content: {
@@ -17,7 +17,18 @@ export default defineComponent({
       default: 'indigo'
     }
   },
-  setup() {
+  setup(props) {
+    const bgColor = computed(() => {
+      return `bg-${props.color}-500`
+    })
+    const textColor = computed(() => {
+      return `text-${props.color}-100`
+    })
+    
+    return {
+      bgColor,
+      textColor,
+    }
   },
 })
 </script>
