@@ -35,7 +35,6 @@
 import { computed, defineComponent } from 'vue'
 import { Title, Card, DirectoryFile, DirectoryFolder, IconTrash, IconTextFile } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
-import { Git } from '@/git/git'
 import { Problem } from '@/problem'
 
 export default defineComponent({
@@ -48,17 +47,17 @@ export default defineComponent({
     IconTextFile
   },
   props: {
-    git: {
-      type: Git
-    },
     problem: {
       type: Problem
     }
   },
   setup(props, context) {
+    const git = computed(() => {
+      return props.problem?.git
+    })
     const fileList = computed(() => {
-      if (props.git) {
-        return props.git?.refDirectory?.children
+      if (git.value) {
+        return git.value.refDirectory?.children
       }
       return props.problem?.refDirectory?.children
     })
@@ -76,7 +75,7 @@ export default defineComponent({
     }
 
     const deletedFiles = computed(() => {
-      const nowStatus = props.git?.status()
+      const nowStatus = git.value?.status()
       const result: string[] = []
       nowStatus?.statusNotToCommit.deleted.forEach(fileName => {
         result.push(fileName)
@@ -88,6 +87,7 @@ export default defineComponent({
     })
 
     return {
+      git,
       dirName,
       fileList,
       updateFileContent,
