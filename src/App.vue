@@ -25,13 +25,26 @@
       />
     </SectionLeft>
     <SectionRight>
-      <div v-for="viewIndex in viewQueue" :key="viewIndex" class="overflow-hidden">
-        <component
-          :is="setCurrentComponent(viewIndex)" 
-          v-bind="setCurrentProps(viewIndex)"
-          @update-file-content="updateFileContent"
-          @delete-file="deleteFile">
-        </component>
+      <div class="overflow-hidden">
+        <transition name="first-card">
+          <component
+            :is="setCurrentComponent(viewQueue[0])" 
+            v-bind="{ problem }"
+            @update-file-content="updateFileContent"
+            @delete-file="deleteFile">
+          </component>
+        </transition>
+      </div>
+
+      <div class="overflow-hidden">
+        <transition name="second-card">
+          <component
+            :is="setCurrentComponent(viewQueue[1])" 
+            v-bind="{ problem }"
+            @update-file-content="updateFileContent"
+            @delete-file="deleteFile">
+          </component>
+        </transition>
       </div>
     </SectionRight>
     <Divider/>
@@ -53,9 +66,7 @@ import {
   GitStagingArea,
   GitRemote,
 } from '@/components'
-import { PlainFile, Directory } from '@/git/fileStructure'
-import { Git } from '@/git/git'
-import { propertyOf } from 'lodash'
+import { PlainFile } from '@/git/fileStructure'
 
 export default defineComponent({
   components: {
@@ -127,6 +138,8 @@ export default defineComponent({
 
     const setCurrentComponent = (viewIndex: number) => {
       switch (viewIndex) {
+        case 0:
+          return 'GitDirectory'
         case 1:
           return 'GitGraph'
         case 2:
@@ -134,32 +147,10 @@ export default defineComponent({
         case 3:
           return 'GitRemote'
         default:
-          return 'GitDirectory'
+          return null
       }
     }
 
-    const setCurrentProps = (viewIndex: number) => {
-      switch (viewIndex) {
-        case 1:
-          return {
-            problem: problem.value
-          }
-        case 2:
-          return {
-            problem: problem.value
-          }
-        case 3:
-          return {
-            problem: problem.value
-          }
-        default:
-          return {
-            git: problem.value.git,
-            problem: problem.value
-          }
-      }
-    }
-    
     return {
       problemIndex,
       lastProblemIndex,
@@ -175,8 +166,7 @@ export default defineComponent({
       deleteFile,
       viewQueue,
       updateViewQueue,
-      setCurrentComponent,
-      setCurrentProps
+      setCurrentComponent
     }
   },
 })
@@ -193,5 +183,64 @@ export default defineComponent({
 
 .main {
   @apply grid grid-cols-2 bg-gray-200 h-screen pt-16;
+}
+
+/* first card */
+.first-card-enter-from,
+.first-card-enter-to {
+  opacity: 0;
+}
+
+.first-card-enter-active {
+  animation: insert 0.5s;
+  animation-delay: 0.5s;
+}
+
+.first-card-leave-active {
+  animation: moveDown 0.5s;
+}
+
+/* second card */
+.second-card-enter-from,
+.second-card-enter-to {
+  opacity: 0;
+}
+
+.second-card-enter-active {
+  animation: insert 0.5s;
+  animation-delay: 0.1s;
+}
+
+.second-card-leave-active {
+}
+
+@keyframes insert {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes moveUp {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 </style>
