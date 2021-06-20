@@ -1,8 +1,10 @@
 <template>
-  <div class="edge">
-    <div class="edge-head-left"></div>
-    <div class="edge-line"></div>
-    <div class="edge-head-right"></div>
+  <div class="container">
+    <div class="edge">
+      <div class="edge-head-left"></div>
+      <div class="edge-line"></div>
+      <div class="edge-head-right"></div>
+    </div>
   </div>
 </template>
 
@@ -17,21 +19,27 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.container {
+  width: 100%;
+  height: 60px;
+  overflow: hidden;
+}
+
 .edge {
   width: 100%;
   position: relative;
   display: flex;
   justify-content: center;
-  animation: createEdge 3s;
+  animation: createEdge 1s;
 }
 
 @keyframes createEdge {
   0% {
-    opacity: 0;
+    transform: translateY(100%);
   }
 
   100% {
-    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -40,7 +48,7 @@ export default defineComponent({
   width: 1px;
   border: 2px solid black;
   background-color: black;
-  transform: rotate(30deg);
+  transform: rotate(30deg) translateX(1px);
 }
 
 .edge-head-right {
@@ -48,7 +56,7 @@ export default defineComponent({
   width: 1px;
   border: 2px solid black;
   background-color: black;
-  transform: rotate(-30deg);
+  transform: rotate(-30deg) translateX(-1px);
 }
 
 .edge-line{

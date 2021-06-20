@@ -6,22 +6,7 @@
       </Title>
     </div>
     <Card class="git-graph__card">
-      <div v-if="problem.git" class="git-graph__main">
-        <div class="flex items-center overflow-auto p-2">
-          <Button v-if="isVerticalView" @click="toggleNetworkView" class="flex align-middle items-center">
-            <IconSwitchHorizontal /> 수평 모드
-          </Button>
-          <Button v-else @click="toggleNetworkView" class="flex align-middle items-center">
-            <IconSwitchVertical /> 수직 모드
-          </Button>
-          <button v-for="(hash, branch) in branches" :key="hash" @click="changeHead(branch)" 
-            class="mx-2 flex">
-            <Badge>
-              {{ branch }}
-            </Badge>
-          </button>
-        </div>
-        
+      <div v-if="problem.git" class="git-graph__main" tabindex="0">
         <transition 
           v-if="commits.length > 0"
           name="swap">
@@ -31,7 +16,6 @@
         <div v-else class="grid justify-center items-center">
           현재까지 커밋 기록이 없습니다.
         </div>
-        
       </div>
       <div v-else class="flex justify-center items-center">
         현재 이 디렉토리는 git 저장소가 아닙니다.
@@ -46,11 +30,8 @@ import {
   Title, 
   Card, 
   NetworkVertical, 
-  NetworkHorizontal, 
-  IconSwitchHorizontal, 
-  IconSwitchVertical,
-  Button, 
-  Badge } from '@/components'
+  NetworkHorizontal 
+} from '@/components'
 import { Problem } from "@/problem"
 
 
@@ -59,11 +40,7 @@ export default defineComponent({
     Title,
     Card,
     NetworkVertical,
-    NetworkHorizontal,
-    IconSwitchHorizontal,
-    IconSwitchVertical,
-    Button,
-    Badge
+    NetworkHorizontal
   },
   props: {
     problem: {
@@ -161,7 +138,6 @@ export default defineComponent({
 
 .git-graph__main {
   display: grid;
-  grid-template-rows: 1fr 3fr;
 }
 
 .git-graph__card::-webkit-scrollbar {
