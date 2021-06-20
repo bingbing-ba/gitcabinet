@@ -19,5 +19,17 @@ export default defineComponent({
   height: 50px;
   border: 4px solid black;
   border-radius: 50%;
+  animation: createNode 3s;
+}
+
+@keyframes createNode {
+  0% {
+    opacity: 0;
+    border-color: tomato;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>
