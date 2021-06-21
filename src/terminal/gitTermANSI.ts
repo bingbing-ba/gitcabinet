@@ -14,4 +14,8 @@ export const ANSI_COLORS: ANSI_COLORS_TYPE = {
 export const ANSI_CONTROLS = {
   CURSOR_BACKWORD: '\x9b1D', // CSI Ps D
   CURSOR_FORWARD: '\x9b1C',  // CSI Ps C
+  CURSOR_UP: '\x9b1A',
+  setCursorPosition: function(row: number, col: number): string {
+    return `\x9b${row};${col}H`
+  },
 }

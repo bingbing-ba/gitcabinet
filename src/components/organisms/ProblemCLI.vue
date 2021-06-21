@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated, watch, watchEffect } from 'vue'
+import { defineComponent, onMounted, onBeforeUnmount, onUpdated, watch } from 'vue'
 import { Problem } from '@/problem'
 import { gitTerm } from '@/terminal/gitTerm'
 import { Terminal } from 'xterm'
@@ -41,16 +41,25 @@ export default defineComponent({
       }
       term = new Terminal(termOptions)
       term.open(document.querySelector('#terminal') as HTMLElement)
+      
       const fitAddon = new FitAddon()
       cabinetTerm = new gitTerm(term, props.problem)
       term.loadAddon(fitAddon)
       term.loadAddon(cabinetTerm)
+      
       term.focus()
       fitAddon.fit()
+      window.addEventListener('resize', () => {
+        fitAddon.fit()
+      })
 
       term.onLineFeed(() => {
         emit('update-answer-manually', props.problem.isCorrect())
       })
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', () => {})
     })
     
     onUpdated(() => {
@@ -71,7 +80,7 @@ export default defineComponent({
 
 <style>
 #terminal {
-  @apply bg-gray-900 rounded overflow-y-scroll overflow-x-hidden break-words min-w-full max-w-full;
+  @apply bg-gray-900 rounded overflow-x-hidden break-words min-w-full max-w-full;
 }
 
 #terminal::-webkit-scrollbar {
@@ -90,9 +99,9 @@ export default defineComponent({
   @apply bg-gray-900 w-3 rounded;
 }
 
-#terminal::-webkit-scrollbar-thumb {
+/* #terminal::-webkit-scrollbar-thumb {
   @apply bg-gray-500 w-3 rounded w-3 mt-3;
-}
+} */
 
 .xterm {
   padding: 10px;

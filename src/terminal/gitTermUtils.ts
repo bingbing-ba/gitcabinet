@@ -149,6 +149,11 @@ export function findAutoCompleteCandidates(problem: Problem, command: string [])
   return result
 }
 
-export function findSimilarWord(command: string [], fileCandidates: string []): string {
-  return ''
+export function findFileCandidates(command: string [], fileCandidates: string []): string [] {
+  let result = []
+  const targetCommand = command[command.length - 1].toLowerCase()
+  result = fileCandidates.filter((fileName) => {
+    return fileName.toLowerCase().startsWith(targetCommand)
+  })
+  return result
 }

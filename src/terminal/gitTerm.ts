@@ -9,7 +9,7 @@ import {
   formattedDisplayMessage, 
   splitCommand,
   findAutoCompleteCandidates,
-  findSimilarWord,
+  findFileCandidates,
 } from '@/terminal/gitTermUtils'
 
 export class gitTerm {
@@ -17,6 +17,7 @@ export class gitTerm {
   problem: Problem
   _history: Array<string>
   _cursor: number
+  _row: number
   _input: string
   _isTermCommand: boolean
   _prompt: Prompt
@@ -26,6 +27,7 @@ export class gitTerm {
     this.problem = problem
     this._history = []
     this._cursor = 0
+    this._row = 0
     this._input = ''
     this._isTermCommand = false
     this._prompt = {
@@ -108,37 +110,47 @@ export class gitTerm {
           break
         }
         case '\t': { // tab
-          if (!this._input.length) break
-          
-          // 1. 입력 명령어 파악 => 스플릿해서 파싱
+          if (!this._input.length) break          
           const splittedCommand = splitCommand(this._input)
 
-          // 2. 커서 위치 파악
-          //    - git add_일 경우 break
-          //    - git add _일 경우 next
           let wordsLength = 0
           splittedCommand.forEach((word, idx) => {
             if (idx !== splitCommand.length - 1) wordsLength += 1
             wordsLength += word.length
           })
 
-          // 2. 명령어 입력 위치에서 추천 가능한 후보군 찾기
-          //    - 후보군은 trie 형태로 저장
-          //    - ex) gi_일 때는 git 추천
-          //    - ex) git ad_일 때는 add 추천
           const commandCandidates = findAutoCompleteCandidates(this.problem, splittedCommand)
           
           if (!commandCandidates.length) {
-            if (wordsLength === this._cursor) {
+            const fileTempCandidates = this.problem.refDirectory.getChildrenName()
+            const fileCandidates = findFileCandidates(splittedCommand, fileTempCandidates)
+            
+            // if the candiate's length is one, auto complete it 
+            if (fileCandidates.length == 1) {
+              const compensatedArgLength = fileCandidates[0].length - splittedCommand[splittedCommand.length - 1].length
+              this._cursor += compensatedArgLength
+              this.term.write('\x1b[2K\r')
+              this.setPrompt()
+              const prefix = splittedCommand.slice(0, splittedCommand.length-1)
+              const suffix = fileCandidates[0]
+              const newCommand = [...prefix, suffix]
+              this._input = newCommand.join(' ')
+              this.term.write(this._input)  
+              // if not, show the list below the current line
+            } else if (fileCandidates.length > 1) {
+              this.term.write('\x1b[2K\r')
+              this.setPrompt()
+              this.term.write(this._input + '\n' + fileCandidates.toString())
+              const cursorPos = ANSI_CONTROLS.setCursorPosition(this._row, this.term.rows)
+              this.term.write(cursorPos)
+            }
+
+            if (!fileCandidates.length && wordsLength === this._cursor) {
               this.setInput(' ')
               return 
             }
-            const fileCandidates = this.problem.refDirectory.getChildrenName()
-            const result = findSimilarWord(splittedCommand, fileCandidates)
-            // 여기서부터 작업... 0614 11:37
           } else {
-            const compensatedArgLength = 
-            commandCandidates[0].length - splittedCommand[splittedCommand.length - 1].length
+            const compensatedArgLength = commandCandidates[0].length - splittedCommand[splittedCommand.length - 1].length
             this._cursor += compensatedArgLength
             this.term.write('\x1b[2K\r')
             this.setPrompt()
@@ -205,6 +217,7 @@ export class gitTerm {
     this.setHead()
     this.setPrompt()
     this._cursor = 0
+    this._row += 1
     this._input = ''
     this._isTermCommand = false
   }
