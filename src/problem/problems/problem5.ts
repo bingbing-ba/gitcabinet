@@ -1,5 +1,5 @@
-import { Problem } from "@/problem/problem"
-import { PlainFile } from "@/git/fileStructure"
+import { Problem } from '@/problem/problem'
+import { PlainFile } from '@/git/fileStructure'
 
 export const problem5AddAdvanced = new Problem('한번에 여러 파일 staging하기')
 
@@ -11,20 +11,33 @@ problem5AddAdvanced.explanation = `한번에 여러 변경사항을 staging area
 
 const modified = new PlainFile('modified.txt', problem5AddAdvanced.refDirectory)
 const deleted = new PlainFile('deleted.txt', problem5AddAdvanced.refDirectory)
-const untracked1 = new PlainFile('untracked1.txt', problem5AddAdvanced.refDirectory)
-const untracked2 = new PlainFile('untracked2.txt', problem5AddAdvanced.refDirectory)
+const untracked1 = new PlainFile(
+  'untracked1.txt',
+  problem5AddAdvanced.refDirectory
+)
+const untracked2 = new PlainFile(
+  'untracked2.txt',
+  problem5AddAdvanced.refDirectory
+)
 problem5AddAdvanced.setGit()
-problem5AddAdvanced.git?.setUserConfig({name:'bing', type:'name'})
-problem5AddAdvanced.git?.setUserConfig({email:'bing@bing.com', type:'email'})
+problem5AddAdvanced.git?.setUserConfig({ name: 'bing', type: 'name' })
+problem5AddAdvanced.git?.setUserConfig({
+  email: 'bing@bing.com',
+  type: 'email',
+})
 
 problem5AddAdvanced.git?.add([modified.filename, deleted.filename])
 problem5AddAdvanced.git?.commit('initial commit')
 modified.content = '수정된 내용'
 problem5AddAdvanced.refDirectory.delete(deleted)
 problem5AddAdvanced.setBase()
-problem5AddAdvanced.setAnswer((_, git)=>{
-  if(git){
-    return git.isExistAtIndex([modified, untracked1, untracked2]) && !git.isExistAtIndex(deleted)
+problem5AddAdvanced.setAnswer((_, git) => {
+  if (git) {
+    return (
+      git.isExistAtIndex([modified, untracked1, untracked2]) &&
+      !git.isExistAtIndex(deleted)
+    )
   }
   return false
 })
+problem5AddAdvanced.setDefaultQueue([0, 2])

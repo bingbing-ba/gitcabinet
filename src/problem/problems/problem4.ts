@@ -1,5 +1,5 @@
-import { Problem } from "@/problem/problem"
-import { PlainFile } from "@/git/fileStructure"
+import { Problem } from '@/problem/problem'
+import { PlainFile } from '@/git/fileStructure'
 
 export const problem4UserConfig = new Problem('user config 등록하기')
 problem4UserConfig.content = `이 저장소에 새로 추가된 *with_user_config.txt* 라는 파일을
@@ -24,12 +24,17 @@ problem4UserConfig.explanation = `commit에는 commit을 남긴 작성자 정보
 *$ git add 파일이름*
 *$ git commit -m '커밋 메세지'*
 를 참고하세요.`
-const withUserConfig = new PlainFile('with_user_config.txt', problem4UserConfig.refDirectory)
+const withUserConfig = new PlainFile(
+  'with_user_config.txt',
+  problem4UserConfig.refDirectory
+)
 problem4UserConfig.setGit()
 problem4UserConfig.setBase()
-problem4UserConfig.setAnswer((_, git)=>{
+problem4UserConfig.setAnswer((_, git) => {
   if (git) {
-    const isUserConfigExists = git.config.user.email === 'bing@bing.com' && git.config.user.name === 'bing'
+    const isUserConfigExists =
+      git.config.user.email === 'bing@bing.com' &&
+      git.config.user.name === 'bing'
     const recentCommit = git.getMostRecentCommit()
     const isEmailMatched = recentCommit?.author.email === git.config.user.email
     const isNameMatched = recentCommit?.author.name === git.config.user.name
@@ -37,3 +42,4 @@ problem4UserConfig.setAnswer((_, git)=>{
   }
   return false
 })
+problem4UserConfig.setDefaultQueue([0, 1])

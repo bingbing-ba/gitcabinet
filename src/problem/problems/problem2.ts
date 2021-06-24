@@ -1,5 +1,5 @@
-import { Problem } from "@/problem/problem"
-import { PlainFile } from "@/git/fileStructure"
+import { Problem } from '@/problem/problem'
+import { PlainFile } from '@/git/fileStructure'
 
 export const problem2BasicAdd = new Problem('staging 하기')
 problem2BasicAdd.content = `이 git 저장소에 두 파일이 새롭게 추가되었습니다. 추가된 파일 중, *staging.txt* 를 staging area에 추가해주세요.`
@@ -14,10 +14,11 @@ const unstaging = new PlainFile('unstaging.txt', problem2BasicAdd.refDirectory)
 // 문제에 맞게 git add 만 하면 되도록 미리 git init해둠
 problem2BasicAdd.setGit()
 problem2BasicAdd.setBase()
-problem2BasicAdd.setAnswer((_, git)=>{
+problem2BasicAdd.setAnswer((_, git) => {
   if (git) {
     // index(staging area)에 README.txt가 존재한다면 add한 것으로 판단!
     return git.isExistAtIndex(staging) && !git.isExistAtIndex(unstaging)
   }
   return false
 })
+problem2BasicAdd.setDefaultQueue([0, 2])
