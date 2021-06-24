@@ -1,5 +1,5 @@
-import { Problem } from "@/problem/problem"
-import { PlainFile } from "@/git/fileStructure"
+import { Problem } from '@/problem/problem'
+import { PlainFile } from '@/git/fileStructure'
 
 export const problem6AddCommitPractice = new Problem('add, commit 실습하기')
 
@@ -15,14 +15,17 @@ const untracked1 = new PlainFile('untracked1.txt', problem6AddCommitPractice.ref
 const untracked2 = new PlainFile('untracked2.txt', problem6AddCommitPractice.refDirectory)
 const untracked3 = new PlainFile('untracked3.txt', problem6AddCommitPractice.refDirectory)
 problem6AddCommitPractice.setGit()
-problem6AddCommitPractice.git?.setUserConfig({name:'bing', type:'name'})
-problem6AddCommitPractice.git?.setUserConfig({email:'bing@bing.com', type:'email'})
+problem6AddCommitPractice.git?.setUserConfig({ name: 'bing', type: 'name' })
+problem6AddCommitPractice.git?.setUserConfig({
+  email: 'bing@bing.com',
+  type: 'email',
+})
 problem6AddCommitPractice.git?.add([modified.filename])
 problem6AddCommitPractice.git?.commit('add modified')
 modified.content = '수정된 내용'
 problem6AddCommitPractice.setBase()
-problem6AddCommitPractice.setAnswer((_, git)=>{
-  if(git){
+problem6AddCommitPractice.setAnswer((_, git) => {
+  if (git) {
     const headCommitHash = git.branches[git.head]
     const isAllCommitted = git.isExistAtCommit([modified, untracked1, untracked2, untracked3], headCommitHash)
     const parentCommitHash = git.getMostRecentCommit()!.parent[0]
@@ -31,4 +34,4 @@ problem6AddCommitPractice.setAnswer((_, git)=>{
   }
   return false
 })
-
+problem6AddCommitPractice.setDefaultQueue([0, 1])

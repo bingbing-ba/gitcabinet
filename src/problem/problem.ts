@@ -2,7 +2,6 @@ import { cloneDeep } from 'lodash'
 import { Directory } from '@/git/fileStructure'
 import { Git } from '@/git/git'
 
-
 interface answer extends Function {
   (refDirectory: Directory, git?: Git): boolean
 }
@@ -28,6 +27,7 @@ export class Problem {
   /** @property 문제의 base설정에 쓰일 git */
   baseGit?: Git
   answer?: answer
+  defaultQueue: (0 | 1 | 2 | 3)[]
 
   /**
    * 현재 문제를 만들면서 내부적으로 디렉토리는 만들어지는 형태입니다.
@@ -37,6 +37,7 @@ export class Problem {
   constructor(title: string) {
     this.title = title
     this.refDirectory = new Directory('directory')
+    this.defaultQueue = [0, 1]
   }
 
   /**
@@ -44,7 +45,10 @@ export class Problem {
    * @param git 이 Problem 인스턴스의 refDirectory를 참조하는 git instance이어야 합니다. 전달하지 않으면 새로 하나를 만듭니다.
    * @param globalConfig global user config 설정 흉내내기 위한 인자인데 미완성
    */
-  setGit(git:Git=new Git(this.refDirectory), globalConfig?: { name: string; email: string }) {
+  setGit(
+    git: Git = new Git(this.refDirectory),
+    globalConfig?: { name: string; email: string }
+  ) {
     if (git.refDirectory !== this.refDirectory) {
       throw new Error('git.refDirectory is not refDirectory of this instance')
     }
@@ -53,7 +57,6 @@ export class Problem {
       this.git.setUserConfig({ type: 'name', name: globalConfig.name })
       this.git.setUserConfig({ type: 'email', email: globalConfig.email })
     }
-
   }
 
   /**
@@ -74,7 +77,6 @@ export class Problem {
     this.baseRefDirectory = cloneDeep(this.refDirectory)
   }
 
-
   /**
    * 미리 지정된 base를 통해서 현재 git과 refDirectory의 상태를 되돌리는 함수입니다.
    */
@@ -92,5 +94,21 @@ export class Problem {
       throw new Error('answer function is not set! use setAnswer method')
     }
     return this.answer(this.refDirectory, this.git)
+  }
+
+  /**
+   * 문제당 기본 뷰를 설정할 수 있는 함수
+   * 0: GitDirectory
+   * 1: GitGraph
+   * 2: GitStagingArea
+   * 3: GitRemote
+   * @param queue 0~3 의 값이 원소가 되는 숫자 배열
+   */
+  setDefaultQueue(queue: (0 | 1 | 2 | 3)[]) {
+    if (queue.length > 2) {
+      this.defaultQueue = queue.slice(0, 2)
+    } else {
+      this.defaultQueue = queue
+    }
   }
 }

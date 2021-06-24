@@ -1,6 +1,6 @@
 <template>
-  <TheNavBar 
-    class="navbar" 
+  <TheNavBar
+    class="navbar"
     :problem="problem"
     :isCorrect="isCorrect"
     :problemIndex="problemIndex"
@@ -13,10 +13,8 @@
   />
   <main class="main">
     <SectionLeft class="overflow-auto">
-      <ProblemInstruction 
-        :problem="problem"
-      />
-      <ProblemCLI 
+      <ProblemInstruction :problem="problem" />
+      <ProblemCLI
         ref="ProblemCLI"
         :problem="problem"
         :hasReset="hasReset"
@@ -28,10 +26,11 @@
       <div class="overflow-hidden">
         <transition name="first-card">
           <component
-            :is="setCurrentComponent(viewQueue[0])" 
+            :is="setCurrentComponent(viewQueue[0])"
             v-bind="{ problem }"
             @update-file-content="updateFileContent"
-            @delete-file="deleteFile">
+            @delete-file="deleteFile"
+          >
           </component>
         </transition>
       </div>
@@ -39,26 +38,27 @@
       <div class="overflow-hidden">
         <transition name="second-card">
           <component
-            :is="setCurrentComponent(viewQueue[1])" 
+            :is="setCurrentComponent(viewQueue[1])"
             v-bind="{ problem }"
             @update-file-content="updateFileContent"
-            @delete-file="deleteFile">
+            @delete-file="deleteFile"
+          >
           </component>
         </transition>
       </div>
     </SectionRight>
-    <Divider/>
+    <Divider />
   </main>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { problems as problemSet } from '@/problem'
-import { 
-  Divider, 
-  TheNavBar, 
-  SectionLeft, 
-  SectionRight, 
+import {
+  Divider,
+  TheNavBar,
+  SectionLeft,
+  SectionRight,
   ProblemCLI,
   ProblemInstruction,
   GitDirectory,
@@ -79,14 +79,14 @@ export default defineComponent({
     GitDirectory,
     GitGraph,
     GitStagingArea,
-    GitRemote
+    GitRemote,
   },
   setup() {
     const problemIndex = ref(0)
     const problems = reactive(problemSet)
-    
+
     const lastProblemIndex = problems.length
-    const problem = computed(()=>{
+    const problem = computed(() => {
       return problems[problemIndex.value]
     })
     problem.value.setBase()
@@ -121,10 +121,17 @@ export default defineComponent({
     const deleteFile = (file: PlainFile) => {
       problems[problemIndex.value].refDirectory.delete(file)
     }
-    
-    const viewQueue = ref([0, 1])
-    
-    const updateViewQueue = (nextViewIndex: number) => {
+
+    const viewQueueMap = reactive(
+      problems.reduce(
+        (acc, problem, idx) => ({ ...acc, [idx]: problem.defaultQueue }),
+        {} as { [key: string]: (0 | 1 | 2 | 3)[] }
+      )
+    )
+    const viewQueue = computed(() => {
+      return viewQueueMap[String(problemIndex.value)]
+    })
+    const updateViewQueue = (nextViewIndex: 0 | 1 | 2 | 3) => {
       if (viewQueue.value.includes(nextViewIndex)) {
         const realIndex = viewQueue.value.indexOf(nextViewIndex)
         viewQueue.value.splice(realIndex, 1)
@@ -166,7 +173,7 @@ export default defineComponent({
       deleteFile,
       viewQueue,
       updateViewQueue,
-      setCurrentComponent
+      setCurrentComponent,
     }
   },
 })

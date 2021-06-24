@@ -1,5 +1,5 @@
-import { Problem } from "@/problem/problem"
-import { PlainFile } from "@/git/fileStructure"
+import { Problem } from '@/problem/problem'
+import { PlainFile } from '@/git/fileStructure'
 
 export const problem3BasicCommit = new Problem('commit 남기기')
 problem3BasicCommit.explanation = `staging area에 추가된 변경사항을 기록하는 일, 혹은 그 기록을 commit 이라고 합니다.
@@ -9,13 +9,20 @@ problem3BasicCommit.explanation = `staging area에 추가된 변경사항을 기
 commit 후에 다시 *$ git status* 를 통해 상태를 확인해보세요. *staging.txt* 의 변경사항은 기록되었기 때문에 status에 출력되지 않는 것을 확인하실 수 있습니다.`
 problem3BasicCommit.content = `이 저장소의 staging area에 *staging.txt* 가 추가되어 있습니다. 해당 변경사항만을 commit하세요.`
 const staging = new PlainFile('staging.txt', problem3BasicCommit.refDirectory)
-const unstaging = new PlainFile('unstaging.txt', problem3BasicCommit.refDirectory)
+const unstaging = new PlainFile(
+  'unstaging.txt',
+  problem3BasicCommit.refDirectory
+)
 problem3BasicCommit.setGit()
 problem3BasicCommit.git!.add([staging.filename])
 problem3BasicCommit.setBase()
-problem3BasicCommit.setAnswer((_, git)=>{
+problem3BasicCommit.setAnswer((_, git) => {
   if (git) {
-    return git.isExistAtRecentCommit(staging) && !git.isExistAtRecentCommit(unstaging)
+    return (
+      git.isExistAtRecentCommit(staging) &&
+      !git.isExistAtRecentCommit(unstaging)
+    )
   }
   return false
 })
+problem3BasicCommit.setDefaultQueue([2, 1])

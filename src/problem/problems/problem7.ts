@@ -13,8 +13,8 @@ problem7Remote.explanation = `원격 저장소는 다른 곳에 존재하는 백
 *$ git remote add origin* 원격저장소주소 를 통해 이 저장소에 원격 저장소의 주소를 등록할 수 있습니다. 중간의 *origin*은 원격 저장소 주소를 간편하게 쓰기 위한 별명이라고 생각하면 됩니다. 이 별명은 *origin* 이 아니라 다르게도 사용할 수 있지만, 관례적으로 *origin* 으로 사용합니다.`
 
 problem7Remote.setGit()
-problem7Remote.git?.setUserConfig({name:'bing', type:'name'})
-problem7Remote.git?.setUserConfig({email:'bing@bing.com', type:'email'})
+problem7Remote.git?.setUserConfig({ name: 'bing', type: 'name' })
+problem7Remote.git?.setUserConfig({ email: 'bing@bing.com', type: 'email' })
 new PlainFile('a.txt', problem7Remote.refDirectory)
 new PlainFile('b.txt', problem7Remote.refDirectory)
 problem7Remote.git?.add()
@@ -26,3 +26,4 @@ problem7Remote.setAnswer((_, git) => {
   }
   return false
 })
+problem7Remote.setDefaultQueue([1, 3])
