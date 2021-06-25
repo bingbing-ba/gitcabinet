@@ -7,24 +7,12 @@
     </div>
     <Card class="git-graph__card">
       <div v-if="isRemote" class="git-graph__main">
-        <div class="flex items-center overflow-auto p-2">
-          <button v-for="(hash, branch) in branches" :key="hash" @click="changeHead(branch)" 
-            class="mx-2 flex">
-            <Badge>
-              {{ branch }}
-            </Badge>
-          </button>
-        </div>
-        
-        <transition 
-          v-if="commits.length > 0"
-          name="swap">
+        <transition v-if="commits.length > 0" name="swap">
           <NetworkVertical :git="remote" :commits="commits" />
         </transition>
         <div v-else class="grid justify-center items-center">
           원격 저장소에 커밋이 없습니다.
         </div>
-        
       </div>
       <div v-else class="flex justify-center items-center">
         원격 저장소가 존재하지 않습니다.
@@ -35,15 +23,9 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { 
-  Title, 
-  Card, 
-  NetworkVertical, 
-  Button, 
-  Badge } from '@/components'
-import { Problem } from "@/problem"
+import { Title, Card, NetworkVertical, Button } from '@/components'
+import { Problem } from '@/problem'
 import { Git } from '@/git/git'
-
 
 export default defineComponent({
   components: {
@@ -51,7 +33,6 @@ export default defineComponent({
     Card,
     NetworkVertical,
     Button,
-    Badge
   },
   props: {
     problem: {
@@ -60,30 +41,29 @@ export default defineComponent({
     },
   },
   setup(props) {
-    
     const branches = computed(() => {
       return props.problem.git?.branches
     })
 
     const nowHead = ref('master')
-    
+
     const changeHead = (branchName: string) => {
       nowHead.value = branchName
     }
 
-    const isRemote = computed(()=>{
+    const isRemote = computed(() => {
       return props.problem.git?.config.remote['origin'] instanceof Git
     })
 
     const commits = computed(() => {
       const origin = props.problem.git?.config.remote['origin']
 
-      if(!origin) {
+      if (!origin) {
         return []
       }
       // 브랜치 별 결과 출력 준비
       const result = []
-        
+
       // head : 브랜치 이름
       // const head = props.problem.git.head
       const head = nowHead.value
@@ -101,26 +81,26 @@ export default defineComponent({
 
       // 검사를 진행할 스택
       const stack = [
-        // 해당 커밋 노드의 hash를 포함한 새로운 객체 
+        // 해당 커밋 노드의 hash를 포함한 새로운 객체
         {
-          ...headCommit, 
-          hash: headCommitHash
-        }
+          ...headCommit,
+          hash: headCommitHash,
+        },
       ]
-      
-      // 스택에서 
+
+      // 스택에서
       while (stack.length !== 0) {
         const commit = stack.pop()
         result.push(commit)
         for (const parentHash of commit!.parent) {
           const parentCommit = origin.commits[parentHash]
-          stack.push({...parentCommit, hash:parentHash})
+          stack.push({ ...parentCommit, hash: parentHash })
         }
       }
       return result
     })
 
-    const remote = computed(()=>{
+    const remote = computed(() => {
       return props.problem.git?.config.remote['origin']
     })
     return {
@@ -128,7 +108,7 @@ export default defineComponent({
       branches,
       isRemote,
       remote,
-      changeHead
+      changeHead,
     }
   },
 })
