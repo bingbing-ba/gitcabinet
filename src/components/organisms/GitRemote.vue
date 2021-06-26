@@ -131,7 +131,6 @@ export default defineComponent({
 
 .git-graph__main {
   display: grid;
-  grid-template-rows: 1fr 3fr;
 }
 
 .git-graph__card::-webkit-scrollbar {
