@@ -1,5 +1,11 @@
 import { fileHashes, tree } from './gitTypes'
 
+type plainFileJson = {
+  filename: string,
+  content: string,
+  parent: string,
+}
+
 export class PlainFile {
   filename: string
   content: string
@@ -22,13 +28,15 @@ export class PlainFile {
     return this.filename
   }
 
-  toJSON() {
+  toJSON(): plainFileJson {
     return {
       filename:this.filename,
       content:this.content,
       parent: this.parent.dirName,
     }
   }
+
+  static fromJSON() {}
 }
 
 export class Directory {
@@ -55,6 +63,24 @@ export class Directory {
       children: this.children,
       allChildren: this.allChildren,
     }
+  }
+
+  static fromJSON(json: string) {
+    const data = JSON.parse(json) as { children: plainFileJson[], allChildren: plainFileJson[], dirName: string }
+    const jsonDirectory = new Directory(data.dirName)
+    for (const child of data.allChildren) {
+      const childFile = new PlainFile(child.filename, jsonDirectory)
+      childFile.content = child.content
+    }
+    jsonDirectory.children = jsonDirectory.allChildren.filter((childFile)=>{
+      for (const child of data.children) {
+        if (child.filename === childFile.filename) {
+          return true
+        }
+      }
+      return false
+    })
+    return jsonDirectory
   }
 
   getChildrenName() {

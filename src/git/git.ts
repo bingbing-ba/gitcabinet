@@ -13,6 +13,30 @@ import {
   PushRejectedError,
 } from './gitTypes'
 
+type gitJson = {
+  index: index
+  head: string
+  mergeHead: string
+  conflicts: string[]
+  branches: branches
+  remoteBranches: {
+    [key: string]: branches
+  }
+  commits: { [key: string]: commit }
+  trees: { [key: string]: tree }
+  fileHashes: fileHashes
+  config: {
+    user: {
+      name: string
+      email: string
+    }
+    remote: {
+      [key: string]: Git
+    }
+  }
+  refDirectory: string,
+}
+
 export class Git {
   /** @property `object`, staging area역할, key가 파일이름, value는 파일내용을 hash한 값 */
   index: index
@@ -736,5 +760,27 @@ export class Git {
       // conflict, 커밋 할 수 없어 종료
       return 'conflict occured, merge failed'
     }
+  }
+
+  toJSON():gitJson {
+    const { branches, commits, config, conflicts, fileHashes, head, index, mergeHead, refDirectory, remoteBranches, trees } = this
+    return {
+      branches,
+      commits,
+      config,
+      conflicts,
+      fileHashes,
+      head,
+      index,
+      mergeHead,
+      refDirectory: JSON.stringify(refDirectory),
+      remoteBranches,
+      trees,
+    }
+  }
+
+  static fromJSON(gitJson: string) {
+    const gitObj = JSON.parse(gitJson) as gitJson
+    const refDir = Directory.fromJSON(gitObj.refDirectory)
   }
 }
