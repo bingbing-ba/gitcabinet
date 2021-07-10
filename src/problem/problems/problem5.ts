@@ -1,5 +1,6 @@
 import { Problem } from '@/problem/problem'
 import { PlainFile } from '@/git/fileStructure'
+import { visualizationArea } from '../viewTypes'
 
 export const problem5AddAdvanced = new Problem('한번에 여러 파일 staging하기')
 
@@ -40,4 +41,5 @@ problem5AddAdvanced.setAnswer((_, git) => {
   }
   return false
 })
-problem5AddAdvanced.setDefaultQueue([0, 2])
+visualizationArea
+problem5AddAdvanced.setDefaultQueue([visualizationArea.GitStagingArea, visualizationArea.GitDirectory])

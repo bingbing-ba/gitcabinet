@@ -1,6 +1,7 @@
 import { Problem } from '@/problem/problem'
 import { Directory, PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
+import { visualizationArea } from '../viewTypes'
 
 export const problem9PullFromRemote = new Problem('원격 저장소에서 pull하기')
 
@@ -39,4 +40,4 @@ problem9PullFromRemote.setAnswer((_, git) => {
   }
   return false
 })
-problem9PullFromRemote.setDefaultQueue([1, 3])
+problem9PullFromRemote.setDefaultQueue([visualizationArea.GitRemote, visualizationArea.GitGraph])
