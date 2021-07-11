@@ -19,12 +19,14 @@ problem8PushToRemote.git?.setUserConfig({
   email: 'bing@bing.com',
   type: 'email',
 })
-const a = new PlainFile('a.txt', problem8PushToRemote.refDirectory)
-const b = new PlainFile('b.txt', problem8PushToRemote.refDirectory)
-problem8PushToRemote.git?.add([a.filename])
-problem8PushToRemote.git?.commit('add a.txt')
-problem8PushToRemote.git?.add([b.filename])
-problem8PushToRemote.git?.commit('add b.txt')
+const remoteTxt = new PlainFile('remote.txt', problem8PushToRemote.refDirectory)
+remoteTxt.content = '원격저장소에 push할 파일'
+const originTxt = new PlainFile('origin.txt', problem8PushToRemote.refDirectory)
+originTxt.content = '원격저장소에 push할 파일'
+problem8PushToRemote.git?.add([remoteTxt.filename])
+problem8PushToRemote.git?.commit('remote.txt 파일 추가')
+problem8PushToRemote.git?.add([originTxt.filename])
+problem8PushToRemote.git?.commit('origin.txt 파일 추가')
 const origin = new Git(new Directory('origin@origin.com'))
 problem8PushToRemote.git?.addRemote('origin', origin)
 problem8PushToRemote.setBase()

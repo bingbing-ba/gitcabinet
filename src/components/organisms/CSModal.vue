@@ -18,7 +18,6 @@
           <div>개발한 곳 <a href="https://github.com/bingbing-ba/gitcabinet" target="_blank">@github</a></div>
         </div>
       </div>
-      
     </div>
   </div>
 </template>
@@ -39,6 +38,13 @@ export default defineComponent({
   },
   setup(_, {emit}) {
     const comments = ref('')
+
+    // 한 컴퓨터에서 여러 아이디 생성되지 않도록
+    let csID = localStorage.getItem('cs-id')
+    if (csID === null) {
+      csID = String(Date.now())
+      localStorage.setItem('cs-id', csID)
+    }
     const leaveComments = (e:Event) => {
       e.stopPropagation()
       if (!comments.value.trim()) {
@@ -48,7 +54,10 @@ export default defineComponent({
       axios({
         url:'https://us-central1-gitcabinet-bing.cloudfunctions.net/comments',
         method:'POST',
-        data: comments.value,
+        data: {
+          csID,
+          content: comments.value,
+        },
       }).then(()=>{
         alert('전송되었어요. 감사합니다.')
         emit('close-modal')

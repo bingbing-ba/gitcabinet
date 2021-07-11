@@ -16,10 +16,10 @@ problem7Remote.explanation = `원격 저장소는 다른 곳에 존재하는 백
 problem7Remote.setGit()
 problem7Remote.git?.setUserConfig({ name: 'bing', type: 'name' })
 problem7Remote.git?.setUserConfig({ email: 'bing@bing.com', type: 'email' })
-new PlainFile('a.txt', problem7Remote.refDirectory)
-new PlainFile('b.txt', problem7Remote.refDirectory)
+new PlainFile('remote.txt', problem7Remote.refDirectory)
+new PlainFile('origin.txt', problem7Remote.refDirectory)
 problem7Remote.git?.add()
-problem7Remote.git?.commit('initial commit')
+problem7Remote.git?.commit('처음 remote.txt와 origin.txt를 추가')
 problem7Remote.setBase()
 problem7Remote.setAnswer((_, git) => {
   if (git) {

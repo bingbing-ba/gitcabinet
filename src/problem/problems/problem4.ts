@@ -30,6 +30,7 @@ const withUserConfig = new PlainFile(
   'with_user_config.txt',
   problem4UserConfig.refDirectory
 )
+withUserConfig.content = '문제의 작성자 정보를 먼저 설정하고 commit 해주세요.'
 problem4UserConfig.setGit()
 problem4UserConfig.setBase()
 problem4UserConfig.setAnswer((_, git) => {

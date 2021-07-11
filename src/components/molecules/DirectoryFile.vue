@@ -41,8 +41,9 @@
     </div>
 
     <transition name="slide">
-      <div v-show="isEditMode" class="p-2">
+      <div class="p-2">
         <DirectoryEditor
+          :isEditMode="isEditMode"
           :fileContent="fileContent"
           @update-file-content="updateFileContent"
         />
