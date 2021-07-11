@@ -155,7 +155,7 @@ export const cli = (command: string, problem:Problem) => {
         }
         try {
           problem.git.push(remoteName, branchName)
-          resultString = '어떻게 push 되었는지 알려드리고 싶지만, 아직은 마음만 있어요.'
+          resultString = 'push 되었어요. 커밋 그래프와 원격 저장소를 비교해보세요.'
         } catch (error) {
           if (error instanceof PushRejectedError) {
             resultString = `${remoteName}의 ${branchName}이 로컬 저장소보다 앞서 있어서 push할 수 없습니다.`
@@ -179,7 +179,7 @@ export const cli = (command: string, problem:Problem) => {
         try {
           problem.git.pull(remoteName, branchName)
           // pull하다가 conflict 날 경우에는 추가로 commit 해야하는데, 그거는 일단 보류
-          resultString = '어떻게 pull 되었는지 알려드리고 싶지만, 아직은 마음만 있어요.'
+          resultString = 'pull 되었어요. 커밋 그래프와 원격 저장소를 비교해보세요.'
         } catch (error) {
           resultString = `${remoteName}이나 ${branchName}을 다시 확인해주세요.`
         }

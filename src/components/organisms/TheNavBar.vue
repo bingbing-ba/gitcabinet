@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <div class="navbar-left">
-      <Title>GIT CABINET</Title>
+      <Title><a href="/">GIT CABINET</a></Title>
       <ProblemNavigator
         :problem="problem"
         :isCorrect="isCorrect"

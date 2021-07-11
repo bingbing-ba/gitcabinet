@@ -11,7 +11,9 @@ problem2BasicAdd.explanation = `git으로 변경 이력을 남기려면, 먼저 
 *커밋할 변경 사항*에 나타나는 파일들은 staging area에 추가되어서 기록할 준비가 된 파일들입니다.`
 
 const staging = new PlainFile('staging.txt', problem2BasicAdd.refDirectory)
+staging.content = '이 파일을 staging 합니다.'
 const unstaging = new PlainFile('unstaging.txt', problem2BasicAdd.refDirectory)
+unstaging.content = '이 파일은 staging 하지 않아요.'
 // 문제에 맞게 git add 만 하면 되도록 미리 git init해둠
 problem2BasicAdd.setGit()
 problem2BasicAdd.setBase()

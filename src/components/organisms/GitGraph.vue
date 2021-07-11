@@ -5,7 +5,7 @@
         커밋 그래프
       </Title>
     </div>
-    <Card class="git-graph__card">
+    <Card class="git-graph__card custom-scroll-bar">
       <div v-if="problem.git" class="git-graph__main" tabindex="0">
         <transition 
           v-if="commits.length > 0"
@@ -138,21 +138,5 @@ export default defineComponent({
 
 .git-graph__main {
   display: grid;
-}
-
-.git-graph__card::-webkit-scrollbar {
-  @apply bg-white w-3 rounded;
-}
-
-.git-graph__card::-webkit-scrollbar-corner {
-  @apply bg-gray-900 rounded;
-}
-
-.git-graph__card::-webkit-scrollbar-corner {
-  @apply bg-gray-900 rounded;
-}
-
-.git-graph__card::-webkit-scrollbar-thumb {
-  @apply bg-gray-500 rounded w-2 mt-3;
 }
 </style>

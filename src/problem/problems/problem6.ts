@@ -15,6 +15,9 @@ const modified = new PlainFile('modified.txt', problem6AddCommitPractice.refDire
 const untracked1 = new PlainFile('untracked1.txt', problem6AddCommitPractice.refDirectory)
 const untracked2 = new PlainFile('untracked2.txt', problem6AddCommitPractice.refDirectory)
 const untracked3 = new PlainFile('untracked3.txt', problem6AddCommitPractice.refDirectory)
+untracked1.content = 'staging 된 적 없는 파일이에요.'
+untracked2.content = 'staging 된 적 없는 파일이에요.'
+untracked3.content = 'staging 된 적 없는 파일이에요.'
 problem6AddCommitPractice.setGit()
 problem6AddCommitPractice.git?.setUserConfig({ name: 'bing', type: 'name' })
 problem6AddCommitPractice.git?.setUserConfig({
@@ -22,8 +25,8 @@ problem6AddCommitPractice.git?.setUserConfig({
   type: 'email',
 })
 problem6AddCommitPractice.git?.add([modified.filename])
-problem6AddCommitPractice.git?.commit('add modified')
-modified.content = '수정된 내용'
+problem6AddCommitPractice.git?.commit('modified.txt 파일 추가')
+modified.content = '처음 commit 이후에 내용이 수정된 파일이에요.'
 problem6AddCommitPractice.setBase()
 problem6AddCommitPractice.setAnswer((_, git) => {
   if (git) {
