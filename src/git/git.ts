@@ -244,7 +244,7 @@ export class Git {
       if (this.fileHashes[hashedFile.hash] === undefined) {
         this.fileHashes[hashedFile.hash] = hashedFile.content
       }
-      this.index[hashedFile.filename] = hashedFile.hash
+      this.index = {...this.index, [hashedFile.filename]: hashedFile.hash}
     }
     for (const filename of deleted) {
       delete this.index[filename]

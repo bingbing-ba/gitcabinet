@@ -1,9 +1,10 @@
 import { Problem } from '@/problem/problem'
 import { PlainFile } from '@/git/fileStructure'
+import { visualizationArea } from '../viewTypes'
 
 export const problem6AddCommitPractice = new Problem('add, commit 실습하기')
 
-problem6AddCommitPractice.content = `저장소에 존재하는 네 파일 중, 하나의 파일은 이전 commit과 비교하여 파일 내용이 수정되었고, 나머지 파일은 새로 생성되었습니다. 먼저 수정된 파일을 commit하고, 다음 commit에는 나머지 파일들을 모두 추가해주세요.
+problem6AddCommitPractice.content = `저장소에 존재하는 네 파일 중, 하나의 파일은 내용이 수정되었고, 나머지 파일은 새로 생성되었습니다. 먼저 수정된 파일을 commit하고, 다음 commit에는 나머지 파일들을 모두 추가해주세요.
 *$ git status* 를 통해 문제해결에 도움을 얻을 수 있습니다.`
 problem6AddCommitPractice.explanation = `아래의 명령어를 참고하세요.
 *$ git add 파일이름*
@@ -34,4 +35,4 @@ problem6AddCommitPractice.setAnswer((_, git) => {
   }
   return false
 })
-problem6AddCommitPractice.setDefaultQueue([0, 1])
+problem6AddCommitPractice.setDefaultQueue([visualizationArea.GitGraph, visualizationArea.GitDirectory])
