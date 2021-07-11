@@ -7,6 +7,7 @@
         'text-green-500': isNotToCommitUntracked
       }">
       <IconTextFile/> {{ fileName }}
+      <button class="absolute -right-16" v-show="isEditMode" @click="deleteFile"><IconTrash /></button>
       <div class="absolute -right-40 w-36" >
         <Badge
           v-if="isNotToCommitUntracked || isNotToCommitModified"
@@ -30,7 +31,6 @@
         <DirectoryEditor 
           :fileContent="fileContent"
           @update-file-content="updateFileContent" />
-        <button @click="deleteFile"><IconTrash /></button>
       </div>
     </transition>
   </div>
