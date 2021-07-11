@@ -1,5 +1,6 @@
 import { Problem } from '@/problem/problem'
 import { PlainFile } from '@/git/fileStructure'
+import { visualizationArea } from '../viewTypes'
 
 export const problem5AddAdvanced = new Problem('한번에 여러 파일 staging하기')
 
@@ -19,6 +20,8 @@ const untracked2 = new PlainFile(
   'untracked2.txt',
   problem5AddAdvanced.refDirectory
 )
+untracked1.content = '이 파일은 staging 된 적이 없는 파일입니다.'
+untracked2.content = '이 파일은 staging 된 적이 없는 파일입니다.'
 problem5AddAdvanced.setGit()
 problem5AddAdvanced.git?.setUserConfig({ name: 'bing', type: 'name' })
 problem5AddAdvanced.git?.setUserConfig({
@@ -27,8 +30,8 @@ problem5AddAdvanced.git?.setUserConfig({
 })
 
 problem5AddAdvanced.git?.add([modified.filename, deleted.filename])
-problem5AddAdvanced.git?.commit('initial commit')
-modified.content = '수정된 내용'
+problem5AddAdvanced.git?.commit('modified.txt와 deleted.txt 파일 추가')
+modified.content = '이 파일은 내용이 수정되었어요.'
 problem5AddAdvanced.refDirectory.delete(deleted)
 problem5AddAdvanced.setBase()
 problem5AddAdvanced.setAnswer((_, git) => {
@@ -40,4 +43,5 @@ problem5AddAdvanced.setAnswer((_, git) => {
   }
   return false
 })
-problem5AddAdvanced.setDefaultQueue([0, 2])
+visualizationArea
+problem5AddAdvanced.setDefaultQueue([visualizationArea.GitStagingArea, visualizationArea.GitDirectory])

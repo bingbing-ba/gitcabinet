@@ -3,7 +3,7 @@
     v-model="content"
     @input="updateContent"
     @click.stop
-    class="resize-none bg-gray-300 w-full flex min-h-100px p-2">
+    class="resize-none bg-gray-200 w-80 flex min-h p-2 rounded">
   </textarea>
 </template>
 
@@ -16,7 +16,10 @@ export default defineComponent({
   props: {
     fileContent: {
       type: String
-    }
+    },
+    isEditMode: {
+      type: Boolean,
+    },
   },
   setup(props, context) {
     const content = ref('')
@@ -34,7 +37,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.min-h-100px {
-  min-height: 100px;
+.min-h {
+  min-height: 48px;
 }
 </style>

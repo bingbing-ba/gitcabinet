@@ -19,7 +19,6 @@
         :problem="problem"
         :hasReset="hasReset"
         @undo-reset="undoReset"
-        @update-answer-manually="updateAnswerManually"
       />
     </SectionLeft>
     <SectionRight>
@@ -48,15 +47,20 @@
       </div>
     </SectionRight>
     <Divider />
+    <ButtonCSModal @click="toggleModal" />
   </main>
+  <CSModal :modalOpened="modalOpened" @close-modal="toggleModal" />
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
 import { problems as problemSet } from '@/problem'
+import { visualizationArea, areas } from '@/problem/viewTypes'
+
 import {
   Divider,
   TheNavBar,
+  CSModal,
   SectionLeft,
   SectionRight,
   ProblemCLI,
@@ -65,6 +69,7 @@ import {
   GitGraph,
   GitStagingArea,
   GitRemote,
+  ButtonCSModal,
 } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 
@@ -72,6 +77,7 @@ export default defineComponent({
   components: {
     Divider,
     TheNavBar,
+    CSModal,
     SectionLeft,
     SectionRight,
     ProblemCLI,
@@ -80,6 +86,7 @@ export default defineComponent({
     GitGraph,
     GitStagingArea,
     GitRemote,
+    ButtonCSModal,
   },
   setup() {
     const problemIndex = ref(0)
@@ -91,12 +98,14 @@ export default defineComponent({
     })
     problem.value.setBase()
 
-    let isCorrect = ref(false)
-    let hasReset = ref(false)
+    const isCorrect = computed(() => {
+      return problem.value.isCorrect()
+    })
+
+    const hasReset = ref(false)
     const resetProblem = () => {
       problem.value.resetToBase()
       problem.value.setBase()
-      isCorrect.value = false
       hasReset.value = true
     }
     const undoReset = () => {
@@ -104,16 +113,11 @@ export default defineComponent({
     }
     const gotoPrevProblem = () => {
       problemIndex.value -= 1
-      isCorrect.value = false
     }
     const gotoNextProblem = () => {
       problemIndex.value += 1
-      isCorrect.value = false
     }
-    const updateAnswerManually = (answer: boolean) => {
-      isCorrect.value = answer
-    }
-
+  
     const updateFileContent = (content: string, index: number) => {
       problems[problemIndex.value].refDirectory.children[index].content = content
     }
@@ -142,22 +146,20 @@ export default defineComponent({
         }
       }
     }
-
+    
     const setCurrentComponent = (viewIndex: number) => {
-      switch (viewIndex) {
-        case 0:
-          return 'GitDirectory'
-        case 1:
-          return 'GitGraph'
-        case 2:
-          return 'GitStagingArea'
-        case 3:
-          return 'GitRemote'
-        default:
-          return null
+
+      for (const key in visualizationArea) {
+        if (visualizationArea[key as areas] === viewIndex) {
+          return key
+        }
       }
     }
 
+    const modalOpened = ref(false)
+    const toggleModal = () => {
+      modalOpened.value = !modalOpened.value
+    }
     return {
       problemIndex,
       lastProblemIndex,
@@ -168,12 +170,13 @@ export default defineComponent({
       problem,
       isCorrect,
       hasReset,
-      updateAnswerManually,
       updateFileContent,
       deleteFile,
       viewQueue,
       updateViewQueue,
       setCurrentComponent,
+      modalOpened,
+      toggleModal,
     }
   },
 })

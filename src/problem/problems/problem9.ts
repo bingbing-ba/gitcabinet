@@ -1,6 +1,7 @@
 import { Problem } from '@/problem/problem'
 import { Directory, PlainFile } from '@/git/fileStructure'
 import { Git } from '@/git/git'
+import { visualizationArea } from '../viewTypes'
 
 export const problem9PullFromRemote = new Problem('원격 저장소에서 pull하기')
 
@@ -22,16 +23,18 @@ problem9PullFromRemote.git?.setUserConfig({
   type: 'email',
 })
 const README = new PlainFile('README.md', problem9PullFromRemote.refDirectory)
+README.content = 'README.md 파일'
 problem9PullFromRemote.git?.add()
-problem9PullFromRemote.git?.commit('initial commit')
+problem9PullFromRemote.git?.commit('README.md 파일 추가')
 const origin = new Git(new Directory('origin'))
 origin.setUserConfig({ name: 'bing', type: 'name' })
 origin.setUserConfig({ email: 'bing@bing.com', type: 'email' })
 problem9PullFromRemote.git?.addRemote('origin', origin)
 problem9PullFromRemote.git?.push('origin', 'master')
 const pull = new PlainFile('pull.txt', origin.refDirectory)
+pull.content = 'pull.txt 파일'
 origin.add()
-const { hash } = origin.commit('add pull.txt')
+const { hash } = origin.commit('pull.txt 파일 추가')
 problem9PullFromRemote.setBase()
 problem9PullFromRemote.setAnswer((_, git) => {
   if (git) {
@@ -39,4 +42,4 @@ problem9PullFromRemote.setAnswer((_, git) => {
   }
   return false
 })
-problem9PullFromRemote.setDefaultQueue([1, 3])
+problem9PullFromRemote.setDefaultQueue([visualizationArea.GitRemote, visualizationArea.GitGraph])

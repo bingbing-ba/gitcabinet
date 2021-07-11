@@ -1,23 +1,32 @@
 <template>
-  <div
-    class="flex pb-2"
-    v-for="hash, fileName in stagingAreaIndex" 
-    :key="hash"
-    :class="{ 
-      'text-yellow-500': isToCommitModified(fileName),
-      'text-green-500': isToCommitUntracked(fileName)
-    }">
-    <IconTextFile /> {{ fileName }}
-    <div class="pl-10">
-      <Badge v-if="isToCommitUntracked(fileName)" :color="'green'">생성</Badge>
-      <Badge v-else-if="isToCommitModified(fileName)" :color="'yellow'">수정</Badge>
+  <div class="staging-area-item pb-2" v-for="(hash, fileName) in stagingAreaIndex" :key="hash">
+    <div
+      class="flex pb-2"
+      :class="{
+        'text-yellow-500': isToCommitModified(fileName),
+        'text-green-500': isToCommitUntracked(fileName),
+      }"
+    >
+      <IconTextFile /> {{ fileName }}
+      <div class="pl-10">
+        <Badge v-if="isToCommitUntracked(fileName)" :color="'green'">생성</Badge>
+        <Badge v-else-if="isToCommitModified(fileName)" :color="'yellow'">수정</Badge>
+      </div>
     </div>
+    <textarea
+      :value="getFileContentFromHash(hash)"
+      readonly
+      @click.stop
+      class="resize-none bg-gray-200 w-80 flex min-h p-2 rounded"
+    >
+    </textarea>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, watch } from 'vue'
 import { IconTextFile, Badge } from '@/components'
+import { Problem } from '@/problem'
 
 export default defineComponent({
   components: {
@@ -27,12 +36,16 @@ export default defineComponent({
   props: {
     nowStatus: {
       type: Object,
-      required:true
+      required: true,
     },
     stagingAreaIndex: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
+    problem: {
+      type: Problem,
+      required: true,
+    },
   },
   emits: ['activate-view-status'],
   setup(props, { emit }) {
@@ -66,16 +79,32 @@ export default defineComponent({
       changeViewStatus(true)
     })
 
+    const getFileContentFromHash = (hash: string) => {
+      const fileHashes = props.problem.git?.fileHashes
+      if (fileHashes) {
+        return fileHashes[hash]
+      }
+      return ''
+    }
+
     return {
       toCommitUntrackedFileList,
       toCommitModifiedFileList,
       toCommitDeletedFileList,
       isToCommitUntracked,
       isToCommitModified,
+      getFileContentFromHash,
     }
-  }
+  },
 })
 </script>
 
 <style scoped>
+.staging-area-item {
+  display: flex;
+  flex-direction: column;
+}
+.staging-area-item textarea:focus {
+  outline: none;
+}
 </style>

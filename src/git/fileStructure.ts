@@ -4,6 +4,7 @@ export class PlainFile {
   filename: string
   content: string
   parent: Directory
+  id:string
 
   constructor(filename: string, parent: Directory) {
     if (filename.includes(' ')) {
@@ -15,6 +16,7 @@ export class PlainFile {
     this.filename = filename
     this.content = ''
     this.parent = parent
+    this.id = `${parent}/${filename} ${Date.now()}`
     parent.add(this)
   }
 

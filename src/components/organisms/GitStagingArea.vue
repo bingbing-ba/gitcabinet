@@ -5,13 +5,14 @@
         Staging Area
       </Title>
     </div>
-    <Card class="git-staging-area__card">
+    <Card class="git-staging-area__card custom-scroll-bar">
       <div v-if="nowStatus" class="w-full p-10">
         <div v-if="isEmptyIndex" class="h-full flex justify-center items-center">
           Staging Area가 비어있습니다.
         </div>
         <!-- v-else 를 넣으면 watch stagingAreaIndex 가 처음에 동작하지 않음 -->
         <StagingAreaStatus
+          :problem="problem"
           :stagingAreaIndex="stagingAreaIndex" 
           :nowStatus="nowStatus" 
           @activate-view-status="activateViewStatus" />

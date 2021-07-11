@@ -34,6 +34,7 @@ import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
 import MessageBox from './molecules/MessageBox.vue'
 import StagingAreaStatus from './molecules/StagingAreaStatus.vue'
+import ButtonCSModal from './molecules/ButtonCSModal.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -42,6 +43,7 @@ import GitDirectory from './organisms/GitDirectory.vue'
 import GitGraph from './organisms/GitGraph.vue'
 import GitRemote from './organisms/GitRemote.vue'
 import GitStagingArea from './organisms/GitStagingArea.vue'
+import CSModal from './organisms/CSModal.vue'
 
 import SectionLeft from './templates/SectionLeft.vue'
 import SectionRight from './templates/SectionRight.vue'
@@ -83,6 +85,7 @@ export {
   NetworkHorizontal,
   MessageBox,
   StagingAreaStatus,
+  ButtonCSModal,
 
   TheNavBar,
   ProblemInstruction,
@@ -93,6 +96,7 @@ export {
   GitRemote,
   GitStagingArea,
 
+  CSModal,
   SectionLeft,
   SectionRight,
 }

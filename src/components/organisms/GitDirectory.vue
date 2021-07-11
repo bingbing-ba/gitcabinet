@@ -5,14 +5,14 @@
         디렉토리
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
+    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden container-height custom-scroll-bar">
       <div v-if="dirName" class="xl:flex max-w-full">
-        <div class="xl:w-1/2">
+        <div class="w-full">
           <DirectoryFolder :dirName="dirName" class="pb-2"/>
           <DirectoryFile
             class="pl-5 py-2"
             v-for="(file, index) in fileList"
-            :key="file.filename"
+            :key="file.id"
             :git="git"
             :file="file"
             :index="index"
@@ -20,9 +20,9 @@
             @delete-file="deleteFile" />
         </div>
         <hr class="xl:hidden m-5">
-        <div class="xl:w-1/2" v-if="deletedFiles.length">
+        <div class="w-full" v-if="deletedFiles.length">
           <p v-if="fileList.length" class="flex pb-2"><IconTrash />삭제된 파일</p>
-          <div v-for="(fileName, idx) in deletedFiles" :key="idx" class="pl-5 py-2">
+          <div v-for="(fileName) in deletedFiles" :key="fileName.id" class="pl-5 py-2">
             <p class="flex overflow-hidden"><IconTextFile/> {{ fileName }}</p>
           </div>
         </div>
