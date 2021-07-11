@@ -20,5 +20,4 @@ problem1Init.setAnswer((refDirectory, git) => {
   }
   return false
 })
-console.log({visualizationArea})
 problem1Init.setDefaultQueue([visualizationArea.GitDirectory])

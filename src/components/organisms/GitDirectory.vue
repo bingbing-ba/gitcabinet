@@ -5,7 +5,7 @@
         디렉토리
       </Title>
     </div>
-    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden max-h-full">
+    <Card class="bg-white p-10 overflow-y-auto overflow-x-hidden container-height custom-scroll-bar">
       <div v-if="dirName" class="xl:flex max-w-full">
         <div class="xl:w-1/2">
           <DirectoryFolder :dirName="dirName" class="pb-2"/>

@@ -7,7 +7,7 @@
       <p v-html="wrapCodesInProblemContent"></p>
     </Card>
     <br>
-    <Badge>설명</Badge>
+    <Badge textColor="white">설명</Badge>
     <Card class="problem__instruction-explanation">
       <p v-html="wrapCodesInProblemExplanation"></p>
     </Card>

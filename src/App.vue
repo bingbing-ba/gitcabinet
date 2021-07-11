@@ -47,7 +47,9 @@
       </div>
     </SectionRight>
     <Divider />
+    <ButtonCSModal @click="toggleModal" />
   </main>
+  <CSModal :modalOpened="modalOpened" @close-modal="toggleModal" />
 </template>
 
 <script lang="ts">
@@ -58,6 +60,7 @@ import { visualizationArea, areas } from '@/problem/viewTypes'
 import {
   Divider,
   TheNavBar,
+  CSModal,
   SectionLeft,
   SectionRight,
   ProblemCLI,
@@ -66,6 +69,7 @@ import {
   GitGraph,
   GitStagingArea,
   GitRemote,
+  ButtonCSModal,
 } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 
@@ -73,6 +77,7 @@ export default defineComponent({
   components: {
     Divider,
     TheNavBar,
+    CSModal,
     SectionLeft,
     SectionRight,
     ProblemCLI,
@@ -81,6 +86,7 @@ export default defineComponent({
     GitGraph,
     GitStagingArea,
     GitRemote,
+    ButtonCSModal,
   },
   setup() {
     const problemIndex = ref(0)
@@ -150,6 +156,10 @@ export default defineComponent({
       }
     }
 
+    const modalOpened = ref(false)
+    const toggleModal = () => {
+      modalOpened.value = !modalOpened.value
+    }
     return {
       problemIndex,
       lastProblemIndex,
@@ -165,6 +175,8 @@ export default defineComponent({
       viewQueue,
       updateViewQueue,
       setCurrentComponent,
+      modalOpened,
+      toggleModal,
     }
   },
 })
