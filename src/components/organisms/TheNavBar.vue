@@ -72,8 +72,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const { problem } = toRefs(props)
 
-    const resetProblem = (problem: Object) => {
-      emit('reset-problem', problem)
+    const resetProblem = () => {
+      emit('reset-problem')
     }
 
     const gotoPrevProblem = () => {

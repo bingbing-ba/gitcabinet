@@ -48,7 +48,8 @@ export default defineComponent({
   },
   props: {
     problem: {
-      type: Problem
+      type: Problem,
+      required: true,
     }
   },
   setup(props, context) {
@@ -56,10 +57,7 @@ export default defineComponent({
       return props.problem?.git
     })
     const fileList = computed(() => {
-      if (git.value) {
-        return git.value.refDirectory?.children
-      }
-      return props.problem?.refDirectory?.children
+      return props.problem.refDirectory.children
     })
 
     const dirName = computed(() => {

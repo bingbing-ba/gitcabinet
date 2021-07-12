@@ -105,7 +105,6 @@ export default defineComponent({
     const hasReset = ref(false)
     const resetProblem = () => {
       problem.value.resetToBase()
-      problem.value.setBase()
       hasReset.value = true
     }
     const undoReset = () => {
