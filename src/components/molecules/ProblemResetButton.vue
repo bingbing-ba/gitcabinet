@@ -21,10 +21,8 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const problem = props.problem
-
     const resetProblem = () => {
-      emit('reset-problem', problem)
+      emit('reset-problem')
     }
     return {
       resetProblem,
