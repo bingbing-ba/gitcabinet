@@ -19,6 +19,7 @@ import NetworkEdgeVertical from './atoms/NetworkEdgeVertical.vue'
 import NetworkEdgeHorizontal from './atoms/NetworkEdgeHorizontal.vue'
 import NetworkDetail from './atoms/NetworkDetail.vue'
 import Badge from './atoms/Badge.vue'
+import IconClipBoard from './atoms/IconClipBoard.vue'
 
 import Card from './molecules/Card.vue'
 import ProblemNavigator from './molecules/ProblemNavigator.vue'
@@ -70,6 +71,7 @@ export {
   NetworkEdgeHorizontal,
   NetworkDetail,
   Badge,
+  IconClipBoard,
 
   Card,
   ProblemNavigator,

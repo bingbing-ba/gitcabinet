@@ -27,5 +27,6 @@ export default defineComponent({
   width: 4rem;
   height: 4rem;
   border-radius: 2rem;
+  font-size: 1.6rem;
 }
 </style>
