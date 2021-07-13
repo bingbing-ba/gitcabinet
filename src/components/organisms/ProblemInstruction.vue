@@ -19,6 +19,16 @@ import { defineComponent, toRefs, computed } from 'vue'
 import { Problem } from '@/problem'
 import { Title, Card, Badge } from '@/components'
 
+const textToProblemInstruction = (text:string) => {
+  return defineComponent({
+    render(){
+      return (
+        <div>123</div>
+      )
+    }
+  })
+}
+
 export default defineComponent({
   components: {
     Title,
@@ -115,6 +125,7 @@ export default defineComponent({
 
 .problem__content-strong {
   color:#ff6103;
+  cursor: pointer;
   @apply font-bold
 }
 </style>
