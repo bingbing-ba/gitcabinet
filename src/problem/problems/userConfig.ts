@@ -4,8 +4,8 @@ import { visualizationArea } from '../viewTypes'
 
 export const userConfig = new Problem('user config 등록하기')
 userConfig.content = `이 저장소에
-- 이름: *bing*
-- 이메일주소: *bing@bing.com*
+- 이름: *#bing*
+- 이메일주소: *#bing@bing.com*
 의 유저 정보를 설정해주세요.`
 userConfig.explanation = `Git 저장소에 기록을 남기기 위해서는 먼저 유저 정보 설정이 되어있어야 합니다.
 

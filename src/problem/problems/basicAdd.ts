@@ -3,12 +3,12 @@ import { PlainFile } from '@/git/fileStructure'
 import { visualizationArea } from '../viewTypes'
 
 export const basicAdd = new Problem('staging 하기')
-basicAdd.content = `이 git 저장소에 두 파일이 새롭게 추가되었습니다(오른쪽 디렉토리 영역). 추가된 파일 중, *staging.txt* 를 staging area에 추가해주세요.`
-basicAdd.explanation = `git으로 변경 이력을 남기려면, 먼저 어떤 변경사항을 기록할지를 *선택*해야 합니다. 
+basicAdd.content = `이 git 저장소에 두 파일이 새롭게 추가되었습니다(오른쪽 디렉토리 영역). 추가된 파일 중, *#staging.txt* 를 staging area에 추가해주세요.`
+basicAdd.explanation = `git으로 변경 이력을 남기려면, 먼저 어떤 변경사항을 기록할지를 *#선택*해야 합니다. 
 이 선택과정을 staging이라고 합니다. *$ git add 파일이름*을 통해 원하는 파일을 staging할 수 있습니다. 선택된 변경사항은 staging area(오른쪽 Staging Area 영역)라는 곳에 존재하게 됩니다.
 
 *$ git add 파일이름* 을 통해 원하는 파일을 staging area에 추가할 수 있습니다.
-*커밋할 변경 사항*에 나타나는 파일들은 staging area에 추가되어서 기록할 준비가 된 파일들입니다.`
+*#커밋할 변경 사항*에 나타나는 파일들은 staging area에 추가되어서 기록할 준비가 된 파일들입니다.`
 
 const staging = new PlainFile('staging.txt', basicAdd.refDirectory)
 staging.content = '이 파일을 staging 합니다.'
