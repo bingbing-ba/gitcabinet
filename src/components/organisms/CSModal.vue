@@ -88,7 +88,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .modal-background {
   position: fixed;
   margin: auto;
