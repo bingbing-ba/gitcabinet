@@ -22,6 +22,7 @@ import Badge from './atoms/Badge.vue'
 import IconClipBoard from './atoms/IconClipBoard.vue'
 
 import Card from './molecules/Card.vue'
+import ProblemNavigatorDropdown from './molecules/ProblemNavigatorDropdown.vue'
 import ProblemNavigator from './molecules/ProblemNavigator.vue'
 import ProblemResetButton from './molecules/ProblemResetButton.vue'
 import ButtonDirectory from './molecules/ButtonDirectory.vue'
@@ -74,6 +75,7 @@ export {
   IconClipBoard,
 
   Card,
+  ProblemNavigatorDropdown,
   ProblemNavigator,
   ProblemResetButton,
   ButtonDirectory,

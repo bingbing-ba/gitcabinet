@@ -2,12 +2,14 @@
   <TheNavBar
     class="navbar"
     :problem="problem"
+    :problems="problems"
     :isCorrect="isCorrect"
     :problemIndex="problemIndex"
     :lastProblemIndex="lastProblemIndex"
     :viewQueue="viewQueue"
     @goto-prev-problem="gotoPrevProblem"
     @goto-next-problem="gotoNextProblem"
+    @goto-target-problem="gotoTargetProblem"
     @reset-problem="resetProblem"
     @update-view-queue="updateViewQueue"
   />
@@ -116,6 +118,9 @@ export default defineComponent({
     const gotoNextProblem = () => {
       problemIndex.value += 1
     }
+    const gotoTargetProblem = (idx: number) => {
+      problemIndex.value  = idx
+    }
   
     const updateFileContent = (content: string, index: number) => {
       problems[problemIndex.value].refDirectory.children[index].content = content
@@ -166,7 +171,9 @@ export default defineComponent({
       undoReset,
       gotoPrevProblem,
       gotoNextProblem,
+      gotoTargetProblem,
       problem,
+      problems,
       isCorrect,
       hasReset,
       updateFileContent,

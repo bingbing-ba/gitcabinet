@@ -23,6 +23,6 @@ export default defineComponent({
 
 <style>
 .navbar__btn {
-  @apply flex align-middle items-center;
+  @apply flex align-middle items-center border-2 border-gray-500;
 }
 </style>

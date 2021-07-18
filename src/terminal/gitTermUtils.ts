@@ -75,9 +75,7 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
           result += messageForUnstaged
           result += '\r\n'
         }
-        
-        
-        
+
         if (!hasChanged) {
           result += '커밋할 변경 사항 없음, 작업 폴더 깨끗함'
         }
@@ -198,6 +196,11 @@ export function findAutoCompleteCandidates(problem: Problem, command: string [])
   return result
 }
 
-export function findSimilarWord(command: string [], fileCandidates: string []): string {
-  return ''
+export function findFileCandidates(command: string [], fileCandidates: string []): string [] {
+  let result = []
+  const targetCommand = command[command.length - 1].toLowerCase()
+  result = fileCandidates.filter((fileName) => {
+    return fileName.toLowerCase().startsWith(targetCommand)
+  })
+  return result
 }
