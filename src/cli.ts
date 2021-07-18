@@ -2,6 +2,7 @@ import { Problem } from '@/problem/problem'
 import { Git } from '@/git/git'
 import { Directory } from './git/fileStructure'
 import { PushRejectedError } from './git/gitTypes'
+import { gitTerm } from './terminal/gitTerm'
 
 export const cli = (command: string, problem:Problem) => {
   
@@ -83,7 +84,13 @@ export const cli = (command: string, problem:Problem) => {
           resultString = `commit message가 비어있습니다`
           return
         }
-        problem.git.commit(message)
+
+        const commitResult = problem.git.commit(message)
+        if (commitResult.result === 'fail') {
+          resultString = commitResult.message
+          return
+        }
+
         resultString = 'commit이 완료되었어요'
       },
 
