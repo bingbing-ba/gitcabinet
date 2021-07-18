@@ -19,6 +19,7 @@ import NetworkEdgeVertical from './atoms/NetworkEdgeVertical.vue'
 import NetworkEdgeHorizontal from './atoms/NetworkEdgeHorizontal.vue'
 import NetworkDetail from './atoms/NetworkDetail.vue'
 import Badge from './atoms/Badge.vue'
+import IconClipBoard from './atoms/IconClipBoard.vue'
 
 import Card from './molecules/Card.vue'
 import ProblemNavigator from './molecules/ProblemNavigator.vue'
@@ -34,6 +35,7 @@ import DirectoryFolder from './molecules/DirectoryFolder.vue'
 import NetworkHorizontal from './molecules/NetworkHorizontal.vue'
 import MessageBox from './molecules/MessageBox.vue'
 import StagingAreaStatus from './molecules/StagingAreaStatus.vue'
+import ButtonCSModal from './molecules/ButtonCSModal.vue'
 
 import TheNavBar from './organisms/TheNavBar.vue'
 import ProblemInstruction from './organisms/ProblemInstruction.vue'
@@ -42,6 +44,7 @@ import GitDirectory from './organisms/GitDirectory.vue'
 import GitGraph from './organisms/GitGraph.vue'
 import GitRemote from './organisms/GitRemote.vue'
 import GitStagingArea from './organisms/GitStagingArea.vue'
+import CSModal from './organisms/CSModal.vue'
 
 import SectionLeft from './templates/SectionLeft.vue'
 import SectionRight from './templates/SectionRight.vue'
@@ -68,6 +71,7 @@ export {
   NetworkEdgeHorizontal,
   NetworkDetail,
   Badge,
+  IconClipBoard,
 
   Card,
   ProblemNavigator,
@@ -83,6 +87,7 @@ export {
   NetworkHorizontal,
   MessageBox,
   StagingAreaStatus,
+  ButtonCSModal,
 
   TheNavBar,
   ProblemInstruction,
@@ -93,6 +98,7 @@ export {
   GitRemote,
   GitStagingArea,
 
+  CSModal,
   SectionLeft,
   SectionRight,
 }

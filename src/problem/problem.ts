@@ -81,8 +81,11 @@ export class Problem {
    * 미리 지정된 base를 통해서 현재 git과 refDirectory의 상태를 되돌리는 함수입니다.
    */
   resetToBase() {
-    this.git = cloneDeep(this.baseGit)
     this.refDirectory = cloneDeep(this.baseRefDirectory) as Directory
+    this.git = cloneDeep(this.baseGit)
+    if (this.git) {
+      this.git.refDirectory = this.refDirectory
+    }
   }
 
   /**

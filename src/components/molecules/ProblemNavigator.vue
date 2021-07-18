@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'p-navi':true, green:solvedStyle}">
+  <div :class="{'p-navi':true, green:isCorrect}">
     <Button 
       class="p-navi__left"
       @click="gotoPrevProblem"
@@ -66,9 +66,6 @@ export default defineComponent({
     const solved = computed(() => {
       return props.isCorrect && !(index.value === props.lastProblemIndex)
     })
-    const solvedStyle = computed(()=>{
-      return props.problem.isCorrect()
-    })
     
     const showStageList = () => {
     }
@@ -84,7 +81,6 @@ export default defineComponent({
     return {
       index,
       solved,
-      solvedStyle,
       showStageList,
       gotoPrevProblem,
       gotoNextProblem,

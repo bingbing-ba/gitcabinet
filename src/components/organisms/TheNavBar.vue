@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <div class="navbar-left">
-      <Title>GIT CABINET</Title>
+      <Title><a href="/">GIT CABINET</a></Title>
       <ProblemNavigator
         :problem="problem"
         :isCorrect="isCorrect"
@@ -72,8 +72,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const { problem } = toRefs(props)
 
-    const resetProblem = (problem: Object) => {
-      emit('reset-problem', problem)
+    const resetProblem = () => {
+      emit('reset-problem')
     }
 
     const gotoPrevProblem = () => {

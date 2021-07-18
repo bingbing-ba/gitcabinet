@@ -1,26 +1,26 @@
 import { Problem } from './problem'
 import {
-  problem1Init,
-  problem2BasicAdd,
-  problem3BasicCommit,
-  problem4UserConfig,
-  problem5AddAdvanced,
-  problem6AddCommitPractice,
-  problem7Remote,
-  problem8PushToRemote,
-  problem9PullFromRemote,
+  initGit,
+  basicAdd,
+  basicCommit,
+  userConfig,
+  addAdvanced,
+  addCommitPractice,
+  addRemote,
+  pushToRemote,
+  pullFromRemote,
 } from './problems'
 
 const problems = [
-  problem1Init,
-  problem2BasicAdd,
-  problem3BasicCommit,
-  problem4UserConfig,
-  problem5AddAdvanced,
-  problem6AddCommitPractice,
-  problem7Remote,
-  problem8PushToRemote,
-  problem9PullFromRemote,
+  initGit,
+  userConfig,
+  basicAdd,
+  basicCommit,
+  addAdvanced,
+  addCommitPractice,
+  addRemote,
+  pushToRemote,
+  pullFromRemote,
 ]
 
 export { Problem, problems }

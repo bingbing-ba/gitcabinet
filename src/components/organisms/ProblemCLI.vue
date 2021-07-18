@@ -1,6 +1,5 @@
 <template>
-  <div id="terminal">
-  </div>
+  <div id="terminal"></div>
 </template>
 
 <script lang="ts">
@@ -8,7 +7,7 @@ import { defineComponent, onMounted, onBeforeUnmount, onUpdated, watch } from 'v
 import { Problem } from '@/problem'
 import { gitTerm } from '@/terminal/gitTerm'
 import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit';
+import { FitAddon } from 'xterm-addon-fit'
 import 'xterm/lib/xterm.js'
 import 'xterm/css/xterm.css'
 
@@ -23,7 +22,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {    
+  setup(props, { emit }) {
     let term: Terminal
     let cabinetTerm: any
     onMounted(() => {
@@ -40,6 +39,13 @@ export default defineComponent({
         cursorBlink: true,
       }
       term = new Terminal(termOptions)
+      term.attachCustomKeyEventHandler(function(e){
+        if (e.ctrlKey && (e.key === 'v')) {
+          document.execCommand('paste')
+          return false
+        }
+        return true
+      })
       term.open(document.querySelector('#terminal') as HTMLElement)
       
       const fitAddon = new FitAddon()
@@ -74,7 +80,7 @@ export default defineComponent({
     watch(props.problem, (newProblem) => {
       cabinetTerm.setProblem(newProblem)
     })
-  }, 
+  },
 })
 </script>
 
@@ -102,6 +108,10 @@ export default defineComponent({
 /* #terminal::-webkit-scrollbar-thumb {
   @apply bg-gray-500 w-3 rounded w-3 mt-3;
 } */
+
+.xterm .xterm-viewport {
+  overflow: hidden;
+}
 
 .xterm {
   padding: 10px;

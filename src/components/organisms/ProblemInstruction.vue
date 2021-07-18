@@ -4,12 +4,12 @@
       {{ problem.title }}
     </Title>
     <Card class="problem__instruction-content">
-      <p v-html="wrapCodesInProblemContent"></p>
+      <WrapCode :text="content" />
     </Card>
-    <br>
-    <Badge>설명</Badge>
+    <br />
+    <Badge textColor="white">설명</Badge>
     <Card class="problem__instruction-explanation">
-      <p v-html="wrapCodesInProblemExplanation"></p>
+      <WrapCode :text="explanation" />
     </Card>
   </div>
 </template>
@@ -18,12 +18,14 @@
 import { defineComponent, toRefs, computed } from 'vue'
 import { Problem } from '@/problem'
 import { Title, Card, Badge } from '@/components'
+import WrapCode from '@/components/jsx/WrapCode'
 
 export default defineComponent({
   components: {
     Title,
     Card,
     Badge,
+    WrapCode,
   },
   props: {
     problem: {
@@ -34,43 +36,14 @@ export default defineComponent({
   setup(props) {
     const { problem } = toRefs(props)
 
-    const wrapCodesInProblem = (paragraph: string | undefined) => {
-      if (!paragraph) {
-        return ''
-      }
-      const pattern = new RegExp('\\*\\$.+?\\*', 'g')
-      const matchList = paragraph?.match(pattern)
-
-      let result = paragraph
-      matchList?.forEach((code) => {
-        const codeAsteriskRemoved = code.slice(1, code.length - 1)
-        const codeDecorated = `<code class="problem__content-code">${codeAsteriskRemoved}</code>`
-        result = result?.replace(code, codeDecorated)
-      })
-      result = result.replace(/\n/g, '<br>')
-
-      const strongPattern = /\*.*?\*/g
-      const strongMatchList = result.match(strongPattern)
-      strongMatchList?.forEach((strong)=> {
-        const asteriskRemoved = strong.slice(1, strong.length -1)
-        const strongDecorated = `<span class="problem__content-strong">${asteriskRemoved}</span>`
-        result = result.replace(strong, strongDecorated)
-      })
-
-      return result
-    }
-
-    const wrapCodesInProblemContent = computed(() =>
-      wrapCodesInProblem(problem.value.content)
-    )
-
-    const wrapCodesInProblemExplanation = computed(() =>
-      wrapCodesInProblem(problem.value.explanation)
-    )
+    const content = computed(() => {
+      return props.problem.content
+    })
+    const explanation = computed(() => props.problem.explanation)
 
     return {
-      wrapCodesInProblemContent,
-      wrapCodesInProblemExplanation,
+      content,
+      explanation,
     }
   },
 })
@@ -114,7 +87,7 @@ export default defineComponent({
 }
 
 .problem__content-strong {
-  color:#ff6103;
-  @apply font-bold
+  color: #ff6103;
+  @apply font-bold;
 }
 </style>

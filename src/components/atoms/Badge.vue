@@ -15,14 +15,18 @@ export default defineComponent({
     color: {
       type: String,
       default: 'indigo'
-    }
+    },
+    textColor: {
+      type: String,
+      default: '',
+    },
   },
   setup(props) {
     const bgColor = computed(() => {
-      return `bg-${props.color}-500`
+      return `bg-${props.color}-600`
     })
     const textColor = computed(() => {
-      return `text-${props.color}-100`
+      return props.textColor ? `text-${props.textColor}` : `text-${props.color}-100`
     })
     
     return {
