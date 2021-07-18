@@ -112,6 +112,6 @@ export default defineComponent({
 }
 
 .selected {
-  @apply text-gray-500 bg-white shadow-none border-gray-500 border-2;
+  @apply text-gray-500 bg-white shadow-none border-gray-500 border-2 hover:bg-gray-300;
 }
 </style>
