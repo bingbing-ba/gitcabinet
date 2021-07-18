@@ -83,7 +83,13 @@ export const cli = (command: string, problem:Problem) => {
           resultString = `commit message가 비어있습니다`
           return
         }
-        problem.git.commit(message)
+
+        const commitResult = problem.git.commit(message)
+        if (commitResult.result === 'fail') {
+          resultString = '커밋할 변경 사항 없음, 작업 폴더 깨끗함\ncommit에 실패했습니다.'
+          return
+        }
+
         resultString = 'commit이 완료되었어요'
       },
 
