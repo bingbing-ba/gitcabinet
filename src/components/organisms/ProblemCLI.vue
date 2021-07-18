@@ -50,7 +50,7 @@ export default defineComponent({
           document.execCommand('paste')
           return false
         }
-        if (e.metaKey && e.key === 'k') {
+        if ((e.metaKey && e.key === 'k') || (e.ctrlKey && e.key === 'k')) {
           cabinetTerm.clearTerm()
           cabinetTerm.setPrompt()
         }
