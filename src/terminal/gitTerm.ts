@@ -141,21 +141,21 @@ export class gitTerm {
               // if not, show the list below the current line
               // WORK FROM HERE (0625)
             } else if (fileCandidates.length > 1) {
-              if (this._tabIndex % fileCandidates.length >= 0) {
-                const fileToAutoComplete = fileCandidates[this._tabIndex]
-                this.term.write('\x1b[2K\r')
-                this.setPrompt()
-                this.term.write(this._input + fileToAutoComplete.toString() + '\n' + fileCandidates.toString())
-                const cursorPos = ANSI_CONTROLS.setCursorPosition(this._row, this.term.rows + this._input.length + fileToAutoComplete.toString().length + 1)
-                this.term.write(cursorPos)
-              } else {
-                this.term.write('\x1b[2K\r')
-                this.setPrompt()
-                this.term.write(this._input + '\n' + fileCandidates.toString())
-                const cursorPos = ANSI_CONTROLS.setCursorPosition(this._row, this.term.rows + this._input.length + 1)
-                this.term.write(cursorPos)
-              }
-              this._tabIndex = (this._tabIndex + 1) % fileCandidates.length
+              // if (this._tabIndex % fileCandidates.length >= 0) {
+              //   const fileToAutoComplete = fileCandidates[this._tabIndex]
+              //   this.term.write('\x1b[2K\r')
+              //   this.setPrompt()
+              //   this.term.write(this._input + fileToAutoComplete.toString() + '\n' + fileCandidates.toString())
+              //   const cursorPos = ANSI_CONTROLS.setCursorPosition(this._row, this.term.rows + this._input.length + fileToAutoComplete.toString().length + 1)
+              //   this.term.write(cursorPos)
+              // } else {
+              //   this.term.write('\x1b[2K\r')
+              //   this.setPrompt()
+              //   this.term.write(this._input + '\n' + fileCandidates.toString())
+              //   const cursorPos = ANSI_CONTROLS.setCursorPosition(this._row, this.term.rows + this._input.length + 1)
+              //   this.term.write(cursorPos)
+              // }
+              // this._tabIndex = (this._tabIndex + 1) % fileCandidates.length
             }
 
             if (!fileCandidates.length && wordsLength === this._cursor) {
