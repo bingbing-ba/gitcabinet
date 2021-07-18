@@ -86,65 +86,58 @@ export function formattedDisplayMessage(problem: Problem, command: string [], me
       },
       commit: function() {
         if (!problem.git) return message
-        
         const { deleted: deletedBeforeCommit, modified: modifiedBeforeCommit, unstaged } = problem.git?.getStatusNotToCommit()
         const { deleted: deletedAfterCommit, modified: modifiedAfterCommit, created } = problem.git?.getStatusToCommit()
-        
-        if (message === 'there is no change' && (deletedBeforeCommit.length || modifiedBeforeCommit.length || unstaged.length)) {
-          let result = ''
-          let hasChanged = false
-          const head = problem?.git?.head
-          result += `현재 브랜치 ${head} \n`
-          result += '\n'
-
-          if (created.length || deletedAfterCommit.length || modifiedAfterCommit.length) {
-            let messageToCommit = '커밋할 변경 사항: \n'
-            created.forEach((fileName: string) => {
-              messageToCommit += highlight(`  새 파일: ${fileName}\n`, 'INFO')
-            })
-            deletedAfterCommit.forEach((fileName: string) => {
-              messageToCommit += highlight(`  삭제함: ${fileName}\n`, 'INFO')
-            })
-            modifiedAfterCommit.forEach((fileName: string) => {
-              messageToCommit += highlight(`  수정함: ${fileName}\n`, 'INFO')
-            })
-            hasChanged = true
-            result += messageToCommit
-            result += '\r\n'
+        if (message === 'there is no change') {
+          if (deletedBeforeCommit.length || modifiedBeforeCommit.length || unstaged.length) {
+            let result = `커밋을 진행할 수 없습니다. ${highlight('git add', 'CYAN')}를 먼저 진행해주세요.\n`
+            let hasChanged = false
+            const head = problem?.git?.head
+            result += `현재 브랜치 ${head} \n`
+            result += '\n'
+            if (created.length || deletedAfterCommit.length || modifiedAfterCommit.length) {
+              let messageToCommit = '커밋할 변경 사항: \n'
+              created.forEach((fileName: string) => {
+                messageToCommit += highlight(`  새 파일: ${fileName}\n`, 'INFO')
+              })
+              deletedAfterCommit.forEach((fileName: string) => {
+                messageToCommit += highlight(`  삭제함: ${fileName}\n`, 'INFO')
+              })
+              modifiedAfterCommit.forEach((fileName: string) => {
+                messageToCommit += highlight(`  수정함: ${fileName}\n`, 'INFO')
+              })
+              hasChanged = true
+              result += messageToCommit
+              result += '\r\n'
+            }
+            if (deletedBeforeCommit.length || modifiedBeforeCommit.length) {
+              let messageForNotStaged = '커밋하도록 정하지 않은 변경 사항: \n'
+              modifiedBeforeCommit.forEach((fileName: string) => {
+                messageForNotStaged += highlight(`  수정함: ${fileName}\n`, 'ERROR')
+              })
+              deletedBeforeCommit.forEach((fileName: string) => {
+                messageForNotStaged += highlight(`  삭제함: ${fileName}\n`, 'ERROR')
+              })
+              hasChanged = true
+              result += messageForNotStaged
+              result += '\r\n'
+            }
+            if (unstaged.length) {
+              let messageForUnstaged = '추적하지 않는 파일: \n'
+              unstaged.forEach((fileName: string) => {
+                messageForUnstaged += highlight(`  ${fileName}\n`, 'ERROR')
+              })
+              hasChanged = true 
+              result += messageForUnstaged
+              result += '\r\n'
+            }
+            if (!hasChanged) {
+              result += '커밋할 변경 사항 없음, 작업 폴더 깨끗함'
+            }
+            return result.trimRight()
           }
-          
-          if (deletedBeforeCommit.length || modifiedBeforeCommit.length) {
-            let messageForNotStaged = '커밋하도록 정하지 않은 변경 사항: \n'
-            modifiedBeforeCommit.forEach((fileName: string) => {
-              messageForNotStaged += highlight(`  수정함: ${fileName}\n`, 'ERROR')
-            })
-            deletedBeforeCommit.forEach((fileName: string) => {
-              messageForNotStaged += highlight(`  삭제함: ${fileName}\n`, 'ERROR')
-            })
-            hasChanged = true
-            result += messageForNotStaged
-            result += '\r\n'
-          }
-          
-          if (unstaged.length) {
-            let messageForUnstaged = '추적하지 않는 파일: \n'
-            unstaged.forEach((fileName: string) => {
-              messageForUnstaged += highlight(`  ${fileName}\n`, 'ERROR')
-            })
-            hasChanged = true 
-            result += messageForUnstaged
-            result += '\r\n'
-          }
-          
-          
-          
-          if (!hasChanged) {
-            result += '커밋할 변경 사항 없음, 작업 폴더 깨끗함'
-          }
-
-          return result.trimRight()
+          return '커밋할 변경 사항 없음, 작업 폴더 깨끗함'
         }
-
         return message
       }
     },
