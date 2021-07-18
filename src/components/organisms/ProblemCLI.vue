@@ -39,34 +39,31 @@ export default defineComponent({
         cursorBlink: true,
       }
       term = new Terminal(termOptions)
-      term.attachCustomKeyEventHandler(function(e){
-        if (e.ctrlKey && (e.key === 'v')) {
-          document.execCommand('paste')
-          return false
-        }
-        return true
-      })
       term.open(document.querySelector('#terminal') as HTMLElement)
       
       const fitAddon = new FitAddon()
       cabinetTerm = new gitTerm(term, props.problem)
       term.loadAddon(fitAddon)
       term.loadAddon(cabinetTerm)
+      term.attachCustomKeyEventHandler(function(e){
+        if (e.ctrlKey && (e.key === 'v')) {
+          document.execCommand('paste')
+          return false
+        }
+        if (e.metaKey && e.key === 'k') {
+          cabinetTerm.clearTerm()
+          cabinetTerm.setPrompt()
+        }
+        return true
+      })
       
       term.focus()
       fitAddon.fit()
-      // window.addEventListener('resize', () => {
-      //   fitAddon.fit()
-      // })
 
       term.onLineFeed(() => {
         emit('update-answer-manually', props.problem.isCorrect())
       })
     })
-
-    // onBeforeUnmount(() => {
-    //   window.removeEventListener('resize', () => {})
-    // })
     
     onUpdated(() => {
       cabinetTerm.setProblem(props.problem)
@@ -80,6 +77,8 @@ export default defineComponent({
     watch(props.problem, (newProblem) => {
       cabinetTerm.setProblem(newProblem)
     })
+
+    // window.addEventListener('key')
   },
 })
 </script>
