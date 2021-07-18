@@ -52,6 +52,7 @@
     <ButtonCSModal @click="toggleModal" />
   </main>
   <CSModal :modalOpened="modalOpened" @close-modal="toggleModal" />
+  <TutorialModal />
 </template>
 
 <script lang="ts">
@@ -72,6 +73,7 @@ import {
   GitStagingArea,
   GitRemote,
   ButtonCSModal,
+  TutorialModal,
 } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 
@@ -89,6 +91,7 @@ export default defineComponent({
     GitStagingArea,
     GitRemote,
     ButtonCSModal,
+    TutorialModal,
   },
   setup() {
     const problemIndex = ref(0)

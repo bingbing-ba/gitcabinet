@@ -46,6 +46,7 @@ import GitGraph from './organisms/GitGraph.vue'
 import GitRemote from './organisms/GitRemote.vue'
 import GitStagingArea from './organisms/GitStagingArea.vue'
 import CSModal from './organisms/CSModal.vue'
+import TutorialModal from './organisms/TutorialModal.vue'
 
 import SectionLeft from './templates/SectionLeft.vue'
 import SectionRight from './templates/SectionRight.vue'
@@ -101,6 +102,7 @@ export {
   GitStagingArea,
 
   CSModal,
+  TutorialModal,
   SectionLeft,
   SectionRight,
 }

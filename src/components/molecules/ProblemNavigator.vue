@@ -98,6 +98,7 @@ export default defineComponent({
       emit('goto-next-problem')
     }
     const gotoTargetProblem = (idx: number) => {
+      showStageList()
       emit('goto-target-problem', idx)
     }
 
