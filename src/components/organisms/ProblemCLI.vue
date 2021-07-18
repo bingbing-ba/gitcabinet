@@ -55,18 +55,18 @@ export default defineComponent({
       
       term.focus()
       fitAddon.fit()
-      window.addEventListener('resize', () => {
-        fitAddon.fit()
-      })
+      // window.addEventListener('resize', () => {
+      //   fitAddon.fit()
+      // })
 
       term.onLineFeed(() => {
         emit('update-answer-manually', props.problem.isCorrect())
       })
     })
 
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', () => {})
-    })
+    // onBeforeUnmount(() => {
+    //   window.removeEventListener('resize', () => {})
+    // })
     
     onUpdated(() => {
       cabinetTerm.setProblem(props.problem)
