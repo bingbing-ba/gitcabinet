@@ -4,11 +4,13 @@
       <Title><a href="/">GIT CABINET</a></Title>
       <ProblemNavigator
         :problem="problem"
+        :problems="problems"
         :isCorrect="isCorrect"
         :problemIndex="problemIndex"
         :lastProblemIndex="lastProblemIndex"
         @goto-prev-problem="gotoPrevProblem"
         @goto-next-problem="gotoNextProblem"
+        @goto-target-problem="gotoTargetProblem"
       />
       <ProblemResetButton 
         :problem="problem"
@@ -52,6 +54,10 @@ export default defineComponent({
       type: Problem,
       required: true,
     },
+    problems: {
+      type: Array,
+      required: true,
+    },
     isCorrect: {
       type: Boolean,
       required: true,
@@ -82,6 +88,9 @@ export default defineComponent({
     const gotoNextProblem = () => {
       emit('goto-next-problem')
     }
+    const gotoTargetProblem = (idx: number) => {
+      emit('goto-target-problem', idx)
+    }
 
     const updateViewQueue = (nextViewIndex: number) => {
       emit('update-view-queue', nextViewIndex)
@@ -92,6 +101,7 @@ export default defineComponent({
       resetProblem,
       gotoPrevProblem,
       gotoNextProblem,
+      gotoTargetProblem,
       updateViewQueue
     }
   },
@@ -112,6 +122,6 @@ export default defineComponent({
 }
 
 .selected {
-  @apply text-gray-500 bg-white shadow-none border-gray-500 border-2;
+  @apply text-gray-500 bg-white shadow-none border-gray-500 border-2 hover:bg-gray-300;
 }
 </style>

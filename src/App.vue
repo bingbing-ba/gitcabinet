@@ -2,12 +2,14 @@
   <TheNavBar
     class="navbar"
     :problem="problem"
+    :problems="problems"
     :isCorrect="isCorrect"
     :problemIndex="problemIndex"
     :lastProblemIndex="lastProblemIndex"
     :viewQueue="viewQueue"
     @goto-prev-problem="gotoPrevProblem"
     @goto-next-problem="gotoNextProblem"
+    @goto-target-problem="gotoTargetProblem"
     @reset-problem="resetProblem"
     @update-view-queue="updateViewQueue"
   />
@@ -50,6 +52,7 @@
     <ButtonCSModal @click="toggleModal" />
   </main>
   <CSModal :modalOpened="modalOpened" @close-modal="toggleModal" />
+  <TutorialModal />
 </template>
 
 <script lang="ts">
@@ -70,6 +73,7 @@ import {
   GitStagingArea,
   GitRemote,
   ButtonCSModal,
+  TutorialModal,
 } from '@/components'
 import { PlainFile } from '@/git/fileStructure'
 
@@ -87,6 +91,7 @@ export default defineComponent({
     GitStagingArea,
     GitRemote,
     ButtonCSModal,
+    TutorialModal,
   },
   setup() {
     const problemIndex = ref(0)
@@ -115,6 +120,9 @@ export default defineComponent({
     }
     const gotoNextProblem = () => {
       problemIndex.value += 1
+    }
+    const gotoTargetProblem = (idx: number) => {
+      problemIndex.value  = idx
     }
   
     const updateFileContent = (content: string, index: number) => {
@@ -166,7 +174,9 @@ export default defineComponent({
       undoReset,
       gotoPrevProblem,
       gotoNextProblem,
+      gotoTargetProblem,
       problem,
+      problems,
       isCorrect,
       hasReset,
       updateFileContent,

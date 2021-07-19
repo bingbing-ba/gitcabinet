@@ -22,6 +22,7 @@ import Badge from './atoms/Badge.vue'
 import IconClipBoard from './atoms/IconClipBoard.vue'
 
 import Card from './molecules/Card.vue'
+import ProblemNavigatorDropdown from './molecules/ProblemNavigatorDropdown.vue'
 import ProblemNavigator from './molecules/ProblemNavigator.vue'
 import ProblemResetButton from './molecules/ProblemResetButton.vue'
 import ButtonDirectory from './molecules/ButtonDirectory.vue'
@@ -45,6 +46,7 @@ import GitGraph from './organisms/GitGraph.vue'
 import GitRemote from './organisms/GitRemote.vue'
 import GitStagingArea from './organisms/GitStagingArea.vue'
 import CSModal from './organisms/CSModal.vue'
+import TutorialModal from './organisms/TutorialModal.vue'
 
 import SectionLeft from './templates/SectionLeft.vue'
 import SectionRight from './templates/SectionRight.vue'
@@ -74,6 +76,7 @@ export {
   IconClipBoard,
 
   Card,
+  ProblemNavigatorDropdown,
   ProblemNavigator,
   ProblemResetButton,
   ButtonDirectory,
@@ -99,6 +102,7 @@ export {
   GitStagingArea,
 
   CSModal,
+  TutorialModal,
   SectionLeft,
   SectionRight,
 }
